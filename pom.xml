@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- parent指明继承关系，给出被继承的父项目的具体信息 设置全局springboot版本-->
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <version>3.5.3</version>
+    <relativePath/>
+  </parent>
+
+
+  <!-- 多模块项目父工程必须指定为 pom -->
+  <packaging>pom</packaging>
+
+  <!-- 项目信息 -->
+  <groupId>com.gqtian</groupId>
+  <artifactId>IndividualProject</artifactId>
+  <name>IndividualProject</name>
+  <version>${revision}</version>
+  <description>构建个人多模块化体系</description>
+
+  <!-- 版本控制 -->
+  <properties>
+    <!-- 全局项目版本控制 Start -->
+    <revision>1.0.0</revision>
+    <!-- 全局项目版本控制 End -->
+
+    <mybatis-plus.version>3.5.5</mybatis-plus.version>
+    <mybatis-flex.version>1.11.1</mybatis-flex.version>
+    <hutool.version>5.8.24</hutool.version>
+    <mysql.version>8.0.33</mysql.version>
+    <druid.version>1.2.18</druid.version>
+    <fastjson2.version>2.0.43</fastjson2.version>
+    <obs.aliyun.version>3.15.1</obs.aliyun.version>
+    <obs.hw.version>3.22.12</obs.hw.version>
+    <obs.minio.version>8.2.1</obs.minio.version>
+    <jsch.version>0.1.55</jsch.version>
+    <commons-net.version>3.9.0</commons-net.version>
+    <netty.version>4.1.65.Final</netty.version>
+    <rocketmq.client.version>4.9.2</rocketmq.client.version>
+    <rocketmq.spring.version>2.3.3</rocketmq.spring.version>
+  </properties>
+
+  <!-- 模块说明：这里声明多个子模块 -->
+  <modules>
+    <module>annotationModel</module>
+    <module>commonModel</module>
+    <module>nettyModel</module>
+  </modules>
+
+  <!-- 项目依赖统一管理 -->
+  <dependencyManagement>
+    <!--============================ 子包依赖 ============================-->
+    <dependencies>
+      <dependency>
+        <groupId>com.gqtian</groupId>
+        <artifactId>commonModel</artifactId>
+        <version>${revision}</version>
+      </dependency>
+
+      <!--============================ Spring ============================-->
+
+      <dependency>
+        <artifactId>netty-all</artifactId>
+        <groupId>io.netty</groupId>
+        <version>${netty.version}</version>
+      </dependency>
+      <!--============================ 数据源 ============================-->
+      <!-- Mybatis-Flex -->
+      <dependency>
+        <groupId>com.mybatis-flex</groupId>
+        <artifactId>mybatis-flex-spring-boot3-starter</artifactId>
+        <version>${mybatis-flex.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.mybatis-flex</groupId>
+        <artifactId>mybatis-flex-processor</artifactId>
+        <version>${mybatis-flex.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- Mybatis-Plus -->
+      <dependency>
+        <groupId>com.baomidou</groupId>
+        <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        <version>${mybatis-plus.version}</version>
+      </dependency>
+
+      <!-- Druid连接池 -->
+      <dependency>
+        <groupId>com.alibaba</groupId>
+        <artifactId>druid-spring-boot-starter</artifactId>
+        <version>${druid.version}</version>
+      </dependency>
+
+      <!-- MySQL驱动 -->
+      <dependency>
+        <groupId>com.mysql</groupId>
+        <artifactId>mysql-connector-j</artifactId>
+        <version>${mysql.version}</version>
+      </dependency>
+
+
+      <!--============================ 存储 ============================-->
+
+      <!--华为Obs云储存-->
+      <dependency>
+        <artifactId>esdk-obs-java</artifactId>
+        <groupId>com.huaweicloud</groupId>
+        <version>${obs.hw.version}</version>
+      </dependency>
+
+      <!-- Minio -->
+      <dependency>
+        <artifactId>minio</artifactId>
+        <groupId>io.minio</groupId>
+        <version>${obs.minio.version}</version>
+      </dependency>
+
+      <!-- Aliyun Oss -->
+      <dependency>
+        <artifactId>aliyun-sdk-oss</artifactId>
+        <groupId>com.aliyun.oss</groupId>
+        <version>${obs.aliyun.version}</version>
+      </dependency>
+
+      <!-- SFTP -->
+      <dependency>
+        <groupId>com.jcraft</groupId>
+        <artifactId>jsch</artifactId>
+        <scope>provided</scope>
+        <optional>true</optional>
+        <version>${jsch.version}</version>
+      </dependency>
+
+      <!-- FTP -->
+      <dependency>
+        <groupId>commons-net</groupId>
+        <artifactId>commons-net</artifactId>
+        <optional>true</optional>
+        <version>${commons-net.version}</version>
+      </dependency>
+
+      <dependency>
+        <artifactId>rocketmq-client</artifactId>
+        <groupId>org.apache.rocketmq</groupId>
+        <version>${rocketmq.client.version}</version>
+      </dependency>
+
+      <dependency>
+        <artifactId>rocketmq-spring-boot-starter</artifactId>
+        <groupId>org.apache.rocketmq</groupId>
+        <version>${rocketmq.spring.version}</version>
+      </dependency>
+
+
+      <!--============================ 常用工具 ============================-->
+      <!-- Lombok -->
+      <dependency>
+        <artifactId>lombok</artifactId>
+        <groupId>org.projectlombok</groupId>
+        <version>${lombok.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>cn.hutool</groupId>
+        <artifactId>hutool-all</artifactId>
+        <version>${hutool.version}</version>
+      </dependency>
+
+      <dependency>
+        <artifactId>fastjson2</artifactId>
+        <groupId>com.alibaba.fastjson2</groupId>
+        <version>${fastjson2.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-pool2</artifactId>
+        <version>${commons-pool2.version}</version>
+      </dependency>
+
+    </dependencies>
+  </dependencyManagement>
+
+
+</project>

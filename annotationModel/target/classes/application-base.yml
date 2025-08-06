@@ -1,0 +1,25 @@
+#################################  Spring  #################################
+spring:
+  datasource:
+    #----------------------- Mysql -----------------------#
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    username: root
+    password: REDACTED
+    type: com.alibaba.druid.pool.DruidDataSource
+
+
+#################################  Mybatis-plus  #################################
+mybatis-plus:
+  mapper-locations: classpath*:mapper/mysql/*.xml
+  configuration:
+    # SQL打印到工作台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+  
+
+
+
+
+
+
