@@ -1,9 +1,0 @@
-CREATE TABLE IF NOT EXISTS ex_user
-(
-    ID       VARCHAR(128) NULL COMMENT '标识',
-    NAME     VARCHAR(128) NULL COMMENT '名称',
-    AGE      INT          NULL COMMENT '年龄',
-    BIRTHDAY DATETIME     NULL COMMENT '生日'
-)
-    COMMENT '模板-用户信息';
-
