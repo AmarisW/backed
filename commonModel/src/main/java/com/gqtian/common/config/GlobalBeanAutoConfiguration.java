@@ -15,7 +15,7 @@ import com.gqtian.common.utils.SpringApplicationUtil;
  */
 @AutoConfiguration
 @Import(
-{DicInitRun.class, SpringApplicationUtil.class, MyBatisConfiguration.class})
-public class BeanAutoConfiguration {
+{DicInitRun.class, SpringApplicationUtil.class, GlobalMyBatisConfiguration.class})
+public class GlobalBeanAutoConfiguration {
     
 }

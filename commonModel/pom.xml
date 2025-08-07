@@ -35,7 +35,7 @@
       <artifactId>spring-boot-starter-aop</artifactId>
       <groupId>org.springframework.boot</groupId>
     </dependency>
-    
+
     <!--=============================== 工具类 ===========================-->
 
     <dependency>
@@ -51,6 +51,11 @@
     <dependency>
       <artifactId>hutool-all</artifactId>
       <groupId>cn.hutool</groupId>
+    </dependency>
+    
+    <dependency>
+      <artifactId>fastjson2</artifactId>
+      <groupId>com.alibaba.fastjson2</groupId>
     </dependency>
 
     <!--===============================Mybatis-Plus配置===========================-->

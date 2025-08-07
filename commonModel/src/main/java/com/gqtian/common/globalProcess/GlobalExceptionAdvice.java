@@ -1,12 +1,11 @@
 package com.gqtian.common.globalProcess;
 
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import com.gqtian.common.enums.ResultCodeEnum;
+import com.gqtian.common.enums.GlobalResultCodeEnum;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2023/04/26 10:49
  */
 @Slf4j
-@Order(9999999)
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
     
@@ -29,7 +27,7 @@ public class GlobalExceptionAdvice {
      * @throws Exception 异常
      */
     @ExceptionHandler(Exception.class)
-    public Result<?> handleException(Exception e)
+    public GlobalResult<?> handleException(Exception e)
         throws Exception {
         log.error(e.getMessage(), e);
         
@@ -38,7 +36,7 @@ public class GlobalExceptionAdvice {
             throw e;
         }
         
-        return Result.failure(e.getMessage());
+        return GlobalResult.failure(e.getMessage());
     }
     
     /**
@@ -47,8 +45,8 @@ public class GlobalExceptionAdvice {
      * @param e 异常
      * @return Result
      */
-    @ExceptionHandler(BusinessException.class)
-    public Result<?> handleBusinessException(BusinessException e) {
+    @ExceptionHandler(GlobalException.class)
+    public GlobalResult<?> handleBusinessException(GlobalException e) {
         // 业务异常不需要打印堆栈信息
         String message = e.getMessage();
         
@@ -60,13 +58,13 @@ public class GlobalExceptionAdvice {
             throw e;
         }
         
-        ResultCodeEnum resultCodeEnum = ResultCodeEnum.getResultCodeEnum(message);
+        GlobalResultCodeEnum globalResultCodeEnum = GlobalResultCodeEnum.getResultCodeEnum(message);
         
-        if (resultCodeEnum == null) {
-            return Result.failure(ResultCodeEnum.RC999.getCode(), message);
+        if (globalResultCodeEnum == null) {
+            return GlobalResult.failure(GlobalResultCodeEnum.RC999.getCode(), message);
         }
         
-        return Result.failure(resultCodeEnum.getCode(), resultCodeEnum.getMessage());
+        return GlobalResult.failure(globalResultCodeEnum.getCode(), globalResultCodeEnum.getMessage());
     }
     
 }

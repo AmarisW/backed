@@ -39,7 +39,7 @@
     <obs.minio.version>8.2.1</obs.minio.version>
     <jsch.version>0.1.55</jsch.version>
     <commons-net.version>3.9.0</commons-net.version>
-    <netty.version>4.1.65.Final</netty.version>
+    <netty.version>4.1.94.Final</netty.version>
     <rocketmq.client.version>4.9.2</rocketmq.client.version>
     <rocketmq.spring.version>2.3.3</rocketmq.spring.version>
   </properties>

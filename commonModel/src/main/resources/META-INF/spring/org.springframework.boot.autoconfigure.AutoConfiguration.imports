@@ -1,2 +1,4 @@
-com.gqtian.common.config.BeanAutoConfiguration
+com.gqtian.common.globalProcess.GlobalResponseBodyAdvice
+com.gqtian.common.globalProcess.GlobalExceptionAdvice
+com.gqtian.common.config.GlobalBeanAutoConfiguration
 

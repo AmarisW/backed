@@ -1,0 +1,14 @@
+#################################  自定义配置 #################################
+#------------------------------- Netty配置 -------------------------------#
+netty:
+  server:
+    port: 9001                            # 服务端启动端口
+  client:
+    server-ip: '127.0.0.1'                # 服务端连接地址
+    server-port: 9001                     # 服务端连接端口
+  boss-max-thread-count: 1                # 处理连接线程数（一般设置为1）
+  work-max-thread-count: 8                # 处理数据接发线程数
+  reader-idle-time-seconds: 120           # 读超时时间
+  writer-idle-time-seconds: 120           # 写超时时间
+  all-idle-time-seconds: 120              # 读写超时
+  max-frame-length: 65535                 # 数据包最大长度

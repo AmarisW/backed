@@ -9,7 +9,7 @@ import lombok.Getter;
  * @date 2023/04/26 10:04
  */
 @Getter
-public enum ResultCodeEnum
+public enum GlobalResultCodeEnum
 {
     /**
      * 空
@@ -88,7 +88,7 @@ public enum ResultCodeEnum
     
     private final String message;
     
-    ResultCodeEnum(String code, String message)
+    GlobalResultCodeEnum(String code, String message)
     {
         this.code = code;
         this.message = message;
@@ -97,10 +97,10 @@ public enum ResultCodeEnum
     /**
      * 根据code获取message
      */
-    public static ResultCodeEnum getResultCodeEnum(String code) {
-        for (ResultCodeEnum resultCodeEnum : ResultCodeEnum.values()) {
-            if (resultCodeEnum.getCode().equals(code)) {
-                return resultCodeEnum;
+    public static GlobalResultCodeEnum getResultCodeEnum(String code) {
+        for (GlobalResultCodeEnum globalResultCodeEnum : GlobalResultCodeEnum.values()) {
+            if (globalResultCodeEnum.getCode().equals(code)) {
+                return globalResultCodeEnum;
             }
         }
         return null;

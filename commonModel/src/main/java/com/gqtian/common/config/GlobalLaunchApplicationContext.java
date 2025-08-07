@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2024/4/8 13:53
  */
 @Slf4j
-public class LaunchApplicationContext {
+public class GlobalLaunchApplicationContext {
     
     public static final String SERVER_PORT = "server.port";
     

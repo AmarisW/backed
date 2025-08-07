@@ -20,7 +20,6 @@ public class SpringApplicationUtil implements ApplicationContextAware {
     /**
      * -- GETTER -- 获取applicationContext
      *
-     * @return ApplicationContext
      */
     // Spring应用上下文环境
     @Getter

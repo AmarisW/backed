@@ -6,7 +6,7 @@ package com.gqtian.common.constant;
  * @author GQTIAN
  * @date 2025/7/24 17:15
  **/
-public class Constant {
+public class GlobalConstant {
     
     /**
      * 时间格式
