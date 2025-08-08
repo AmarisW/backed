@@ -4,9 +4,9 @@ import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
-import com.gqtian.netty.codec.MessageDecoder;
-import com.gqtian.netty.codec.MessageEncoder;
 import com.gqtian.netty.config.NettyConfig;
+import com.gqtian.netty.server.codec.MessageDecoder;
+import com.gqtian.netty.server.codec.MessageEncoder;
 import com.gqtian.netty.server.handler.ServerHandler;
 
 import io.netty.channel.ChannelInitializer;

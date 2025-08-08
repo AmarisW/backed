@@ -1,4 +1,4 @@
-package com.gqtian.netty.codec;
+package com.gqtian.netty.server.codec;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

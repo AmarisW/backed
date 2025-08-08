@@ -31,9 +31,10 @@
     <mybatis-plus.version>3.5.5</mybatis-plus.version>
     <mybatis-flex.version>1.11.1</mybatis-flex.version>
     <hutool.version>5.8.24</hutool.version>
-    <mysql.version>8.0.33</mysql.version>
+    <mysql.version>8.2.0</mysql.version>
     <druid.version>1.2.18</druid.version>
     <fastjson2.version>2.0.43</fastjson2.version>
+    <commons-lang3.version>3.18.0</commons-lang3.version>
     <obs.aliyun.version>3.15.1</obs.aliyun.version>
     <obs.hw.version>3.22.12</obs.hw.version>
     <obs.minio.version>8.2.1</obs.minio.version>
@@ -184,8 +185,12 @@
         <version>${commons-pool2.version}</version>
       </dependency>
 
+      <dependency>
+        <artifactId>commons-lang3</artifactId>
+        <groupId>org.apache.commons</groupId>
+        <version>${commons-lang3.version}</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
-
-
 </project>

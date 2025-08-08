@@ -19,7 +19,7 @@ spring:
 #################################  日志配置  #################################
 logging:
   file:
-    name: ../autoLogs/${logging.level.root}.log
+    name: ./logs/${logging.level.root}.log
   level:
     root: info
   logback:

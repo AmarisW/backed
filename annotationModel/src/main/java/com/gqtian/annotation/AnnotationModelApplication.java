@@ -3,7 +3,7 @@ package com.gqtian.annotation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
-import com.gqtian.common.config.GlobalLaunchApplicationContext;
+import com.gqtian.common.config.GlobalBeautifyStart;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,6 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 public class AnnotationModelApplication {
     
     public static void main(String[] args) {
-        GlobalLaunchApplicationContext.launch(AnnotationModelApplication.class, args);
+        GlobalBeautifyStart.start(AnnotationModelApplication.class, args);
     }
 }
