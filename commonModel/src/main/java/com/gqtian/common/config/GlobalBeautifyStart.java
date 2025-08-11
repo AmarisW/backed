@@ -10,6 +10,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.Environment;
 
 import com.gqtian.common.model.GlobalApiOutEntity;
+import com.gqtian.common.model.GlobalApiOutEntity.ParamEntity;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -446,13 +447,29 @@ public class GlobalBeautifyStart {
         // 如果有参数信息，则在下一行显示
         if (hasParameters(api)) {
             String paramPrefix = isLast ? "   " : TREE_BAR;
+            
+            StringBuilder paramOutput = new StringBuilder();
+            for (ParamEntity param : api.getParams()) {
+                if (!paramOutput.isEmpty()) {
+                    paramOutput.append(COLOR_WHITE).append(" | ");
+                }
+                paramOutput.append(COLOR_RESET)
+                    .append(COLOR_GREEN)
+                    .append(param.getType())
+                    .append(": ")
+                    .append(COLOR_RESET)
+                    .append(COLOR_CYAN)
+                    .append(param.getName())
+                    .append(COLOR_RESET);
+            }
+            
             output.append(paramPrefix)
                 .append("   ")
                 .append(COLOR_WHITE)
                 .append(".Parameters: ")
                 .append(COLOR_RESET)
                 .append(COLOR_GREEN)
-                .append(api.getParams())
+                .append(paramOutput)
                 .append(COLOR_RESET)
                 .append("\n");
         }
@@ -469,7 +486,7 @@ public class GlobalBeautifyStart {
      * 检查API是否有参数信息
      */
     private static boolean hasParameters(GlobalApiOutEntity api) {
-        return api.getParams() != null && !api.getParams().isEmpty() && !"无参数".equals(api.getParams());
+        return api.getParams() != null && !api.getParams().isEmpty();
     }
     
     /**
