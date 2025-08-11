@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <title>开放API列表</title>
+  <style>
+    * {
+      padding: 0;
+      margin: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      padding: 30px 0;
+      color: white;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.9;
+    }
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+
+    .api-list {
+      display: grid;
+      gap: 20px;
+    }
+
+    .api-item {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+
+    .api-item:hover {
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
+    }
+
+    .api-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .method {
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .method.GET {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .method.POST {
+      background-color: #e3f2fd;
+      color: #1565c0;
+    }
+
+    .method.PUT {
+      background-color: #fff8e1;
+      color: #f57f17;
+    }
+
+    .method.DELETE {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    .method.PATCH {
+      background-color: #fce4ec;
+      color: #ad1457;
+    }
+
+    .path {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      color: #1a237e;
+      font-size: 1.1rem;
+    }
+
+    .comment {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    .params {
+      background-color: #f5f5f5;
+      border-left: 4px solid #667eea;
+      padding: 10px 15px;
+      border-radius: 0 4px 4px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 0.9rem;
+    }
+
+    .params-label {
+      font-weight: bold;
+      color: #555;
+    }
+
+    .no-apis {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+      font-size: 1.2rem;
+    }
+
+    .error {
+      text-align: center;
+      padding: 40px;
+      color: #c62828;
+      font-size: 1.2rem;
+    }
+
+    .refresh-btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      margin: 20px auto;
+      display: block;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .refresh-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .refresh-btn:active {
+      transform: translateY(0);
+    }
+
+    .test-btn {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 14px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .test-btn:hover {
+      background-color: #45a049;
+    }
+
+    .test-form {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 10px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .form-actions {
+      margin-top: 10px;
+    }
+
+    .execute-btn {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .execute-btn:hover {
+      background-color: #0b7dda;
+    }
+
+    .response-area {
+      margin-top: 15px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background-color: #f0f0f0;
+      display: none;
+    }
+
+    .response-header {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .response-content {
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    footer {
+      text-align: center;
+      color: white;
+      padding: 20px;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 10px;
+      }
+
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .card {
+        padding: 15px;
+      }
+
+      .api-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>🚀 开放接口</h1>
+    <!--    <p>查看系统中所有公开的API接口</p>-->
+  </header>
+
+  <!--  <button class="refresh-btn" onclick="loadApis()">刷新API列表</button>-->
+
+  <main class="card">
+    <div id="api-container">
+      <div class="loading" id="loading">正在加载API列表...</div>
+      <div class="api-list" id="api-list" style="display: none;"></div>
+      <div class="no-apis" id="no-apis" style="display: none;">暂无API接口暴露</div>
+      <div class="error" id="error" style="display: none;"></div>
+    </div>
+  </main>
+
+  <!--  <footer>-->
+  <!--    <p>Powered by IndividualProject | API Explorer</p>-->
+  <!--  </footer>-->
+</div>
+
+<script>
+  // 常量定义
+  const API_CONTAINER_ID = 'api-container';
+  const API_LIST_ID = 'api-list';
+  const LOADING_ID = 'loading';
+  const NO_APIS_ID = 'no-apis';
+  const ERROR_ID = 'error';
+
+  const CLASS_API_ITEM = 'api-item';
+  const CLASS_METHOD = 'method';
+  const CLASS_PATH = 'path';
+  const CLASS_TEST_FORM = 'test-form';
+  const CLASS_RESPONSE_AREA = 'response-area';
+  const CLASS_RESPONSE_CONTENT = 'response-content';
+
+  const SELECTOR_PARAM_INPUT = 'input[id^="param-"]';
+
+  // 页面加载完成后获取API列表
+  document.addEventListener('DOMContentLoaded', function () {
+    loadApis();
+  });
+
+  // 获取API列表
+  function loadApis() {
+    // 显示加载状态
+    showElement(LOADING_ID);
+    hideElement(API_LIST_ID);
+    hideElement(NO_APIS_ID);
+    hideElement(ERROR_ID);
+
+    // 获取当前页面的context path
+    const basePath = window.location.pathname.split('/')[1];
+    const apiUrl = basePath ? `/${basePath}/globalExposed/list` : '/globalExposed/list';
+
+    // 调用API接口
+    fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('网络响应错误: ' + response.status);
+      }
+      return response.json();
+    })
+    .then(result => {
+      // 检查响应是否成功
+      result.msg = undefined;
+      if (result.success) {
+        renderApis(result.data);
+      } else {
+        throw new Error('API返回错误: ' + result.msg);
+      }
+    })
+    .catch(error => {
+      console.error('Error loading APIs:', error);
+      const errorElement = document.getElementById(ERROR_ID);
+      errorElement.textContent = '加载失败: ' + error.message;
+      errorElement.style.display = 'block';
+      hideElement(LOADING_ID);
+    });
+  }
+
+  // 显示元素
+  function showElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.style.display = 'block';
+    }
+  }
+
+  // 隐藏元素
+  function hideElement(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+      element.style.display = 'none';
+    }
+  }
+
+  // 渲染API列表
+  function renderApis(apis) {
+    const apiListContainer = document.getElementById(API_LIST_ID);
+    const loadingElement = document.getElementById(LOADING_ID);
+    const noApisElement = document.getElementById(NO_APIS_ID);
+
+    // 隐藏加载状态
+    hideElement(LOADING_ID);
+
+    // 检查是否有API数据
+    if (!apis || apis.length === 0) {
+      showElement(NO_APIS_ID);
+      hideElement(API_LIST_ID);
+      return;
+    }
+
+    // 清空现有内容
+    apiListContainer.innerHTML = '';
+
+    // 渲染每个API项
+    apis.forEach((api, index) => {
+      const apiItem = document.createElement('div');
+      apiItem.className = CLASS_API_ITEM;
+      apiItem.id = `api-${index}`;
+
+      // 处理参数显示
+      const paramsHtml = buildParamsHtml(api.params);
+
+      // 处理注释显示
+      const commentHtml = buildCommentHtml(api.comment);
+
+      // 构建测试表单
+      const testFormHtml = buildTestFormHtml(api, index);
+
+      apiItem.innerHTML = `
+          ${commentHtml}
+          <div class="api-header">
+            <span class="method ${api.httpMethod}">${api.httpMethod}</span>
+            <span class="path">${api.path}</span>
+            <button class="test-btn" style="margin-left: auto;" onclick="toggleTestForm(${index})">在线测试</button>
+          </div>
+          ${paramsHtml}
+          ${testFormHtml}
+        `;
+
+      apiListContainer.appendChild(apiItem);
+    });
+
+    // 显示API列表
+    apiListContainer.style.display = 'grid';
+    hideElement(NO_APIS_ID);
+  }
+
+  // 构建参数显示HTML
+  function buildParamsHtml(params) {
+    if (!params || params.length === 0) {
+      return '';
+    }
+
+    const paramsText = params.map(param => {
+      // 如果name是JSON字符串，则直接显示，否则显示 name: type 格式
+      if (param.name.startsWith('{') && param.name.endsWith('}')) {
+        return `${param.name}: ${param.type}`;
+      } else {
+        return `${param.name}: ${param.type}`;
+      }
+    }).join(', ');
+
+    return `
+      <div class="params">
+        <span class="params-label">Parameters:</span> ${paramsText}
+      </div>`;
+  }
+
+  // 构建注释显示HTML
+  function buildCommentHtml(comment) {
+    const hasComment = comment && comment.trim() !== '';
+    return hasComment ? `<div class="comment">${comment}</div>` : '';
+  }
+
+  // 构建测试表单HTML
+  function buildTestFormHtml(api, index) {
+    let testFormHtml = '';
+
+    if (api.params && api.params.length > 0) {
+      if (api.httpMethod === 'GET') {
+        // 对于GET请求，为每个参数创建输入框
+        let formGroups = '';
+        api.params.forEach((param, paramIndex) => {
+          formGroups += `
+            <div class="form-group">
+              <label for="param-${index}-${paramIndex}">${param.name} (${param.type}):</label>
+              <input type="text" id="param-${index}-${paramIndex}" placeholder="请输入${param.name}参数值">
+            </div>`;
+        });
+
+        testFormHtml = `
+          <div class="${CLASS_TEST_FORM}" id="${CLASS_TEST_FORM}-${index}">
+            ${formGroups}
+            <div class="form-actions">
+              <button class="execute-btn" onclick="executeApi(${index})">执行</button>
+            </div>
+          </div>`;
+      } else {
+        // 对于非GET请求，保持原来的单个参数输入框
+        testFormHtml = `
+          <div class="${CLASS_TEST_FORM}" id="${CLASS_TEST_FORM}-${index}">
+            <div class="form-group">
+              <label for="param-${index}">参数:</label>
+              <input type="text" id="param-${index}" placeholder="请输入参数${
+            api.params && api.params.length > 0 &&
+            api.params[0].name.startsWith('{') && api.params[0].name.endsWith('}')
+                ? ' (JSON格式)'
+                : ''
+        }">
+            </div>
+            <div class="form-actions">
+              <button class="execute-btn" onclick="executeApi(${index})">执行</button>
+            </div>
+          </div>`;
+      }
+    } else {
+      // 没有参数的情况
+      testFormHtml = `
+        <div class="${CLASS_TEST_FORM}" id="${CLASS_TEST_FORM}-${index}">
+          <div class="form-actions">
+            <button class="execute-btn" onclick="executeApi(${index})">执行</button>
+          </div>
+        </div>`;
+    }
+
+    // 添加响应区域
+    testFormHtml += `
+      <div class="${CLASS_RESPONSE_AREA}" id="${CLASS_RESPONSE_AREA}-${index}">
+        <div class="response-header">响应结果:</div>
+        <div class="${CLASS_RESPONSE_CONTENT}" id="${CLASS_RESPONSE_CONTENT}-${index}"></div>
+      </div>`;
+
+    return testFormHtml;
+  }
+
+  // 切换测试表单显示/隐藏
+  function toggleTestForm(index) {
+    const form = document.getElementById(`${CLASS_TEST_FORM}-${index}`);
+    const responseArea = document.getElementById(`${CLASS_RESPONSE_AREA}-${index}`);
+    if (form.style.display === 'block') {
+      form.style.display = 'none';
+      responseArea.style.display = 'none';
+    } else {
+      form.style.display = 'block';
+      responseArea.style.display = 'none';
+    }
+  }
+
+  // 执行API调用
+  function executeApi(index) {
+    // 获取API信息
+    const apiItems = document.querySelectorAll(`.${CLASS_API_ITEM}`);
+    const apiItem = apiItems[index];
+    const methodElement = apiItem.querySelector(`.${CLASS_METHOD}`);
+    const pathElement = apiItem.querySelector(`.${CLASS_PATH}`);
+
+    const method = methodElement.textContent;
+    const path = pathElement.textContent;
+
+    // 获取响应区域
+    const responseContent = document.getElementById(`${CLASS_RESPONSE_CONTENT}-${index}`);
+    const responseArea = document.getElementById(`${CLASS_RESPONSE_AREA}-${index}`);
+
+    // 构建完整URL
+    const basePath = window.location.pathname.split('/')[1];
+    let baseUrl = '';
+    if (basePath) {
+      baseUrl = `/${basePath}`;
+    }
+
+    let url = `${baseUrl}${path}`;
+
+    // 发起请求
+    const options = {
+      method: method
+    };
+
+    if (method === 'GET') {
+      // 处理GET请求参数，支持多个独立参数输入框
+      const paramInputs = apiItem.querySelectorAll(`input[id^="param-${index}-"]`);
+      const params = [];
+
+      // 收集所有参数值
+      paramInputs.forEach((input, paramIndex) => {
+        const value = input.value.trim();
+        if (value) {
+          params.push({
+            name: input.previousElementSibling.textContent.split(' ')[0], // 提取参数名
+            value: value
+          });
+        }
+      });
+
+      // 构建查询字符串
+      if (params.length > 0) {
+        const queryParams = params.map((param, i) =>
+            `${param.name}=${encodeURIComponent(param.value)}`).join('&');
+        url += `?${queryParams}`;
+      }
+    } else {
+      // 处理非GET请求
+      const paramInput = document.getElementById(`param-${index}`);
+      let paramValue = paramInput ? paramInput.value : '';
+
+      if (paramValue) {
+        // 检查参数是否为有效的JSON对象
+        try {
+          const jsonObj = JSON.parse(paramValue);
+          // 如果是有效的JSON，直接发送JSON对象
+          options.headers = {
+            'Content-Type': 'application/json'
+          };
+          options.body = paramValue; // 直接使用用户输入的JSON字符串
+        } catch (e) {
+          // 如果不是有效的JSON，按原来的逻辑处理
+          options.headers = {
+            'Content-Type': 'application/json'
+          };
+          // 检查path是否包含/msg后缀，如果是则发送原始字符串，否则发送JSON对象
+          if (path.endsWith("/msg")) {
+            options.body = paramValue;
+          } else {
+            options.body = JSON.stringify({msg: paramValue});
+          }
+        }
+      } else if (!paramValue) {
+        // 即使没有参数也设置Content-Type，某些API可能需要
+        options.headers = {
+          'Content-Type': 'application/json'
+        };
+      }
+    }
+
+    fetch(url, options)
+    .then(response => response.text())
+    .then(data => {
+      // 尝试美化JSON响应
+      try {
+        const jsonData = JSON.parse(data);
+        responseContent.textContent = JSON.stringify(jsonData, null, 2);
+      } catch (e) {
+        // 如果不是有效的JSON，直接显示原始数据
+        responseContent.textContent = data;
+      }
+      responseArea.style.display = 'block';
+    })
+    .catch(error => {
+      responseContent.textContent = '请求失败: ' + error.message;
+      responseArea.style.display = 'block';
+    });
+  }
+</script>
+</body>
+</html>
