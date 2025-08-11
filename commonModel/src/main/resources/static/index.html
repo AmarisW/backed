@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta content="IE=edge" http-equiv="X-UA-Compatible">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>FROMTIAN</title>
+  <title>预览页面</title>
   <!-- <link rel="stylesheet" type="text/css" href="css/style.css" /> -->
   <style>
     * {
@@ -61,6 +61,32 @@
       font-size: 70px;
       font-family: Century Gothic, serif;
     }
+
+    .api-link {
+      position: absolute;
+      top: 70%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 255, 255, 0.2);
+      padding: 15px 30px;
+      border-radius: 30px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+    }
+
+    .api-link:hover {
+      background-color: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    .api-link a {
+      color: white;
+      text-decoration: none;
+      font-size: 20px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
   </style>
 </head>
 <body>
@@ -68,9 +94,9 @@
   <div class="main">
     <ul>
       <li class="active"><a href="#">首页</a></li>
-      <li><a href="http://www.bing.com" target="_blank">Bing</a></li>
-      <li><a href="https://blog.csdn.net" target="_blank"><span style="color: crimson;">C</span>SDN官网</a></li>
-
+      <!--      <li><a href="https://www.bing.com" target="_blank">Bing</a></li>-->
+      <!--      <li><a href="https://blog.csdn.net" target="_blank"><span style="color: crimson;">C</span>SDN官网</a></li>-->
+      <li><a href="apis.html" target="_blank">🔍<span style="color: crimson;">开发</span>接口</a></li>
     </ul>
   </div>
   <div class="title">

@@ -33,10 +33,4 @@ public @interface GlobalApiOut {
      */
     String params() default "";
     
-    /**
-     * API的返回值说明
-     * 
-     * @return 返回值说明
-     */
-    String returns() default "";
 }

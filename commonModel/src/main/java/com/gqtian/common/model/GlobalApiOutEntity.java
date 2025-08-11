@@ -1,5 +1,7 @@
 package com.gqtian.common.model;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,11 +28,30 @@ public class GlobalApiOutEntity {
     /**
      * 请求参数
      */
-    private String params;
+    private List<ParamEntity> params;
     
     /**
      * 接口描述
      */
     private String comment;
     
+    /**
+     * 内部类参数对象
+     */
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ParamEntity {
+        
+        /**
+         * 参数名称
+         */
+        private String name;
+        
+        /**
+         * 参数类型
+         */
+        private String type;
+    }
 }

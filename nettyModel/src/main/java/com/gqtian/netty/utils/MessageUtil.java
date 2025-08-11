@@ -293,7 +293,7 @@ public class MessageUtil {
         ByteBuf byteBuf = Unpooled.copiedBuffer(bytes);
         ByteBuf unescapedBuf = MessageUtil.escape(byteBuf, false);
         byte[] resultBytes = ByteBufUtil.getBytes(unescapedBuf);
-        return new String(resultBytes, CharsetUtil.CHARSET_GBK);
+        return new String(resultBytes, CharsetUtil.CHARSET_GBK).trim();
     }
     
 }

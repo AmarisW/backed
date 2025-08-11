@@ -3,6 +3,8 @@ package com.gqtian.common.config;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.util.Strings;
@@ -22,8 +24,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONWriter.Feature;
 import com.gqtian.common.annotation.GlobalApiOut;
 import com.gqtian.common.model.GlobalApiOutEntity;
+import com.gqtian.common.model.GlobalApiOutEntity.ParamEntity;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -158,7 +163,7 @@ public class GlobalApiInfoScanner implements ImportAware {
         
         // 描述和参数信息
         String comment = apiInfo != null ? apiInfo.value() : null;
-        String params = getMethodParameters(method);
+        List<ParamEntity> params = getMethodParameters(method);
         
         // 添加到队列缓存
         GlobalBeautifyStart.GLOBAL_API_CACHE.add(
@@ -189,21 +194,59 @@ public class GlobalApiInfoScanner implements ImportAware {
      * @param method 方法
      * @return 参数信息字符串
      */
-    private String getMethodParameters(Method method) {
+    private List<ParamEntity> getMethodParameters(Method method) {
+        ArrayList<ParamEntity> params = new ArrayList<>();
         Parameter[] parameters = method.getParameters();
         if (parameters.length == 0) {
-            return NO_PARAMETERS;
+            return new ArrayList<>();
         }
         
-        StringBuilder paramsBuilder = new StringBuilder();
-        for (int i = 0; i < parameters.length; i++) {
-            Parameter parameter = parameters[i];
-            if (i > 0) {
-                paramsBuilder.append(", ");
+        for (Parameter parameter : parameters) {
+            // 获取参数类型
+            Class<?> paramType = parameter.getType();
+            if (isSimpleType(paramType)) {
+                ParamEntity param =
+                    ParamEntity.builder().name(parameter.getName()).type(paramType.getSimpleName()).build();
+                params.add(param);
             }
-            paramsBuilder.append(parameter.getType().getSimpleName()).append(" ").append(parameter.getName());
+            else {
+                ParamEntity param =
+                    ParamEntity.builder().name(generateJsonExample(paramType)).type(paramType.getSimpleName()).build();
+                params.add(param);
+            }
         }
         
-        return paramsBuilder.toString();
+        return params;
+    }
+    
+    /**
+     * 生成实体类的JSON示例
+     * 
+     * @param type 实体类类型
+     * @return JSON示例字符串
+     */
+    private String generateJsonExample(Class<?> type) {
+        try {
+            // 创建实例
+            Object instance = type.getDeclaredConstructor().newInstance();
+            // 转换为格式化的JSON字符串
+            return JSON.toJSONString(instance, Feature.WriteMapNullValue);
+        }
+        catch (Exception e) {
+            log.warn("无法为类型 {} 生成JSON示例: {}", type.getSimpleName(), e.getMessage());
+            return null;
+        }
+    }
+    
+    /**
+     * 判断是否为简单类型
+     * 
+     * @param type 类型
+     * @return 是否为简单类型
+     */
+    private boolean isSimpleType(Class<?> type) {
+        return type.isPrimitive() || type == String.class || type == Integer.class || type == Long.class
+            || type == Double.class || type == Float.class || type == Boolean.class || type == Character.class
+            || type == Byte.class || type == Short.class || type.isEnum();
     }
 }

@@ -1,5 +1,2 @@
-com.gqtian.common.globalProcess.GlobalResponseBodyAdvice
-com.gqtian.common.globalProcess.GlobalExceptionAdvice
+# 全局bean配置
 com.gqtian.common.config.GlobalBeanAutoConfiguration
-com.gqtian.common.config.GlobalApiInfoScanner
-
