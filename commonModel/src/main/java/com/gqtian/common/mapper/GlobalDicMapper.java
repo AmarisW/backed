@@ -3,7 +3,7 @@ package com.gqtian.common.mapper;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.gqtian.common.model.SysDic;
+import com.gqtian.common.model.GlobalDic;
 
 /**
  * 描述: 字典dao
@@ -11,6 +11,6 @@ import com.gqtian.common.model.SysDic;
  * @author gqtian
  */
 @Mapper
-public interface SysDicMapper extends BaseMapper<SysDic> {
+public interface GlobalDicMapper extends BaseMapper<GlobalDic> {
     
 }

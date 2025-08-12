@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.gqtian.common.mapper.SysDicMapper;
-import com.gqtian.common.model.SysDic;
+import com.gqtian.common.mapper.GlobalDicMapper;
+import com.gqtian.common.model.GlobalDic;
 import com.gqtian.common.utils.SpringApplicationUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -37,10 +37,10 @@ import lombok.extern.slf4j.Slf4j;
 // @ConditionalOnExpression("T(org.springframework.util.StringUtils).hasLength('${spring
 // .isEnable}')")
 // 判断注解上方是否有值
-public class DicInitRun implements CommandLineRunner {
+public class GlobalDicInitRun implements CommandLineRunner {
     
     // 字典缓存
-    private static final Map<String, List<SysDic>> SYS_DIC = new HashMap<>();
+    private static final Map<String, List<GlobalDic>> GLOBAL_DIC = new HashMap<>();
     
     /**
      * 初始化字典缓存
@@ -49,28 +49,28 @@ public class DicInitRun implements CommandLineRunner {
         log.info("【字典缓存】字典缓存开始初始化！");
         LocalDateTime startTime = LocalDateTime.now();
         // 清空字典缓存
-        SYS_DIC.clear();
+        GLOBAL_DIC.clear();
         // 获取字典SysDicDao实例
-        SysDicMapper sysDicMapper = SpringApplicationUtil.getBean(SysDicMapper.class);
-        LambdaQueryWrapper<SysDic> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(SysDic::getCode, SysDic::getValue, SysDic::getType);
+        GlobalDicMapper sysDicMapper = SpringApplicationUtil.getBean(GlobalDicMapper.class);
+        LambdaQueryWrapper<GlobalDic> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(GlobalDic::getCode, GlobalDic::getValue, GlobalDic::getType);
         
-        List<SysDic> sysDicList = sysDicMapper.selectList(queryWrapper);
+        List<GlobalDic> globalDicList = sysDicMapper.selectList(queryWrapper);
         
-        for (SysDic sysDic : sysDicList) {
+        for (GlobalDic globalDic : globalDicList) {
             // 如果当前Key存在,则直接将元素存储进去
-            if (SYS_DIC.containsKey(sysDic.getType())) {
-                SYS_DIC.get(sysDic.getType()).add(sysDic);
+            if (GLOBAL_DIC.containsKey(globalDic.getType())) {
+                GLOBAL_DIC.get(globalDic.getType()).add(globalDic);
             }
             // 不存在,新建Key
             else {
-                List<SysDic> sysDices = new ArrayList<>();
-                sysDices.add(sysDic);
-                SYS_DIC.put(sysDic.getType(), sysDices);
+                List<GlobalDic> globalDices = new ArrayList<>();
+                globalDices.add(globalDic);
+                GLOBAL_DIC.put(globalDic.getType(), globalDices);
             }
         }
         log.info("【字典缓存】字典缓存初始化完成！总数：{} 条，用时：{} ms",
-            SYS_DIC.size(),
+            GLOBAL_DIC.size(),
             Duration.between(startTime, LocalDateTime.now()).toMillis());
     }
     
@@ -81,12 +81,12 @@ public class DicInitRun implements CommandLineRunner {
      * @param code 编码
      * @return 字典对象
      */
-    public static SysDic getSysDic(String type, String code) {
-        List<SysDic> sysDicList = listDictionary(type);
-        if (!CollectionUtils.isEmpty(sysDicList)) {
-            for (SysDic sysDic : sysDicList) {
-                if (sysDic.getCode().equals(code)) {
-                    return sysDic;
+    public static GlobalDic getSysDic(String type, String code) {
+        List<GlobalDic> globalDicList = listDictionary(type);
+        if (!CollectionUtils.isEmpty(globalDicList)) {
+            for (GlobalDic globalDic : globalDicList) {
+                if (globalDic.getCode().equals(code)) {
+                    return globalDic;
                 }
             }
         }
@@ -101,14 +101,14 @@ public class DicInitRun implements CommandLineRunner {
      * @return 字典对象
      */
     public static String getDicString(String type, String code) {
-        List<SysDic> sysDicList = listDictionary(type);
+        List<GlobalDic> globalDicList = listDictionary(type);
         // 字符串转List<String>
         List<String> split = Arrays.asList(code.split(","));
         // 结果集合
         List<String> valueName = new ArrayList<>();
         
-        if (!CollectionUtils.isEmpty(sysDicList)) {
-            split.forEach(a -> sysDicList.forEach(b -> {
+        if (!CollectionUtils.isEmpty(globalDicList)) {
+            split.forEach(a -> globalDicList.forEach(b -> {
                 if (b.getCode().equals(a)) {
                     valueName.add(b.getValue());
                 }
@@ -124,8 +124,8 @@ public class DicInitRun implements CommandLineRunner {
      * @param type 字典类型
      * @return List<SysDic>
      */
-    public static List<SysDic> listDictionary(String type) {
-        return SYS_DIC.get(type);
+    public static List<GlobalDic> listDictionary(String type) {
+        return GLOBAL_DIC.get(type);
     }
     
     /**

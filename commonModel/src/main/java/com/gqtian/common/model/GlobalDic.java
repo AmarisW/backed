@@ -1,7 +1,5 @@
 package com.gqtian.common.model;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-
 import lombok.Data;
 
 /**
@@ -11,8 +9,7 @@ import lombok.Data;
  * @date 2025/7/24 17:23
  **/
 @Data
-@TableName("sys_dic")
-public class SysDic {
+public class GlobalDic {
     
     /**
      * 编码
