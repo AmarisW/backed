@@ -50,6 +50,7 @@
     <module>annotationModel</module>
     <module>commonModel</module>
     <module>nettyModel</module>
+    <module>contrastModel</module>
   </modules>
 
   <!-- 项目依赖统一管理 -->
