@@ -1,10 +1,10 @@
-package com.gqtian.contrast;
+package com.gqtian.fileStorage;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class AnnotationModelApplicationTests {
+public class ContrastModelApplicationTests {
     
     @Test
     public void contextLoads() {

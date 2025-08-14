@@ -28,6 +28,16 @@
       <groupId>com.gqtian</groupId>
       <artifactId>commonModel</artifactId>
     </dependency>
+
+    <dependency>
+      <groupId>com.gqtian</groupId>
+      <artifactId>fileStorageModel</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.alibaba</groupId>
+      <artifactId>easyexcel</artifactId>
+    </dependency>
   </dependencies>
 
   <build>

@@ -1,2 +1,123 @@
 #################################  自定义配置 #################################
+yml:
+  properties:
+    #---------------普通用法---------------#
+    ## 普通属性
+    normalBoolean: true
+    normalString: "string"
+    normalNumber: 1
+    #---------------数组集合---------------#
+    myListOrArray:
+      - 1
+      - 2
+      - 3
+    ### 等价于 myListOrArray: 1, 2, 3
+    
+    #---------------对象集合---------------#
+    # 数组或集合（元素为对象）
+    myListOrArrayPlus:
+      - { age: 25,gender: 1,name: "张三",motto: 2 }
+      - { age: 25,gender: 1,name: "李四",motto: 2 }
+      - { age: 25,gender: 1,name: "王二麻子",motto: 2 }
+      #等价于
+      #    myListOrArrayPlus:
+      #      - age: 25
+      #        gender: 1
+      #        name: "张三"
+      #        motto: 2
+      #      - age: 25
+      #        gender: 1
+      #        name: "李四"
+      #        motto: 2
+      #      - age: 25
+      #        gender: 1
+      #        name: "王二麻子"
+      #        motto: 2
+      
+      #---------------简单Map---------------#
+    myMap: { Key1: "Value1",Key2: "Value2" }
+    #等价于 
+    #myMap:
+    #  Key1: "Value1"
+    #  Key2: "Value2"
+    #---------------复杂Map---------------#
+    myMapPlus:
+      Key1: { age: 25,
+              gender: 1,
+              name: "张三",
+              motto: 2 }
+      Key2: { age: 25,
+              gender: 1,
+              name: "李四",
+              motto: 2 }
+      Key3: { age: 25,
+              gender: 1,
+              name: "王二麻子",
+              motto: 2 }
+    #等价于
+    #myMapPlus[k1]:
+    #    age: 25
+    #    gender: 1
+    #    name: "张三"
+    #    motto: 2
+    #myMapPlus[k2]:
+    #    age: 25
+    #    gender: 1
+    #    name: "李四"
+    #    motto: 2
+    #等价于
+    #      myMapPlus:
+    #        k1:
+    #          age: 25
+    #          gender: 1
+    #          name: "张三"
+    #          motto: 2
+    #        k2:
+    #          age: 25
+    #          gender: 1
+    #          name: "张三"
+    #          motto: 2
+    
+    #---------------对象---------------#
+    myUser: { age: 25,gender: 1,name: "张三",motto: 2 }
 
+
+######################################## 自定义配置 ######################################## 
+file-storage: # minio | aliYunOss | huaweiObs | ftp | local
+  default-platform: local
+  local:
+    platform: local                                                   # 本地
+    enable: true                                                      # 是否启用对象存储服务
+    base-path: G:\桌面\                                                # 基础路
+  aliYunOss:
+    platform: aliYunOss                                               # 阿里云
+    enable: true                                                      # 是否启用对象存储服务
+    access-key: REDACTED                              # 访问密钥，用于身份验证
+    secret-key: REDACTED                        # 密钥secret-key，与访问密钥搭配使用，确保数据安全
+    end-point: https://oss-cn-beijing.aliyuncs.com                    # 对象存储服务的终结点（Endpoint），即服务访问地址
+    bucket-name: gqtian                                               # 存储桶（Bucket）名称，用于组织和管理存储在OSS中的对象
+    base-path: test/                                                  # 基础路径，用于指定上传到存储桶时的默认目录
+  minio:
+    platform: minio                                                   # 阿里云
+    enable: true                                                      # 是否启用对象存储服务
+    access-key: REDACTED                                      # 访问密钥，用于身份验证
+    secret-key: REDACTED                      # 密钥secret-key，与访问密钥搭配使用，确保数据安全
+    end-point: http://192.168.90.111:3100                             # 对象存储服务的终结点（Endpoint），即服务访问地址
+    bucket-name: v2x                                                  # 存储桶（Bucket）名称，用于组织和管理存储在OSS中的对象
+    base-path: test/                                                  # 基础路径，用于指定上传到存储桶时的默认目录
+  ftp:
+    platform: ftp                                                     # Ftp
+    enable: true                                                      # 是否启用对象存储服务
+    access-key: REDACTED                                               # 用户名
+    secret-key: REDACTED                                         # 密码
+    end-point: 47.98.213.196:21                                       # 对象存储服务的终结点（Endpoint），即服务访问地址
+    base-path: sub/                                                   # 基础路径 根目录
+    domain:                                                           # 预览地址
+  huaweiObs:
+    platform: huaweiObs                                               # 华为云对象存储服务
+    enable: true                                                      # 是否启用对象存储服务
+    access-key: REDACTED                                  # 访问密钥，用于身份验证
+    secret-key: REDACTED                    # 密钥secret-key，与访问密钥搭配使用，确保数据安全
+    end-point: http://10.201.124.34:8002                              # 对象存储服务的终结点（Endpoint），即服务访问地址
+    bucket-name: hnsjtt-glfwpt                                        # 存储桶（Bucket）名称，用于组织和管理存储在OSS中的对象
+    base-path: test/                                                  # 基础路径，用于指定上传到存储桶时的默认目录

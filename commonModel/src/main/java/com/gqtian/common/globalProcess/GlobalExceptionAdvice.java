@@ -46,7 +46,7 @@ public class GlobalExceptionAdvice {
      * @return Result
      */
     @ExceptionHandler(GlobalException.class)
-    public GlobalResult<?> handleBusinessException(GlobalException e) {
+    public GlobalResult<?> handleGlobalException(GlobalException e) {
         // 业务异常不需要打印堆栈信息
         String message = e.getMessage();
         
