@@ -1,4 +1,4 @@
-package com.gqtian.fileStorage.demo.excel;
+package com.gqtian.fileStorage.demo.excelDemo;
 
 import java.io.OutputStream;
 import java.security.MessageDigest;
@@ -53,19 +53,20 @@ public class PageWriteExcelHelper {
      * @param outputStream 输出流 (响应OutputStream)
      * @param head 数据模型Class (如 User.class)
      * @param pageSize 【重要】每批次处理条数 (建议 1000~5000)
-     * @param totalCount 总数据量 (用于计算总页数)
      * @param supplier 分页数据提供器 (你的业务查询逻辑)
      */
-    public static <T> void writeByPageSingleSheet(HttpServletResponse response, OutputStream outputStream,
-        Class<T> head, int pageSize, int totalCount, String sheetName, PageQuerySupplier<T> supplier)
+    public static <T> void writeByPageSingleSheet(OutputStream outputStream, Class<T> head, int pageSize,
+        String sheetName, PageQuerySupplier<T> supplier)
         throws NoSuchAlgorithmException {
+        // 计算数据总数
+        Long totalCount = supplier.getTotal();
         // 计数
         AtomicLong atomicLong = new AtomicLong(0);
         // 初始化 SHA-256 哈希计算
         MessageDigest digest = MessageDigest.getInstance("SHA-256");
         // 1. 初始化 ExcelWriter (EasyExcel 核心写入器)
         ExcelWriter excelWriter = EasyExcel.write(outputStream, head)
-            .excelType(ExcelTypeEnum.CSV) // 设置导出为 CSV 格式
+            .excelType(ExcelTypeEnum.XLSX) // 设置导出为 CSV 格式
             .registerWriteHandler(new MyCellWriteHandler(digest))
             .registerWriteHandler(new MyRowWriteHandler(atomicLong))
             .build();
@@ -114,7 +115,7 @@ public class PageWriteExcelHelper {
         
         // 1. 初始化 ExcelWriter (EasyExcel 核心写入器)
         ExcelWriter excelWriter = EasyExcel.write(outputStream, head)
-            .excelType(ExcelTypeEnum.CSV) // 设置导出为 CSV 格式
+            .excelType(ExcelTypeEnum.XLSX) // 设置导出为 CSV 格式
             .build();
         try {
             // 2. 计算总页数

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.gqtian.fileStorage.demo.excel.PageQuerySupplier;
-import com.gqtian.fileStorage.entity.GlobalUser;
-import com.gqtian.fileStorage.mapper.GlobalUserMapper;
+import com.gqtian.fileStorage.demo.excelDemo.PageQuerySupplier;
+import com.gqtian.fileStorage.entity.SystemUser;
+import com.gqtian.fileStorage.mapper.SystemUserMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,11 +21,16 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class GlobalUserService extends ServiceImpl<GlobalUserMapper, GlobalUser>
-    implements PageQuerySupplier<GlobalUser> {
+public class SystemUserService extends ServiceImpl<SystemUserMapper, SystemUser>
+    implements PageQuerySupplier<SystemUser> {
     
     @Override
-    public List<GlobalUser> getPage(int pageNum, int pageSize) {
+    public List<SystemUser> getPage(int pageNum, int pageSize) {
         return this.list(new Page<>(pageNum, pageSize));
+    }
+    
+    @Override
+    public Long getTotal() {
+        return this.count();
     }
 }

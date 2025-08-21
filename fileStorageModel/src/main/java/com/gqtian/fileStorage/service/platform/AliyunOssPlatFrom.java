@@ -1,10 +1,6 @@
 /* Copyright (C) 2020-present Linkcld. All rights reserved. */
 package com.gqtian.fileStorage.service.platform;
 
-import com.gqtian.fileStorage.config.FileStorageProperties.AliYunOssConfig;
-import com.gqtian.fileStorage.domain.FileStorageInfo;
-import com.gqtian.fileStorage.service.FileStorageClientFactory;
-import com.gqtian.fileStorage.service.FileStorageInterface;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -12,6 +8,10 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.model.PutObjectRequest;
+import com.gqtian.fileStorage.config.FileStorageProperties.AliYunOssConfig;
+import com.gqtian.fileStorage.domain.FileStorageInfo;
+import com.gqtian.fileStorage.service.FileStorageClientFactory;
+import com.gqtian.fileStorage.service.FileStorageInterface;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -70,7 +70,7 @@ public class AliyunOssPlatFrom implements FileStorageInterface {
             client.putObject(request);
         }
         catch (Exception e) {
-            log.error("阿里云OSS文件上传失败", e);
+            log.error("【文件服务】阿里云OSS文件上传失败", e);
             return false;
         }
         return true;
@@ -84,7 +84,7 @@ public class AliyunOssPlatFrom implements FileStorageInterface {
             client.deleteObject(bucketName, fileKey);
         }
         catch (Exception e) {
-            log.error("阿里云OSS文件删除失败", e);
+            log.error("【文件服务】阿里云OSS文件删除失败", e);
             return false;
         }
         return true;
@@ -101,7 +101,7 @@ public class AliyunOssPlatFrom implements FileStorageInterface {
             generateUrl = client.generatePresignedUrl(bucketName, fileKey, expiration).toString();
         }
         catch (Exception e) {
-            log.error("阿里云OSS文件预览失败", e);
+            log.error("【文件服务】阿里云OSS文件预览失败", e);
         }
         return generateUrl;
     }

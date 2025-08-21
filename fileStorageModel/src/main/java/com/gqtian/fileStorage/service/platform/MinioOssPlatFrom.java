@@ -84,7 +84,7 @@ public class MinioOssPlatFrom implements FileStorageInterface {
             return true;
         }
         catch (Exception e) {
-            log.error("minioOss文件上传失败", e);
+            log.error("【文件服务】minioOss文件上传失败", e);
         }
         return false;
     }
@@ -98,7 +98,7 @@ public class MinioOssPlatFrom implements FileStorageInterface {
             return true;
         }
         catch (Exception e) {
-            log.error("minioOss文件删除失败", e);
+            log.error("【文件服务】minioOss文件删除失败", e);
             throw new GlobalException(fileKey + "文件删除失败");
         }
     }
@@ -117,7 +117,7 @@ public class MinioOssPlatFrom implements FileStorageInterface {
                 .build());
         }
         catch (Exception e) {
-            log.error("minioOss文件预览失败", e);
+            log.error("【文件服务】minioOss文件预览失败", e);
             throw new GlobalException(fileKey + "文件预览失败");
         }
         return generateUrl;

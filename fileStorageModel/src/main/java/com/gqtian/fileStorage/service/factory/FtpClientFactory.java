@@ -83,7 +83,7 @@ public class FtpClientFactory implements FileStorageClientFactory<Ftp> {
             return pool.borrowObject();
         }
         catch (Exception e) {
-            throw new GlobalException("获取 FTP Client 失败！", e);
+            throw new GlobalException("【文件服务】获取 FTP Client 失败！", e);
         }
     }
     
@@ -101,7 +101,7 @@ public class FtpClientFactory implements FileStorageClientFactory<Ftp> {
             pool.returnObject(ftp);
         }
         catch (Exception e) {
-            throw new GlobalException("归还 FTP Client 失败！", e);
+            throw new GlobalException("【文件服务】归还 FTP Client 失败！", e);
         }
     }
     
@@ -115,7 +115,7 @@ public class FtpClientFactory implements FileStorageClientFactory<Ftp> {
         @Override
         public Ftp create() {
             if (factory == null) {
-                throw new GlobalException("FTP 连接失败！config 不能为空");
+                throw new GlobalException("【文件服务】FTP 连接失败！config 不能为空");
             }
             
             try {
@@ -134,7 +134,7 @@ public class FtpClientFactory implements FileStorageClientFactory<Ftp> {
                     factory.getIsActive() ? FtpMode.Active : FtpMode.Passive);
             }
             catch (Exception e) {
-                throw new GlobalException("FTP 连接失败！platform：" + factory.getPlatform(), e);
+                throw new GlobalException("【文件服务】FTP 连接失败！platform：" + factory.getPlatform(), e);
             }
         }
         
@@ -150,7 +150,7 @@ public class FtpClientFactory implements FileStorageClientFactory<Ftp> {
                 return true;
             }
             catch (FtpException e) {
-                log.error("验证 Ftp 对象失败", e);
+                log.error("【文件服务】验证 Ftp 对象失败", e);
                 return false;
             }
         }
@@ -161,7 +161,7 @@ public class FtpClientFactory implements FileStorageClientFactory<Ftp> {
                 p.getObject().close();
             }
             catch (Exception e) {
-                throw new GlobalException("销毁 Ftp 对象失败！", e);
+                throw new GlobalException("【文件服务】销毁 Ftp 对象失败！", e);
             }
         }
     }

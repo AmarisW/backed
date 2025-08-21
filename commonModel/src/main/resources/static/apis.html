@@ -483,10 +483,12 @@
 
     const paramsText = params.map(param => {
       // 如果name是JSON字符串，则直接显示，否则显示 name: type 格式
-      if (param.name.startsWith('{') && param.name.endsWith('}')) {
+      // 需要先检查param.name是否为null
+      if (param.name && param.name.startsWith('{') && param.name.endsWith('}')) {
         return `${param.name}: ${param.type}`;
       } else {
-        return `${param.name}: ${param.type}`;
+        // 当name为null时，显示为"参数"或其他默认值
+        return `${param.name || '参数'}: ${param.type}`;
       }
     }).join(', ');
 
@@ -513,8 +515,8 @@
         api.params.forEach((param, paramIndex) => {
           formGroups += `
             <div class="form-group">
-              <label for="param-${index}-${paramIndex}">${param.name} (${param.type}):</label>
-              <input type="text" id="param-${index}-${paramIndex}" placeholder="请输入${param.name}参数值">
+              <label for="param-${index}-${paramIndex}">${param.name || '参数'} (${param.type}):</label>
+              <input type="text" id="param-${index}-${paramIndex}" placeholder="请输入${param.name || '参数'}参数值">
             </div>`;
         });
 
@@ -533,6 +535,7 @@
               <label for="param-${index}">参数:</label>
               <input type="text" id="param-${index}" placeholder="请输入参数${
             api.params && api.params.length > 0 &&
+            api.params[0].name && // 添加对param.name是否为null的检查
             api.params[0].name.startsWith('{') && api.params[0].name.endsWith('}')
                 ? ' (JSON格式)'
                 : ''

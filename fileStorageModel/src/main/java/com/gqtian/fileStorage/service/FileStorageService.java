@@ -41,7 +41,7 @@ public class FileStorageService {
             platform = properties.getDefaultPlatform();
         }
         if (CollectionUtils.isEmpty(fileStorageInterfaceList)) {
-            throw new GlobalException("未配置存储平台或平台未启用，请检查配置文件参数信息！");
+            throw new GlobalException("【文件服务】未配置存储平台或平台未启用，请检查配置文件参数信息！");
         }
         
         for (FileStorageInterface fileStorageInterface : fileStorageInterfaceList) {
@@ -52,8 +52,8 @@ public class FileStorageService {
             }
         }
         if (platformFileStorageInterface == null) {
-            log.error("平台编码：{} 未匹配到存储平台实现，请检查配置文件参数信息！", platform);
-            throw new GlobalException("平台编码：" + platform + "未匹配到存储平台实现，请检查配置文件参数信息！");
+            log.error("【文件服务】平台编码：{} 未匹配到存储平台实现，请检查配置文件参数信息！", platform);
+            throw new GlobalException("【文件服务】平台编码：" + platform + "未匹配到存储平台实现，请检查配置文件参数信息！");
         }
         return Tools.cast(platformFileStorageInterface);
     }
@@ -66,7 +66,7 @@ public class FileStorageService {
      */
     public boolean upload(FileStorageInfo fileStorageInfo) {
         if (fileStorageInfo == null) {
-            log.error("文件信息为空");
+            log.error("【文件服务】文件信息为空");
             return false;
         }
         
@@ -80,13 +80,13 @@ public class FileStorageService {
             
             // 3. 执行上传
             if (fileStorageInterface.upload(fileStorageInfo)) {
-                log.info("文件 {} 上传成功 | 耗时: {}ms",
+                log.info("【文件服务】文件 {} 上传成功 | 耗时: {}ms",
                     fileStorageInfo.getFilename(),
                     System.currentTimeMillis() - startTime);
                 return true;
             }
             else {
-                log.error("文件 {} 上传失败 | 耗时: {}ms",
+                log.error("【文件服务】文件 {} 上传失败 | 耗时: {}ms",
                     fileStorageInfo.getFilename(),
                     System.currentTimeMillis() - startTime);
                 return false;
@@ -94,11 +94,11 @@ public class FileStorageService {
             
         }
         catch (Exception e) {
-            log.error("文件 {} 上传失败 | 耗时: {}ms | 错误: {}",
+            log.error("【文件服务】文件 {} 上传失败 | 耗时: {}ms | 错误: {}",
                 fileStorageInfo.getFilename(),
                 System.currentTimeMillis() - startTime,
                 e.getMessage());
-            throw new GlobalException("文件上传失败", e);
+            throw new GlobalException("【文件服务】文件上传失败", e);
         }
         
     }
@@ -114,9 +114,8 @@ public class FileStorageService {
             // 字节数组无需关闭
             fileStorageInfo.setInputStream(new ByteArrayInputStream((byte[])content));
         }
-        else if (content instanceof MultipartFile) {
+        else if (content instanceof MultipartFile file) {
             // 读取MultipartFile到字节数组（自动关闭原始流）
-            MultipartFile file = (MultipartFile)content;
             try (InputStream srcStream = file.getInputStream()) {
                 byte[] bytes = IoUtil.readBytes(srcStream);
                 fileStorageInfo.setInputStream(new ByteArrayInputStream(bytes));
@@ -127,7 +126,7 @@ public class FileStorageService {
             fileStorageInfo.setInputStream((InputStream)content);
         }
         else {
-            throw new GlobalException("不支持的文件类型: " + content.getClass().getSimpleName());
+            throw new GlobalException("【文件服务】不支持的文件类型: " + content.getClass().getSimpleName());
         }
     }
     
@@ -142,8 +141,8 @@ public class FileStorageService {
             return fileStorageInterface.getPreviewUrl(fileStorageInfo);
         }
         catch (Exception e) {
-            log.error("文件：{} 文件预览失败：{}", fileStorageInfo.getFilename(), e.getMessage(), e);
-            throw new GlobalException("文件：" + fileStorageInfo.getFilename() + "文件预览失败!");
+            log.error("【文件服务】文件：{} 文件预览失败：{}", fileStorageInfo.getFilename(), e.getMessage(), e);
+            throw new GlobalException("【文件服务】文件：" + fileStorageInfo.getFilename() + "文件预览失败!");
         }
     }
     
@@ -158,8 +157,8 @@ public class FileStorageService {
             return fileStorageInterface.delete(fileStorageInfo);
         }
         catch (Exception e) {
-            log.error("文件删除失败", e);
-            throw new GlobalException("文件删除失败");
+            log.error("【文件服务】文件删除失败", e);
+            throw new GlobalException("【文件服务】文件删除失败");
         }
     }
     
@@ -168,10 +167,10 @@ public class FileStorageService {
         for (FileStorageInterface fileStorageInterface : fileStorageInterfaceList) {
             try {
                 fileStorageInterface.close();
-                log.info("销毁存储平台 {} 成功", fileStorageInterface.getPlatform());
+                log.info("【文件服务】销毁存储平台 {} 成功", fileStorageInterface.getPlatform());
             }
             catch (Exception e) {
-                log.error("销毁存储平台 {} 失败，{}", fileStorageInterface.getPlatform(), e.getMessage(), e);
+                log.error("【文件服务】销毁存储平台 {} 失败，{}", fileStorageInterface.getPlatform(), e.getMessage(), e);
             }
         }
     }

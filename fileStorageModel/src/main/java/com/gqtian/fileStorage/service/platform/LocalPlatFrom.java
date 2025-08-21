@@ -1,12 +1,13 @@
 /* Copyright (C) 2020-present Linkcld. All rights reserved. */
 package com.gqtian.fileStorage.service.platform;
 
+import java.io.File;
+import java.io.InputStream;
+
 import com.gqtian.common.globalProcess.GlobalException;
 import com.gqtian.fileStorage.config.FileStorageProperties.LocalConfig;
 import com.gqtian.fileStorage.domain.FileStorageInfo;
 import com.gqtian.fileStorage.service.FileStorageInterface;
-import java.io.File;
-import java.io.InputStream;
 
 import cn.hutool.core.io.FileUtil;
 import lombok.Getter;
@@ -53,9 +54,9 @@ public class LocalPlatFrom implements FileStorageInterface {
             FileUtil.writeFromStream(inputStream, buildFile);
         }
         catch (Exception e) {
-            log.error("本地文件上传失败", e);
+            log.error("【文件服务】本地文件上传失败", e);
             FileUtil.del(fileKey);
-            throw new GlobalException("本地文件上传失败");
+            throw new GlobalException("【文件服务】本地文件上传失败");
         }
         return true;
     }
@@ -68,8 +69,8 @@ public class LocalPlatFrom implements FileStorageInterface {
             return FileUtil.del(fileKey);
         }
         catch (Exception e) {
-            log.error("本地文件删除失败", e);
-            throw new GlobalException("本地文件删除失败");
+            log.error("【文件服务】本地文件删除失败", e);
+            throw new GlobalException("【文件服务】本地文件删除失败");
         }
     }
     

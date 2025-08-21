@@ -1,5 +1,5 @@
 /* Copyright (C) 2020-present Linkcld. All rights reserved. */
-package com.gqtian.fileStorage.demo.excel;
+package com.gqtian.fileStorage.demo.excelDemo;
 
 import java.io.OutputStream;
 import java.net.URLEncoder;
@@ -33,11 +33,10 @@ public class ExcelExporter {
      * @param sheetName Sheet名称
      * @param dataModel 数据模型
      * @param pageSize 每页数据量
-     * @param totalCount 总数据量
      * @param pageSupplier 分页数据提供器 (你的业务查询逻辑)
      */
     public static <T> void exportByPageSingleSheet(HttpServletResponse response, String fileName, String sheetName,
-        Class<T> dataModel, int pageSize, int totalCount, PageQuerySupplier<T> pageSupplier) {
+        Class<T> dataModel, int pageSize, PageQuerySupplier<T> pageSupplier) {
         
         // 设置响应头
         setupResponse(response, fileName);
@@ -45,8 +44,7 @@ public class ExcelExporter {
         // 分页工具类导出
         try (OutputStream out = response.getOutputStream()) {
             // 委托给核心分页工具执行
-            PageWriteExcelHelper
-                .writeByPageSingleSheet(response, out, dataModel, pageSize, totalCount, sheetName, pageSupplier);
+            PageWriteExcelHelper.writeByPageSingleSheet(out, dataModel, pageSize, sheetName, pageSupplier);
         }
         catch (Exception e) {
             // 记录异常日志
@@ -130,10 +128,10 @@ public class ExcelExporter {
      */
     public static void setupResponse(HttpServletResponse response, String fileName) {
         try {
-            response.setContentType("text/csv; charset=UTF-8"); // 关键：指定 UTF-8
+            response.setContentType("text/xlsx; charset=UTF-8"); // 关键：指定 UTF-8
             // 处理空格
             String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + encodedFileName + ".csv");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + encodedFileName + ".xlsx");
         }
         catch (Exception e) {
             throw new GlobalException("设置响应头失败", e);

@@ -72,7 +72,7 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
             }
         }
         catch (Exception e) {
-            log.error("obs上传失败", e);
+            log.error("【文件服务】obs上传失败", e);
             return false;
         }
         return false;
@@ -88,7 +88,7 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
             obsClient.deleteObject(bucketName, fileKey);
         }
         catch (ObsException e) {
-            log.error("obs删除保存失败", e);
+            log.error("【文件服务】obs删除保存失败", e);
             return false;
         }
         return true;
@@ -108,7 +108,7 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
             response = obsClient.createTemporarySignature(request);
         }
         catch (ObsException e) {
-            log.error("obs获取临时签名失败", e);
+            log.error("【文件服务】obs获取临时签名失败", e);
         }
         return Optional.ofNullable(response).map(TemporarySignatureResponse::getSignedUrl).orElse(null);
     }

@@ -1,4 +1,4 @@
-package com.gqtian.fileStorage.demo.fileDemo;
+package com.gqtian.fileStorage.controller;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -24,12 +24,12 @@ import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/***
- * 👻文件读取控制**
- * 
- * @className FileTestController*
- * @author gqtian*
- * @date 2025/3/14 13:58
+/**
+ * 👻 文件控制器
+ *
+ * @className TestController
+ * @author gqtian
+ * @date 2025/8/15 00:00
  */
 @Slf4j
 @RestController
@@ -188,8 +188,4 @@ public class FileController {
         return out.toByteArray();
     }
     
-    public static void main(String[] args) {
-        String format = DateUtil.format(new Date(), "yyyyMMddHHmmss");
-        System.out.println(format);
-    }
 }

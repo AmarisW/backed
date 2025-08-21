@@ -1,12 +1,13 @@
 /* Copyright (C) 2020-present Linkcld. All rights reserved. */
 package com.gqtian.fileStorage.service.platform;
 
+import java.io.InputStream;
+
 import com.gqtian.common.globalProcess.GlobalException;
 import com.gqtian.fileStorage.config.FileStorageProperties.FtpOssConfig;
 import com.gqtian.fileStorage.domain.FileStorageInfo;
 import com.gqtian.fileStorage.service.FileStorageClientFactory;
 import com.gqtian.fileStorage.service.FileStorageInterface;
-import java.io.InputStream;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.ftp.Ftp;
@@ -66,8 +67,8 @@ public class FtpPlatFrom implements FileStorageInterface {
         }
         catch (Exception e) {
             client.delFile(fileKey + fileStorageInfo.getFilename());
-            log.error("ftp文件上传失败", e);
-            throw new GlobalException("ftp文件上传失败");
+            log.error("【文件服务】ftp文件上传失败", e);
+            throw new GlobalException("【文件服务】ftp文件上传失败");
         }
         finally {
             returnClient(client);

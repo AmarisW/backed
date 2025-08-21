@@ -91,7 +91,7 @@ public class FileStorageServiceBuilder {
                         return Tools.cast(factory);
                     }
                     catch (Exception e) {
-                        throw new GlobalException("获取 FileStorageClientFactory 失败，类型不匹配，platform：" + platform, e);
+                        throw new GlobalException("【文件服务】获取 FileStorageClientFactory 失败，类型不匹配，platform：" + platform, e);
                     }
                 }
             }
@@ -112,7 +112,7 @@ public class FileStorageServiceBuilder {
             return;
         }
         if (doesNotExistClass(platformEnum.getClassPath())) {
-            throw new GlobalException("检测到【" + platformEnum.getName() + "】配置，但是没有找到对应的依赖类：【"
+            throw new GlobalException("【文件服务】检测到【" + platformEnum.getName() + "】配置，但是没有找到对应的依赖类：【"
                 + platformEnum.getClassPath() + "】，所以无法加载此存储平台！");
         }
     }
@@ -142,7 +142,7 @@ public class FileStorageServiceBuilder {
      */
     public FileStorageService build() {
         if (properties == null) {
-            throw new GlobalException("properties 不能为 null");
+            throw new GlobalException("【文件服务】properties 不能为 null");
         }
         // 初始化各个存储平台
         // 阿里云
@@ -167,10 +167,10 @@ public class FileStorageServiceBuilder {
     private FileStorageInterface buildLocalFileStorage(LocalConfig local) {
         // 检查 FTP 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(local, null) || !local.isEnable()) {
-            log.info("未启用本地存储平台：{}", local.getPlatform());
+            log.info("【文件服务】未启用本地存储平台：{}", local.getPlatform());
             return null;
         }
-        log.info("加载本地存储平台：{}，平台地址：{}", local.getPlatform(), local.getEndPoint());
+        log.info("【文件服务】加载本地存储平台：{}，平台地址：{}", local.getPlatform(), local.getEndPoint());
         return new LocalPlatFrom(local);
     }
     
@@ -185,11 +185,11 @@ public class FileStorageServiceBuilder {
         List<FileStorageClientFactory<?>> clientFactoryList) {
         // 检查 FTP 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(ftp, null) || !ftp.isEnable()) {
-            log.info("未启用 FTP 存储平台：{}", ftp.getPlatform());
+            log.info("【文件服务】未启用 FTP 存储平台：{}", ftp.getPlatform());
             return null;
         }
         // 如果 FTP 存储平台已启用，记录加载信息并继续创建实例
-        log.info("加载 FTP 存储平台：{}，平台地址：{}", ftp.getPlatform(), ftp.getEndPoint());
+        log.info("【文件服务】加载 FTP 存储平台：{}，平台地址：{}", ftp.getPlatform(), ftp.getEndPoint());
         // 根据平台类型获取或创建对应的客户端工厂
         FileStorageClientFactory<Ftp> clientFactory =
             getFactory(ftp.getPlatform(), clientFactoryList, () -> new FtpClientFactory(ftp));
@@ -208,12 +208,12 @@ public class FileStorageServiceBuilder {
         List<FileStorageClientFactory<?>> clientFactoryList) {
         // 检查华为 OBS 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(huaweiObs, null) || !huaweiObs.isEnable()) {
-            log.info("未启用华为 OBS 存储平台：{}", huaweiObs.getPlatform());
+            log.info("【文件服务】未启用华为 OBS 存储平台：{}", huaweiObs.getPlatform());
             return null;
         }
         // 如果华为 OBS 存储平台已启用，记录加载信息并继续创建实例
         // buildFileStorageDetect(huaweiObs, PlatformEnum.HUAWEI_OBS);
-        log.info("加载华为 OBS 存储平台：{}，平台地址：{}", huaweiObs.getPlatform(), huaweiObs.getEndPoint());
+        log.info("【文件服务】加载华为 OBS 存储平台：{}，平台地址：{}", huaweiObs.getPlatform(), huaweiObs.getEndPoint());
         // 根据平台类型获取或创建对应的客户端工厂
         FileStorageClientFactory<ObsClient> clientFactory =
             getFactory(huaweiObs.getPlatform(), clientFactoryList, () -> new HuaweiObsClientFactory(huaweiObs));
@@ -232,12 +232,12 @@ public class FileStorageServiceBuilder {
         List<FileStorageClientFactory<?>> clientFactoryList) {
         // 检查 Minio 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(minio, null) || !minio.isEnable()) {
-            log.info("未启用 Minio 存储平台：{}", minio.getPlatform());
+            log.info("【文件服务】未启用 Minio 存储平台：{}", minio.getPlatform());
             return null;
         }
         // 如果 Minio 存储平台已启用，记录加载信息并继续创建实例
         // buildFileStorageDetect(minio, PlatformEnum.MINIO);
-        log.info("加载 Minio 存储平台：{}，平台地址：{}", minio.getPlatform(), minio.getEndPoint());
+        log.info("【文件服务】加载 Minio 存储平台：{}，平台地址：{}", minio.getPlatform(), minio.getEndPoint());
         // 根据平台类型获取或创建对应的客户端工厂
         FileStorageClientFactory<MinioClient> clientFactory =
             getFactory(minio.getPlatform(), clientFactoryList, () -> new MinioOssClientFactory(minio));
@@ -255,11 +255,11 @@ public class FileStorageServiceBuilder {
     public static AliyunOssPlatFrom buildAliyunOssFileStorage(AliYunOssConfig aliYunOssConfig,
         List<FileStorageClientFactory<?>> clientFactoryList) {
         if (Objects.equals(aliYunOssConfig, null) || !aliYunOssConfig.isEnable()) {
-            log.info("未启用阿里云 OSS 存储平台：{}", aliYunOssConfig.getPlatform());
+            log.info("【文件服务】未启用阿里云 OSS 存储平台：{}", aliYunOssConfig.getPlatform());
             return null;
         }
         // buildFileStorageDetect(aliYunOssConfig, PlatformEnum.ALIYUN_OSS);
-        log.info("加载阿里云 OSS 存储平台：{}，平台地址：{}", aliYunOssConfig.getPlatform(), aliYunOssConfig.getEndPoint());
+        log.info("【文件服务】加载阿里云 OSS 存储平台：{}，平台地址：{}", aliYunOssConfig.getPlatform(), aliYunOssConfig.getEndPoint());
         FileStorageClientFactory<OSS> clientFactory = getFactory(aliYunOssConfig.getPlatform(),
             clientFactoryList,
             () -> new AliYunOssClientFactory(aliYunOssConfig));
