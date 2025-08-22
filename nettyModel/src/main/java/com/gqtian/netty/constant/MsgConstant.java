@@ -1,4 +1,4 @@
-package com.gqtian.netty.server;
+package com.gqtian.netty.constant;
 
 /**
  * 👻 消息常量
