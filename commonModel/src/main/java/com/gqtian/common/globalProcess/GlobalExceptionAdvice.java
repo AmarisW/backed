@@ -10,15 +10,15 @@ import com.gqtian.common.enums.GlobalResultCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 全局异常处理
- *
- * @author gqtian
- * @date 2023/04/26 10:49
- */
+ * 🤨 全局异常处理
+ * @ClassName GlobalExceptionAdvice
+ * @Author gqtian
+ * @date 2025/8/26
+ **/
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionAdvice {
-    
+
     /**
      * 处理所有不可知的异常
      *
@@ -27,18 +27,17 @@ public class GlobalExceptionAdvice {
      * @throws Exception 异常
      */
     @ExceptionHandler(Exception.class)
-    public GlobalResult<?> handleException(Exception e)
-        throws Exception {
+    public GlobalResult<?> handleException(Exception e) throws Exception {
         log.error(e.getMessage(), e);
-        
+
         // 如果某个自定义异常有@ResponseStatus注解，就继续抛出
         if (AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class) != null) {
             throw e;
         }
-        
+
         return GlobalResult.failure(e.getMessage());
     }
-    
+
     /**
      * 处理所有业务异常
      *
@@ -49,22 +48,22 @@ public class GlobalExceptionAdvice {
     public GlobalResult<?> handleGlobalException(GlobalException e) {
         // 业务异常不需要打印堆栈信息
         String message = e.getMessage();
-        
+
         // 打印业务异常信息
         log.error(message, e);
-        
+
         // 如果某个自定义异常有@ResponseStatus注解，就继续抛出
         if (AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class) != null) {
             throw e;
         }
-        
+
         GlobalResultCodeEnum globalResultCodeEnum = GlobalResultCodeEnum.getResultCodeEnum(message);
-        
+
         if (globalResultCodeEnum == null) {
             return GlobalResult.failure(GlobalResultCodeEnum.RC999.getCode(), message);
         }
-        
+
         return GlobalResult.failure(globalResultCodeEnum.getCode(), globalResultCodeEnum.getMessage());
     }
-    
+
 }
