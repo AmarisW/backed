@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日志查询系统</title>
+  <!-- SockJS 和 STOMP 客户端库 -->
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      color: #2d3748;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .container {
+        padding: 15px;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+      }
+
+      .header p {
+        font-size: 1.1em;
+      }
+
+      .search-controls {
+        flex-direction: column;
+        gap: 15px;
+      }
+
+      .realtime-controls {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+      }
+
+      .file-list {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .search-panel,
+      .result-panel {
+        padding: 20px;
+      }
+
+      .log-line {
+        padding: 10px 15px;
+        font-size: 12px;
+      }
+    }
+
+    .header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      color: #2d3748;
+      padding: 40px 20px;
+      border-radius: 20px;
+      margin-bottom: 30px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .header h1 {
+      font-size: 3.5em;
+      margin-bottom: 15px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .header p {
+      font-size: 1.3em;
+      opacity: 0.8;
+      color: #4a5568;
+      font-weight: 500;
+    }
+
+    .search-panel {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .form-row {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+
+    .form-group {
+      flex: 1;
+      min-width: 200px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 15px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid rgba(226, 232, 240, 0.8);
+      border-radius: 12px;
+      font-size: 14px;
+      background: rgba(255, 255, 255, 0.9);
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+      background: rgba(255, 255, 255, 1);
+      transform: translateY(-2px);
+    }
+
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+    }
+
+    .btn-success:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(72, 187, 120, 0.4);
+    }
+
+    .result-panel {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      overflow: hidden;
+    }
+
+    .result-header {
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+      padding: 20px 30px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 600;
+    }
+
+    .log-content {
+      max-height: 700px;
+      overflow-y: auto;
+      font-family: 'JetBrains Mono', 'Fira Code', 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.5;
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+    }
+
+    .log-line {
+      padding: 12px 20px;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.3);
+      white-space: pre-wrap;
+      word-break: break-all;
+      transition: all 0.2s ease;
+      border-radius: 8px;
+      margin: 2px 0;
+    }
+
+    .log-line:hover {
+      background: rgba(102, 126, 234, 0.05);
+      transform: translateX(5px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .log-line.error {
+      background: linear-gradient(90deg, rgba(245, 101, 101, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-left: 4px solid #f56565;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .log-line.warn {
+      background: linear-gradient(90deg, rgba(237, 137, 54, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-left: 4px solid #ed8936;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .log-line.info {
+      background: linear-gradient(90deg, rgba(102, 126, 234, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+      border-left: 4px solid #667eea;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .pagination {
+      padding: 20px 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+      border-top: 1px solid rgba(226, 232, 240, 0.5);
+    }
+
+    .pagination-info {
+      color: #666;
+    }
+
+    .pagination-controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .pagination-controls input {
+      width: 60px;
+      padding: 5px;
+      text-align: center;
+      border: 1px solid #ddd;
+      border-radius: 3px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #718096;
+      font-size: 16px;
+    }
+
+    .loading::after {
+      content: '';
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(102, 126, 234, 0.3);
+      border-radius: 50%;
+      border-top-color: #667eea;
+      animation: spin 1s ease-in-out infinite;
+      margin-left: 10px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error {
+      background: linear-gradient(135deg, rgba(245, 101, 101, 0.1) 0%, rgba(229, 62, 62, 0.05) 100%);
+      color: #c53030;
+      padding: 20px;
+      border-radius: 12px;
+      margin: 15px 0;
+      border: 1px solid rgba(245, 101, 101, 0.2);
+      font-weight: 500;
+    }
+
+    .no-logs {
+      text-align: center;
+      padding: 60px;
+      color: #718096;
+      font-style: italic;
+      font-size: 16px;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%);
+      border-radius: 15px;
+      border: 2px dashed rgba(102, 126, 234, 0.2);
+    }
+
+    .file-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .file-item {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .file-item:hover {
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 1);
+    }
+
+    .file-item.selected {
+      border: 2px solid #667eea;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      box-shadow: 0 15px 35px rgba(102, 126, 234, 0.2);
+    }
+
+    .file-name {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 8px;
+    }
+
+    .file-info {
+      font-size: 12px;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .realtime-panel {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+    }
+
+    .search-controls {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      margin-top: 30px;
+      flex-wrap: wrap;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+    }
+
+    .search-controls .realtime-controls {
+      margin-left: auto;
+    }
+
+    .realtime-controls {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      padding: 12px 20px;
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .status-indicator {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      margin-right: 10px;
+      position: relative;
+    }
+
+    .status-indicator::before {
+      content: '';
+      position: absolute;
+      top: -2px;
+      left: -2px;
+      right: -2px;
+      bottom: -2px;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    .status-indicator.connected {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+    }
+
+    .status-indicator.connected::before {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      opacity: 0.3;
+    }
+
+    .status-indicator.disconnected {
+      background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+    }
+
+    .status-indicator.disconnected::before {
+      background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%);
+      opacity: 0.3;
+    }
+
+    .status-indicator.monitoring {
+      background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+    }
+
+    .status-indicator.monitoring::before {
+      background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+      opacity: 0.3;
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+      50% {
+        transform: scale(1.5);
+        opacity: 0.1;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 0.3;
+      }
+    }
+
+    .realtime-log-content {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      background: #f8f9fa;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+    }
+
+    .realtime-log-line {
+      padding: 5px 10px;
+      border-bottom: 1px solid #eee;
+      white-space: pre-wrap;
+      word-break: break-all;
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    .realtime-log-line:last-child {
+      border-bottom: none;
+    }
+
+    .realtime-log-line.new {
+      background-color: #fff3cd;
+      border-left: 3px solid #ffc107;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .btn-toggle {
+      background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(237, 137, 54, 0.3);
+    }
+
+    .btn-toggle:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(237, 137, 54, 0.4);
+    }
+
+    .btn-toggle.active {
+      background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(72, 187, 120, 0.3);
+    }
+
+    .btn-toggle.active:hover {
+      box-shadow: 0 15px 35px rgba(72, 187, 120, 0.4);
+    }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      backdrop-filter: blur(5px);
+    }
+
+    /* 滚动条样式 */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    }
+
+    /* 选择文本样式 */
+    ::selection {
+      background: rgba(102, 126, 234, 0.3);
+      color: #2d3748;
+    }
+
+    /* 焦点样式 */
+    *:focus {
+      outline: none;
+    }
+
+    /* 动画效果 */
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="header fade-in">
+    <h1>📋 日志查询系统</h1>
+    <p>轻量级日志在线查询、分析、下载工具</p>
+  </div>
+
+  <!-- 文件选择区域 -->
+  <div class="search-panel fade-in">
+    <h3>📁 选择日志文件</h3>
+    <div id="fileList" class="file-list">
+      <div class="loading">正在加载文件列表...</div>
+    </div>
+  </div>
+
+
+  <!-- 搜索条件区域 -->
+  <div class="search-panel hidden fade-in" id="searchPanel">
+    <h3>🔍 搜索条件</h3>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="keyword">关键字</label>
+        <input type="text" id="keyword" placeholder="输入搜索关键字">
+      </div>
+      <div class="form-group">
+        <label for="level">日志级别</label>
+        <select id="level">
+          <option value="">全部</option>
+          <option value="ERROR">ERROR</option>
+          <option value="WARN">WARN</option>
+          <option value="INFO">INFO</option>
+          <option value="DEBUG">DEBUG</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="pageSize">每页行数</label>
+        <select id="pageSize">
+          <option value="50">50</option>
+          <option value="100" selected>100</option>
+          <option value="200">200</option>
+          <option value="500">500</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="startTime">开始时间</label>
+        <input type="datetime-local" id="startTime">
+      </div>
+      <div class="form-group">
+        <label for="endTime">结束时间</label>
+        <input type="datetime-local" id="endTime">
+      </div>
+      <div class="form-group">
+        <label for="reverse">排序方式</label>
+        <select id="reverse">
+          <option value="true">最新在前</option>
+          <option value="false">最旧在前</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <button class="btn btn-primary" onclick="searchLogs()">🔍 搜索日志</button>
+      <button class="btn btn-success" onclick="downloadLog()">📥 下载日志</button>
+      <div class="realtime-controls">
+        <div class="connection-status">
+          <span class="status-indicator disconnected" id="connectionStatus"></span>
+          <span id="connectionText">未连接</span>
+        </div>
+        <button class="btn btn-toggle" onclick="toggleRealtimeMonitor()" id="realtimeToggleBtn">
+          📡 实时监控
+        </button>
+        <label>
+          <input type="checkbox" id="autoScrollCheckbox" checked> 自动滚动
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结果显示区域 -->
+  <div class="result-panel hidden fade-in" id="resultPanel">
+    <div class="result-header">
+      <div>
+        <strong id="fileName"></strong>
+        <span id="fileInfo"></span>
+      </div>
+      <div id="resultStats"></div>
+    </div>
+
+    <div class="log-content" id="logContent">
+      <div class="loading">正在搜索日志...</div>
+    </div>
+
+    <div class="pagination">
+      <div class="pagination-info" id="paginationInfo"></div>
+      <div class="pagination-controls">
+        <button class="btn btn-primary" onclick="previousPage()" id="prevBtn">上一页</button>
+        <input type="number" id="currentPage" value="1" min="1" onchange="goToPage()">
+        <span>/ <span id="totalPages">1</span></span>
+        <button class="btn btn-primary" onclick="nextPage()" id="nextBtn">下一页</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentFile = null;
+  let stompClient = null;
+  let isConnected = false;
+  let isMonitoring = false;
+  let realtimeLogCount = 0;
+  const MAX_REALTIME_LOGS = 1000; // 最大实时日志行数
+
+  let currentQuery = {
+    fileName: '',
+    page: 1,
+    pageSize: 100,
+    keyword: '',
+    level: '',
+    startTime: null,
+    endTime: null,
+    reverse: true
+  };
+  let totalPages = 1;
+
+  // 页面加载完成后初始化
+  document.addEventListener('DOMContentLoaded', function () {
+    loadFileList();
+    initWebSocket();
+  });
+
+  // 加载文件列表
+  async function loadFileList() {
+    try {
+      const response = await fetch('/logViewModel/api/logs/files');
+      const res = await response.json();
+      const files = res.data; // 从统一响应格式中提取数据
+
+      const fileListEl = document.getElementById('fileList');
+
+      if (files.length === 0) {
+        fileListEl.innerHTML = '<div class="error">未找到日志文件</div>';
+        return;
+      }
+
+      fileListEl.innerHTML = files.map(file => `
+                    <div class="file-item" onclick="selectFile('${file.name}')">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-info">
+                            <span>${formatFileSize(file.size)}</span>
+                            <span>${formatDate(file.lastModified)}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+    } catch (error) {
+      console.error('加载文件列表失败:', error);
+      document.getElementById('fileList').innerHTML =
+          '<div class="error">加载文件列表失败</div>';
+    }
+  }
+
+  // 选择文件
+  function selectFile(fileName) {
+    // 移除之前的选中状态
+    document.querySelectorAll('.file-item').forEach(item => {
+      item.classList.remove('selected');
+    });
+
+    // 添加选中状态
+    event.target.closest('.file-item').classList.add('selected');
+
+    currentFile = fileName;
+    currentQuery.fileName = fileName;
+
+    // 显示搜索面板
+    document.getElementById('searchPanel').classList.remove('hidden');
+
+    // 自动搜索第一页
+    searchLogs();
+  }
+
+  // 搜索日志
+  async function searchLogs(page = 1) {
+    if (!currentFile) {
+      alert('请先选择日志文件');
+      return;
+    }
+
+    // 更新查询参数
+    currentQuery.page = page;
+    currentQuery.pageSize = parseInt(document.getElementById('pageSize').value);
+    currentQuery.keyword = document.getElementById('keyword').value;
+    currentQuery.level = document.getElementById('level').value;
+    currentQuery.reverse = document.getElementById('reverse').value === 'true';
+
+    const startTime = document.getElementById('startTime').value;
+    const endTime = document.getElementById('endTime').value;
+    currentQuery.startTime = startTime ? startTime.replace('T', ' ') + ':00' : null;
+    currentQuery.endTime = endTime ? endTime.replace('T', ' ') + ':00' : null;
+
+    try {
+      document.getElementById('logContent').innerHTML =
+          '<div class="loading">正在搜索日志...</div>';
+      document.getElementById('resultPanel').classList.remove('hidden');
+
+      const response = await fetch('/logViewModel/api/logs/query', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(currentQuery)
+      });
+
+      if (!response.ok) {
+        throw new Error('搜索失败');
+      }
+
+      const res = await response.json();
+      const result = res.data; // 从统一响应格式中提取数据
+      displayResults(result);
+
+    } catch (error) {
+      console.error('搜索日志失败:', error);
+      document.getElementById('logContent').innerHTML =
+          '<div class="error">搜索日志失败</div>';
+    }
+  }
+
+  // 显示搜索结果
+  function displayResults(result) {
+    // 更新文件信息
+    document.getElementById('fileName').textContent = currentFile;
+    document.getElementById('fileInfo').textContent =
+        ` (${formatFileSize(result.fileSize)}, 修改时间: ${formatDateTime(result.lastModified)})`;
+
+    // 更新统计信息
+    document.getElementById('resultStats').textContent =
+        `共找到 ${result.totalLines} 行，第 ${result.currentPage}/${result.totalPages} 页`;
+
+    // 更新分页信息
+    totalPages = result.totalPages;
+    document.getElementById('currentPage').value = result.currentPage;
+    document.getElementById('totalPages').textContent = result.totalPages;
+    document.getElementById('paginationInfo').textContent =
+        `显示第 ${(result.currentPage - 1) * currentQuery.pageSize + 1} - ${Math.min(
+            result.currentPage * currentQuery.pageSize, result.totalLines)} 行`;
+
+    // 更新按钮状态
+    document.getElementById('prevBtn').disabled = result.currentPage <= 1;
+    document.getElementById('nextBtn').disabled = result.currentPage >= result.totalPages;
+
+    // 显示日志内容
+    const logContentEl = document.getElementById('logContent');
+    if (result.lines.length === 0) {
+      logContentEl.innerHTML = '<div class="error">未找到匹配的日志</div>';
+      return;
+    }
+
+    logContentEl.innerHTML = result.lines.map(line => {
+      const className = getLogLineClass(line);
+      return `<div class="log-line ${className}">${escapeHtml(line)}</div>`;
+    }).join('');
+  }
+
+  // 获取日志行样式类
+  function getLogLineClass(line) {
+    if (line.includes('ERROR')) {
+      return 'error';
+    }
+    if (line.includes('WARN')) {
+      return 'warn';
+    }
+    if (line.includes('INFO')) {
+      return 'info';
+    }
+    return '';
+  }
+
+  // HTML转义
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  // 分页控制
+  function previousPage() {
+    if (currentQuery.page > 1) {
+      searchLogs(currentQuery.page - 1);
+    }
+  }
+
+  function nextPage() {
+    if (currentQuery.page < totalPages) {
+      searchLogs(currentQuery.page + 1);
+    }
+  }
+
+  function goToPage() {
+    const page = parseInt(document.getElementById('currentPage').value);
+    if (page >= 1 && page <= totalPages) {
+      searchLogs(page);
+    }
+  }
+
+  // 下载日志
+  function downloadLog() {
+    if (!currentFile) {
+      alert('请先选择日志文件');
+      return;
+    }
+
+    const params = new URLSearchParams();
+    if (currentQuery.keyword) {
+      params.append('keyword', currentQuery.keyword);
+    }
+    if (currentQuery.level) {
+      params.append('level', currentQuery.level);
+    }
+    if (currentQuery.startTime) {
+      params.append('startTime', currentQuery.startTime);
+    }
+    if (currentQuery.endTime) {
+      params.append('endTime', currentQuery.endTime);
+    }
+
+    const url = `/api/logs/download/${currentFile}?${params.toString()}`;
+    window.open(url, '_blank');
+  }
+
+  // 工具函数
+  function formatFileSize(bytes) {
+    if (bytes === 0) {
+      return '0 B';
+    }
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  function formatDate(timestamp) {
+    return new Date(timestamp).toLocaleDateString('zh-CN');
+  }
+
+  function formatDateTime(dateTimeStr) {
+    return new Date(dateTimeStr).toLocaleString('zh-CN');
+  }
+
+  // ==================== WebSocket 实时日志功能 ====================
+
+  // 初始化WebSocket连接
+  function initWebSocket() {
+    try {
+      const socket = new SockJS('/logViewModel/ws');
+      stompClient = new StompJs.Client({
+        webSocketFactory: () => socket,
+        debug: function (str) {
+          console.log('STOMP: ' + str);
+        },
+        reconnectDelay: 5000,
+        heartbeatIncoming: 4000,
+        heartbeatOutgoing: 4000
+      });
+
+      stompClient.onConnect = function (frame) {
+        console.log('WebSocket连接成功: ' + frame);
+        isConnected = true;
+        updateConnectionStatus(true);
+
+        // 订阅日志监控主题
+        stompClient.subscribe('/topic/log-monitor', function (message) {
+          handleRealtimeMessage(JSON.parse(message.body));
+        });
+
+        // 发送心跳
+        setInterval(() => {
+          if (isConnected) {
+            stompClient.publish({
+              destination: '/app/heartbeat',
+              body: JSON.stringify({message: 'ping'})
+            });
+          }
+        }, 30000);
+      };
+
+      stompClient.onStompError = function (frame) {
+        console.error('WebSocket错误: ' + frame.headers['message']);
+        console.error('详细信息: ' + frame.body);
+        isConnected = false;
+        updateConnectionStatus(false);
+      };
+
+      stompClient.onWebSocketClose = function (event) {
+        console.log('WebSocket连接关闭');
+        isConnected = false;
+        isMonitoring = false;
+        updateConnectionStatus(false);
+        updateMonitoringStatus(false);
+      };
+
+      stompClient.activate();
+
+    } catch (error) {
+      console.error('初始化WebSocket失败:', error);
+      updateConnectionStatus(false);
+    }
+  }
+
+  // 更新连接状态显示
+  function updateConnectionStatus(connected) {
+    const statusEl = document.getElementById('connectionStatus');
+    const textEl = document.getElementById('connectionText');
+
+    if (connected) {
+      statusEl.className = 'status-indicator connected';
+      textEl.textContent = 'WebSocket已连接';
+    } else {
+      statusEl.className = 'status-indicator disconnected';
+      textEl.textContent = 'WebSocket未连接';
+    }
+  }
+
+  // 更新监控状态显示
+  function updateMonitoringStatus(monitoring) {
+    const statusEl = document.getElementById('connectionStatus');
+    const textEl = document.getElementById('connectionText');
+    const toggleBtn = document.getElementById('realtimeToggleBtn');
+
+    if (monitoring) {
+      statusEl.className = 'status-indicator monitoring';
+      textEl.textContent = '正在监控: ' + currentFile;
+      toggleBtn.textContent = '🛑 停止监控';
+      toggleBtn.classList.add('active');
+    } else {
+      if (isConnected) {
+        statusEl.className = 'status-indicator connected';
+        textEl.textContent = 'WebSocket已连接';
+      } else {
+        statusEl.className = 'status-indicator disconnected';
+        textEl.textContent = 'WebSocket未连接';
+      }
+      toggleBtn.textContent = '📡 实时监控';
+      toggleBtn.classList.remove('active');
+    }
+  }
+
+  // 切换实时监控
+  function toggleRealtimeMonitor() {
+    if (!isConnected) {
+      alert('WebSocket未连接，无法开始监控');
+      return;
+    }
+
+    if (!currentFile) {
+      alert('请先选择日志文件');
+      return;
+    }
+
+    if (isMonitoring) {
+      stopRealtimeMonitor();
+    } else {
+      startRealtimeMonitor();
+    }
+  }
+
+  // 开始实时监控
+  function startRealtimeMonitor() {
+    if (!isConnected || !currentFile) {
+      return;
+    }
+
+    stompClient.publish({
+      destination: '/app/start-monitor',
+      body: JSON.stringify({fileName: currentFile})
+    });
+
+    isMonitoring = true;
+    updateMonitoringStatus(true);
+
+    // 清空现有日志并显示监控状态
+    clearRealtimeLogs();
+    addRealtimeLog('开始监控日志文件: ' + currentFile, 'info');
+
+    // 隐藏分页控件（实时模式下不需要分页）
+    const pagination = document.querySelector('.pagination');
+    if (pagination) {
+      pagination.style.display = 'none';
+    }
+  }
+
+  // 停止实时监控
+  function stopRealtimeMonitor() {
+    if (!isConnected) {
+      return;
+    }
+
+    stompClient.publish({
+      destination: '/app/stop-monitor',
+      body: JSON.stringify({})
+    });
+
+    isMonitoring = false;
+    updateMonitoringStatus(false);
+
+    addRealtimeLog('已停止日志监控', 'info');
+
+    // 显示分页控件
+    const pagination = document.querySelector('.pagination');
+    if (pagination) {
+      pagination.style.display = 'flex';
+    }
+
+    // 重新加载当前页面的日志
+    setTimeout(() => {
+      searchLogs();
+    }, 500);
+  }
+
+  // 处理实时消息
+  function handleRealtimeMessage(message) {
+    console.log('收到实时消息:', message);
+
+    switch (message.type) {
+      case 'new_log_line':
+        addRealtimeLog(message.content, message.level);
+        break;
+      case 'monitor_started':
+        isMonitoring = true;
+        updateMonitoringStatus(true);
+        addRealtimeLog('监控已启动: ' + message.fileName, 'info');
+        break;
+      case 'monitor_stopped':
+        isMonitoring = false;
+        updateMonitoringStatus(false);
+        addRealtimeLog('监控已停止', 'info');
+        break;
+      case 'error':
+        addRealtimeLog('错误: ' + message.message, 'error');
+        break;
+      case 'heartbeat':
+        // 心跳响应，不需要显示
+        break;
+      default:
+        console.log('未知消息类型:', message.type);
+    }
+  }
+
+  // 添加实时日志行
+  function addRealtimeLog(content, level = '') {
+    const container = document.getElementById('logContent');
+
+    // 如果是第一条日志，清空loading信息
+    if (container.children.length === 1 && container.children[0].classList.contains('loading')) {
+      container.innerHTML = '';
+    }
+
+    // 限制日志行数
+    if (realtimeLogCount >= MAX_REALTIME_LOGS) {
+      const firstChild = container.firstElementChild;
+      if (firstChild) {
+        container.removeChild(firstChild);
+        realtimeLogCount--;
+      }
+    }
+
+    // 创建日志行元素
+    const logLine = document.createElement('div');
+    logLine.className = 'log-line realtime-log-line new ' + getLogLineClass(content);
+    logLine.textContent = new Date().toLocaleTimeString() + ' ' + content;
+
+    // 添加到容器
+    container.appendChild(logLine);
+    realtimeLogCount++;
+
+    // 移除new类（用于动画效果）
+    setTimeout(() => {
+      logLine.classList.remove('new');
+    }, 300);
+
+    // 自动滚动到底部
+    if (document.getElementById('autoScrollCheckbox').checked) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  // 清空实时日志
+  function clearRealtimeLogs() {
+    const container = document.getElementById('logContent');
+    container.innerHTML = '<div class="loading">暂无日志内容</div>';
+    realtimeLogCount = 0;
+  }
+</script>
+</body>
+</html>

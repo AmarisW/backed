@@ -9,34 +9,28 @@ import com.gqtian.common.enums.GlobalResultCodeEnum;
  * @date 2023/04/26 10:52
  */
 public class GlobalException extends RuntimeException {
-    
-    public GlobalException()
-    {
+
+    public GlobalException() {
         super();
     }
-    
-    public GlobalException(int messageCode)
-    {
+
+    public GlobalException(int messageCode) {
         super(String.valueOf(messageCode));
     }
-    
-    public GlobalException(String message)
-    {
+
+    public GlobalException(String message) {
         super(message);
     }
-    
-    public GlobalException(String message, Throwable cause)
-    {
+
+    public GlobalException(String message, Throwable cause) {
         super(message, cause);
     }
-    
-    public GlobalException(Throwable cause)
-    {
+
+    public GlobalException(Throwable cause) {
         super(cause);
     }
-    
-    public GlobalException(GlobalResultCodeEnum globalResultCodeEnum)
-    {
+
+    public GlobalException(GlobalResultCodeEnum globalResultCodeEnum) {
         super(globalResultCodeEnum.getCode());
     }
 }

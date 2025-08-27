@@ -13,9 +13,9 @@ import lombok.Data;
  */
 @Data
 public class UploadParam {
-    
+
     private String platform;
-    
+
     private MultipartFile file;
-    
+
 }

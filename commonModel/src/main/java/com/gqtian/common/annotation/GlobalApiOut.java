@@ -18,19 +18,19 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface GlobalApiOut {
-    
+
     /**
      * API的注释信息
      * 
      * @return 注释内容
      */
     String value() default "";
-    
+
     /**
      * API的请求参数说明
      * 
      * @return 参数说明
      */
     String params() default "";
-    
+
 }

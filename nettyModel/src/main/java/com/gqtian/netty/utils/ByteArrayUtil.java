@@ -15,7 +15,7 @@ import java.util.Date;
  * @date 2018-12-27 17:27
  **/
 public class ByteArrayUtil {
-    
+
     /**
      * byte数组拼接
      * <p>
@@ -35,9 +35,9 @@ public class ByteArrayUtil {
         System.arraycopy(first, 0, res, 0, first.length);
         System.arraycopy(back, 0, res, first.length, back.length);
         return res;
-        
+
     }
-    
+
     /**
      * 截取字节数组
      * <p>
@@ -54,7 +54,7 @@ public class ByteArrayUtil {
         System.arraycopy(data, off, res, 0, length);
         return res;
     }
-    
+
     /**
      * short转换为byte[]
      * <p>
@@ -70,7 +70,7 @@ public class ByteArrayUtil {
         b[1] = (byte)(number & 0xFF);
         return b;
     }
-    
+
     /**
      * byte[]转换为short
      * <p>
@@ -84,7 +84,7 @@ public class ByteArrayUtil {
         short z = (short)((bytes[0] << 8) | (bytes[1] & 0xFF));
         return z;
     }
-    
+
     /**
      * byte数组转换为int
      * <p>
@@ -105,7 +105,7 @@ public class ByteArrayUtil {
         }
         return n;
     }
-    
+
     /**
      * int转换为byte数组
      * <p>
@@ -117,14 +117,14 @@ public class ByteArrayUtil {
      */
     public static byte[] int2bytes(int n) {
         byte[] b = new byte[4];
-        
+
         for (int i = 0; i < 4; i++) {
             b[i] = (byte)(n >> (24 - i * 8));
-            
+
         }
         return b;
     }
-    
+
     /**
      * byte[] 转换为 GBK 编码的 字符串
      * <p>
@@ -137,7 +137,7 @@ public class ByteArrayUtil {
     public static String bytes2gbkString(byte[] byteArray) {
         return bytes2string(byteArray, "GBK");
     }
-    
+
     /**
      * byte[] 转换为 string
      * <p>
@@ -154,7 +154,7 @@ public class ByteArrayUtil {
         }
         return new String(byteArray, Charset.forName(charset));
     }
-    
+
     /**
      * byte[] 转换为 string
      * <p>
@@ -170,7 +170,7 @@ public class ByteArrayUtil {
         }
         return new String(byteArray, Charset.defaultCharset());
     }
-    
+
     /**
      * byte[] 转换为 float
      * <p>
@@ -188,7 +188,7 @@ public class ByteArrayUtil {
         }
         return Float.intBitsToFloat(accum);
     }
-    
+
     /**
      * byte[] 转换为 double
      * <p>
@@ -205,7 +205,7 @@ public class ByteArrayUtil {
         }
         return Double.longBitsToDouble(value);
     }
-    
+
     /**
      * 数组转换成十六进制字符串
      * <p>
@@ -227,7 +227,7 @@ public class ByteArrayUtil {
         }
         return sb.toString();
     }
-    
+
     /**
      * 数组转换成带0x的十六进制字符串
      * <p>
@@ -253,7 +253,7 @@ public class ByteArrayUtil {
         }
         return sb.toString().toLowerCase();
     }
-    
+
     /**
      * short 转换为十六进制字符串
      * <p>
@@ -266,7 +266,7 @@ public class ByteArrayUtil {
     public static String short2HexStr(short num) {
         return Integer.toHexString(num);
     }
-    
+
     /**
      * 把16进制字符串转换成字节数组
      * <p>
@@ -286,7 +286,7 @@ public class ByteArrayUtil {
         }
         return result;
     }
-    
+
     /**
      * 把带0x的16进制字符串转换成字节数组
      * <p>
@@ -300,7 +300,7 @@ public class ByteArrayUtil {
         hex = hex.toLowerCase().replaceAll("0x", "").trim().toUpperCase();
         return hexStr2Bytes(hex);
     }
-    
+
     /**
      * 将字符转换为对应的十六进制数值
      * <p>
@@ -314,7 +314,7 @@ public class ByteArrayUtil {
         byte b = (byte)"0123456789ABCDEF".indexOf(c);
         return b;
     }
-    
+
     /**
      * byte数组转时间字符串 格式 yyMMddHHmmss
      * <p>
@@ -336,7 +336,7 @@ public class ByteArrayUtil {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         return sdf.format(new Date()).substring(0, 2) + stringBuilder;
     }
-    
+
     /**
      * byte转无符号整数
      * <p>
@@ -349,7 +349,7 @@ public class ByteArrayUtil {
     public static int byte2UnsignedInt(byte value) {
         return Byte.toUnsignedInt(value);
     }
-    
+
     /**
      * 将一个long转换成8位的byte[]
      * <p>
@@ -366,7 +366,7 @@ public class ByteArrayUtil {
         }
         return b;
     }
-    
+
     /**
      * 将一个数组转换成一个long值
      * <p>
@@ -387,7 +387,7 @@ public class ByteArrayUtil {
         }
         return res;
     }
-    
+
     /**
      * 将一个byte数组转换成二进制字符串
      * <p>
@@ -404,7 +404,7 @@ public class ByteArrayUtil {
         }
         return stringBuilder.toString();
     }
-    
+
     /**
      * 将一个byte转换成二进制字符串
      * <p>
@@ -418,5 +418,5 @@ public class ByteArrayUtil {
         return "" + (byte)((b >> 7) & 0x1) + (byte)((b >> 6) & 0x1) + (byte)((b >> 5) & 0x1) + (byte)((b >> 4) & 0x1)
             + (byte)((b >> 3) & 0x1) + (byte)((b >> 2) & 0x1) + (byte)((b >> 1) & 0x1) + (byte)((b >> 0) & 0x1);
     }
-    
+
 }

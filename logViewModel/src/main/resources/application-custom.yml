@@ -1,0 +1,18 @@
+#################################  自定义配置 #################################
+# 日志查看系统配置
+log:
+  viewer:
+    # 日志文件根目录
+    log-path: ./logs
+    # 允许访问的文件扩展名
+    allowed-extensions:
+      - .log
+      - .txt
+      - .out
+    # 单次查询最大行数
+    max-lines: 1000
+    # 文件最大大小（MB）
+    max-file-size: 100
+    # 是否启用安全检查
+    enable-security: true
+

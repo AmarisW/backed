@@ -1,5 +1,7 @@
-#  模拟数据
-CREATE TEMPORARY TABLE temp_names
+#
+模拟数据
+CREATE
+TEMPORARY TABLE temp_names
 (
     name VARCHAR(50)
 );
@@ -22,7 +24,6 @@ SELECT FLOOR(RAND() * 100) + 1,
        FLOOR(RAND() * 100) + 1,
        DATE_ADD('2024-04-08 14:59:19', INTERVAL FLOOR(RAND() * 100) DAY)
 FROM temp_names
-ORDER BY RAND()
-LIMIT 100;
+ORDER BY RAND() LIMIT 100;
 
 DROP TABLE temp_names;

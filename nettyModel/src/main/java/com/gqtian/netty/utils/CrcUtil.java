@@ -10,7 +10,7 @@ package com.gqtian.netty.utils;
  * @version 1.0
  **/
 public class CrcUtil {
-    
+
     /**
      * CRC16校验算法
      * <p>
@@ -32,7 +32,7 @@ public class CrcUtil {
         crc &= 0xffff;
         return crc;
     }
-    
+
     /**
      * 获取CRC校验码字节数组
      * <p>
@@ -44,8 +44,7 @@ public class CrcUtil {
      */
     public static byte[] crcBytes(byte[] bytes) {
         byte[] int2bytes = ByteArrayUtil.int2bytes(crc16(bytes));
-        return new byte[]
-        {int2bytes[2], int2bytes[3]};
+        return new byte[] {int2bytes[2], int2bytes[3]};
     }
-    
+
 }

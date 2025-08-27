@@ -28,31 +28,31 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class NettyServer {
-    
+
     private final NettyConfig nettyConfig;
-    
+
     private final InitServerChannel initServerChannel;
-    
+
     public static Channel serverChannel;
-    
+
     /**
      * 主链路（服务端）引导入口
      */
     public void runServer() {
-        
+
         if (serverChannel != null) {
             log.error("服务端已经启动！请勿重复启动！");
             throw new GlobalException("服务端已经启动！请勿重复启动！");
         }
-        
+
         // 创建主线程池（管理Tcp连接线程池）
         NioEventLoopGroup boosGroup = new NioEventLoopGroup(nettyConfig.getBossMaxThreadCount());
         // 创建工作线程池（处理业务逻辑线程池）
         NioEventLoopGroup workGroup = new NioEventLoopGroup(nettyConfig.getWorkMaxThreadCount());
-        
+
         // 创建一个服务器端的程序类进行NIO的启动，同时可以设置Channel
         ServerBootstrap serverBootstrap = new ServerBootstrap();
-        
+
         try {
             // 设置要使用的线程池以及当前的Channel 的类型
             serverBootstrap.group(boosGroup, workGroup);
@@ -92,17 +92,15 @@ public class NettyServer {
              * 会响应事件，并进入finally代码块，进行优雅的关闭操作->shutdownGracefully。
              */
             serverChannel.closeFuture().sync();
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("【服务端】启动失败：{}", e.getMessage(), e);
-        }
-        finally {
+        } finally {
             workGroup.shutdownGracefully();
             boosGroup.shutdownGracefully();
             serverChannel.close();
         }
     }
-    
+
     /**
      * 停止服务器
      */

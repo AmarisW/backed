@@ -27,53 +27,50 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @NoArgsConstructor
 public class LocalPlatFrom implements FileStorageInterface {
-    
+
     /** 基础路径 */
     private String basePath;
-    
+
     /** 平台 */
     private String platform;
-    
+
     /** 访问地址前缀 */
     private String domain;
-    
-    public LocalPlatFrom(LocalConfig config)
-    {
+
+    public LocalPlatFrom(LocalConfig config) {
         platform = config.getPlatform();
         basePath = config.getBasePath();
         domain = config.getDomain();
     }
-    
+
     @Override
     public boolean upload(FileStorageInfo fileStorageInfo) {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
         try (InputStream inputStream = fileStorageInfo.getInputStream())
-        
+
         {
             File buildFile = FileUtil.touch(fileKey);
             FileUtil.writeFromStream(inputStream, buildFile);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("【文件服务】本地文件上传失败", e);
             FileUtil.del(fileKey);
             throw new GlobalException("【文件服务】本地文件上传失败");
         }
         return true;
     }
-    
+
     @Override
     public boolean delete(FileStorageInfo fileStorageInfo) {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
-        
+
         try {
             return FileUtil.del(fileKey);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("【文件服务】本地文件删除失败", e);
             throw new GlobalException("【文件服务】本地文件删除失败");
         }
     }
-    
+
     @Override
     public String getPreviewUrl(FileStorageInfo fileStorageInfo) {
         return "";

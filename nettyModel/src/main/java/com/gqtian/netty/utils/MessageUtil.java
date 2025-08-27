@@ -23,9 +23,9 @@ import lombok.extern.slf4j.Slf4j;
  **/
 @Slf4j
 public class MessageUtil {
-    
+
     private static final Random RANDOM = new Random();
-    
+
     /**
      * BCC校验(异或校验)
      * <p>
@@ -43,7 +43,7 @@ public class MessageUtil {
         byteBuf.resetReaderIndex();
         return cs;
     }
-    
+
     /**
      * 获取一个消息号
      * <p>
@@ -55,7 +55,7 @@ public class MessageUtil {
     public static synchronized int randomSeriesNum() {
         return RANDOM.nextInt(0xffff);
     }
-    
+
     /**
      * 解码ByteBuf为字符串并忽略填充的零字节
      * <p>
@@ -68,7 +68,7 @@ public class MessageUtil {
     public static String decodeToStrIgnoreFillZero(ByteBuf byteBuf) {
         return decodeToStr(byteBuf, (byte)0);
     }
-    
+
     /**
      * <p>
      * 去除GBK编码字符串前后的指定byte字符,byte字符会转换成GBK编码
@@ -81,11 +81,10 @@ public class MessageUtil {
     public static String decodeToStr(ByteBuf byteBuf, byte prefixOrSuffix) {
         byte[] bytes = ByteBufUtil.getBytes(byteBuf);
         byteBuf.release();
-        String pos = new String(new byte[]
-        {prefixOrSuffix}, CharsetUtil.CHARSET_UTF_8);
+        String pos = new String(new byte[] {prefixOrSuffix}, CharsetUtil.CHARSET_UTF_8);
         return new String(bytes, CharsetUtil.CHARSET_UTF_8).replaceAll(pos, "");
     }
-    
+
     /**
      * 解码ByteBuf为UTF-8字符串
      * <p>
@@ -99,7 +98,7 @@ public class MessageUtil {
         byte[] bytes = ByteBufUtil.getBytes(byteBuf);
         return new String(bytes, CharsetUtil.CHARSET_UTF_8);
     }
-    
+
     /**
      * 左侧补齐
      *
@@ -120,7 +119,7 @@ public class MessageUtil {
         }
         return result;
     }
-    
+
     /**
      * 生成32位UUID
      * <p>
@@ -132,7 +131,7 @@ public class MessageUtil {
     public static String ranDomId() {
         return UUID.randomUUID().toString().replace("-", "");
     }
-    
+
     /**
      * <p>
      * jt809转义
@@ -150,13 +149,12 @@ public class MessageUtil {
         ByteBuf result = Unpooled.buffer();
         if (isEncode) {
             encodeEscape(messageBytes, result);
-        }
-        else {
+        } else {
             decodeEscape(messageBytes, result);
         }
         return result;
     }
-    
+
     /**
      * <p>
      * 解密时的数据转义,数据接收需要先解密再转义
@@ -185,7 +183,7 @@ public class MessageUtil {
                     result.writeByte(0x5A);
                 }
             }
-            
+
             if ((indexByte == 0x5E)) {
                 if (nextByte == 0x01) {
                     result.writeByte(0x5D);
@@ -197,7 +195,7 @@ public class MessageUtil {
             i++;
         }
     }
-    
+
     /**
      * <p>
      * 加密时的数据体转义,需要先转义再加密
@@ -223,7 +221,7 @@ public class MessageUtil {
                 result.writeByte(0x01);
                 continue;
             }
-            
+
             if (indexByte == 0x5E) {
                 result.writeByte(0x5E);
                 result.writeByte(0x02);
@@ -231,9 +229,9 @@ public class MessageUtil {
             }
             result.writeByte(indexByte);
         }
-        
+
     }
-    
+
     /**
      * 按指定长度写入字符串，不足部分补零
      * <p>
@@ -255,7 +253,7 @@ public class MessageUtil {
             byteBuf.writeZero(residue);
         }
     }
-    
+
     /**
      * 解析时删除填充的0
      *
@@ -269,7 +267,7 @@ public class MessageUtil {
         }
         return byteBuf.readCharSequence(length, CharsetUtil.CHARSET_UTF_8).toString().trim();
     }
-    
+
     /**
      * 字符串转成16进制
      */
@@ -280,7 +278,7 @@ public class MessageUtil {
         ByteBuf escapedBuf = MessageUtil.escape(buf, true);
         return ByteArrayUtil.bytes2HexStr(ByteBufUtil.getBytes(escapedBuf));
     }
-    
+
     /**
      * 十六进制字符串消息解码为原始字符串
      * 
@@ -295,5 +293,5 @@ public class MessageUtil {
         byte[] resultBytes = ByteBufUtil.getBytes(unescapedBuf);
         return new String(resultBytes, CharsetUtil.CHARSET_GBK).trim();
     }
-    
+
 }

@@ -19,22 +19,22 @@ public class GlobalApiOutEntity {
      * 请求方式
      */
     private String httpMethod;
-    
+
     /**
      * 请求路径
      */
     private String path;
-    
+
     /**
      * 请求参数
      */
     private List<ParamEntity> params;
-    
+
     /**
      * 接口描述
      */
     private String comment;
-    
+
     /**
      * 内部类参数对象
      */
@@ -43,12 +43,12 @@ public class GlobalApiOutEntity {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class ParamEntity {
-        
+
         /**
          * 参数名称
          */
         private String name;
-        
+
         /**
          * 参数类型
          */

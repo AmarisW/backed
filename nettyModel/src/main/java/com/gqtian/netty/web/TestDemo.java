@@ -11,6 +11,6 @@ import lombok.Data;
  */
 @Data
 public class TestDemo {
-    
+
     private String name;
 }

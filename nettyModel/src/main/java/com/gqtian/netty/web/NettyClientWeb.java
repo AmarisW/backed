@@ -24,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/client")
 @RequiredArgsConstructor
 public class NettyClientWeb {
-    
+
     private final NettyClient nettyClient;
-    
+
     /**
      * 启动一个客户端
      * 
@@ -37,7 +37,7 @@ public class NettyClientWeb {
     public String startClient(String serverIp, Integer serverPort) {
         return nettyClient.runClient(serverIp, serverPort);
     }
-    
+
     /**
      * 关闭指定客户端
      */
@@ -49,7 +49,7 @@ public class NettyClientWeb {
             NettyCache.removeClientChannel(key);
         }
     }
-    
+
     /**
      * 获取客户端状态
      */
@@ -57,5 +57,5 @@ public class NettyClientWeb {
     public Map<String, Channel> getClientStatus() {
         return NettyCache.getClientChannelList();
     }
-    
+
 }

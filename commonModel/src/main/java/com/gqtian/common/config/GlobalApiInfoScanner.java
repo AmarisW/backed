@@ -43,39 +43,37 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 public class GlobalApiInfoScanner implements ImportAware {
-    
+
     // HTTP方法常量
     private static final String HTTP_METHOD_GET = "GET";
-    
+
     private static final String HTTP_METHOD_POST = "POST";
-    
+
     private static final String HTTP_METHOD_PUT = "PUT";
-    
+
     private static final String HTTP_METHOD_DELETE = "DELETE";
-    
+
     private static final String HTTP_METHOD_PATCH = "PATCH";
-    
+
     private static final String HTTP_METHOD_REQUEST = "REQUEST";
-    
+
     // 参数信息常量
     private static final String NO_PARAMETERS = "无参数";
-    
+
     // 映射注解类型到HTTP方法
-    private static final Class<? extends Annotation>[] MAPPING_ANNOTATIONS = new Class[]
-    {GetMapping.class, PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class,
-        RequestMapping.class};
-    
+    private static final Class<? extends Annotation>[] MAPPING_ANNOTATIONS = new Class[] {GetMapping.class,
+        PostMapping.class, PutMapping.class, DeleteMapping.class, PatchMapping.class, RequestMapping.class};
+
     // HTTP方法映射
-    private static final String[] HTTP_METHODS = new String[]
-    {HTTP_METHOD_GET, HTTP_METHOD_POST, HTTP_METHOD_PUT, HTTP_METHOD_DELETE, HTTP_METHOD_PATCH, HTTP_METHOD_REQUEST};
-    
+    private static final String[] HTTP_METHODS = new String[] {HTTP_METHOD_GET, HTTP_METHOD_POST, HTTP_METHOD_PUT,
+        HTTP_METHOD_DELETE, HTTP_METHOD_PATCH, HTTP_METHOD_REQUEST};
+
     @Override
-    public void setImportMetadata(@NonNull
-    AnnotationMetadata importingClassMetadata) {
+    public void setImportMetadata(@NonNull AnnotationMetadata importingClassMetadata) {
         // 当注解被导入时，执行API信息扫描
         scanAndPrintApiInfo();
     }
-    
+
     /**
      * 扫描并打印API信息
      */
@@ -84,29 +82,27 @@ public class GlobalApiInfoScanner implements ImportAware {
             // 创建扫描器
             ClassPathScanningCandidateComponentProvider scanner =
                 new ClassPathScanningCandidateComponentProvider(false);
-            
+
             // 添加过滤器，只扫描RestController注解的类
             scanner.addIncludeFilter(new AnnotationTypeFilter(RestController.class));
-            
+
             // 扫描所有RestController类
             Set<BeanDefinition> beans = scanner.findCandidateComponents("com");
-            
+
             // 遍历所有RestController类
             for (BeanDefinition bean : beans) {
                 try {
                     Class<?> clazz = Class.forName(bean.getBeanClassName());
                     printClassApiInfo(clazz);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     log.warn("处理类 {} 时发生异常: {}", bean.getBeanClassName(), e.getMessage());
                 }
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("扫描API接口信息时发生异常", e);
         }
     }
-    
+
     /**
      * 打印类中带有@GlobalApi注解的方法信息
      *
@@ -114,7 +110,7 @@ public class GlobalApiInfoScanner implements ImportAware {
      */
     private void printClassApiInfo(Class<?> clazz) {
         String classRequestMapping = getClassRequestMapping(clazz);
-        
+
         // 遍历所有方法
         for (Method method : clazz.getDeclaredMethods()) {
             if (method.isAnnotationPresent(GlobalApiOut.class)) {
@@ -122,7 +118,7 @@ public class GlobalApiInfoScanner implements ImportAware {
             }
         }
     }
-    
+
     /**
      * 获取类上的RequestMapping路径
      * 
@@ -136,7 +132,7 @@ public class GlobalApiInfoScanner implements ImportAware {
         }
         return Strings.EMPTY;
     }
-    
+
     /**
      * 打印方法的API信息
      * 
@@ -146,7 +142,7 @@ public class GlobalApiInfoScanner implements ImportAware {
     private void printMethodApiInfo(Method method, String classRequestMapping) {
         String httpMethod = "";
         String methodRequestMapping = "";
-        
+
         // 统一处理各种Mapping注解
         for (int i = 0; i < MAPPING_ANNOTATIONS.length; i++) {
             Class<? extends Annotation> annotationClass = MAPPING_ANNOTATIONS[i];
@@ -156,20 +152,20 @@ public class GlobalApiInfoScanner implements ImportAware {
                 break;
             }
         }
-        
+
         // 完整路径
         String fullPath = classRequestMapping + methodRequestMapping;
         GlobalApiOut apiInfo = method.getAnnotation(GlobalApiOut.class);
-        
+
         // 描述和参数信息
         String comment = apiInfo != null ? apiInfo.value() : null;
         List<ParamEntity> params = getMethodParameters(method);
-        
+
         // 添加到队列缓存
         GlobalBeautifyStart.GLOBAL_API_CACHE.add(
             GlobalApiOutEntity.builder().httpMethod(httpMethod).path(fullPath).params(params).comment(comment).build());
     }
-    
+
     /**
      * 获取Mapping注解的路径值
      * 
@@ -187,7 +183,7 @@ public class GlobalApiInfoScanner implements ImportAware {
         }
         return "";
     }
-    
+
     /**
      * 获取方法的参数信息
      * 
@@ -200,7 +196,7 @@ public class GlobalApiInfoScanner implements ImportAware {
         if (parameters.length == 0) {
             return new ArrayList<>();
         }
-        
+
         for (Parameter parameter : parameters) {
             // 获取参数类型
             Class<?> paramType = parameter.getType();
@@ -208,17 +204,16 @@ public class GlobalApiInfoScanner implements ImportAware {
                 ParamEntity param =
                     ParamEntity.builder().name(parameter.getName()).type(paramType.getSimpleName()).build();
                 params.add(param);
-            }
-            else {
+            } else {
                 ParamEntity param =
                     ParamEntity.builder().name(generateJsonExample(paramType)).type(paramType.getSimpleName()).build();
                 params.add(param);
             }
         }
-        
+
         return params;
     }
-    
+
     /**
      * 生成实体类的JSON示例
      * 
@@ -231,13 +226,12 @@ public class GlobalApiInfoScanner implements ImportAware {
             Object instance = type.getDeclaredConstructor().newInstance();
             // 转换为格式化的JSON字符串
             return JSON.toJSONString(instance, Feature.WriteMapNullValue);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.warn("无法为类型 {} 生成JSON示例: {}", type.getSimpleName(), e.getMessage());
             return null;
         }
     }
-    
+
     /**
      * 判断是否为简单类型
      * 

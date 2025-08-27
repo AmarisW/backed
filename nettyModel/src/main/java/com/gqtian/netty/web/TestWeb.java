@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/test")
 @RequiredArgsConstructor
 public class TestWeb {
-    
+
     /**
      * 消息解码接口
      * <p>
@@ -39,12 +39,11 @@ public class TestWeb {
     public String decode(String msg) {
         if (StringUtils.hasLength(msg)) {
             return MessageUtil.decodeMsg(msg);
-        }
-        else {
+        } else {
             throw new GlobalException("请输入待解码的消息字符串");
         }
     }
-    
+
     /**
      * 消息编码接口
      * <p>
@@ -59,11 +58,10 @@ public class TestWeb {
     public String encode(String msg) {
         if (StringUtils.hasLength(msg)) {
             return MessageUtil.encodeMsg(msg);
-        }
-        else {
+        } else {
             throw new GlobalException("请输入待编码的消息字符串");
         }
-        
+
     }
-    
+
 }

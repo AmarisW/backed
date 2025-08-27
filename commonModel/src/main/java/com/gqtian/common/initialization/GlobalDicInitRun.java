@@ -38,10 +38,10 @@ import lombok.extern.slf4j.Slf4j;
 // .isEnable}')")
 // 判断注解上方是否有值
 public class GlobalDicInitRun implements CommandLineRunner {
-    
+
     // 字典缓存
     private static final Map<String, List<GlobalDic>> GLOBAL_DIC = new HashMap<>();
-    
+
     /**
      * 初始化字典缓存
      */
@@ -54,9 +54,9 @@ public class GlobalDicInitRun implements CommandLineRunner {
         GlobalDicMapper sysDicMapper = SpringApplicationUtil.getBean(GlobalDicMapper.class);
         LambdaQueryWrapper<GlobalDic> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.select(GlobalDic::getCode, GlobalDic::getValue, GlobalDic::getType);
-        
+
         List<GlobalDic> globalDicList = sysDicMapper.selectList(queryWrapper);
-        
+
         for (GlobalDic globalDic : globalDicList) {
             // 如果当前Key存在,则直接将元素存储进去
             if (GLOBAL_DIC.containsKey(globalDic.getType())) {
@@ -69,11 +69,10 @@ public class GlobalDicInitRun implements CommandLineRunner {
                 GLOBAL_DIC.put(globalDic.getType(), globalDices);
             }
         }
-        log.info("【字典缓存】字典缓存初始化完成！总数：{} 条，用时：{} ms",
-            GLOBAL_DIC.size(),
+        log.info("【字典缓存】字典缓存初始化完成！总数：{} 条，用时：{} ms", GLOBAL_DIC.size(),
             Duration.between(startTime, LocalDateTime.now()).toMillis());
     }
-    
+
     /**
      * 获取指定字典
      *
@@ -92,7 +91,7 @@ public class GlobalDicInitRun implements CommandLineRunner {
         }
         return null;
     }
-    
+
     /**
      * 获取指定字典
      *
@@ -106,7 +105,7 @@ public class GlobalDicInitRun implements CommandLineRunner {
         List<String> split = Arrays.asList(code.split(","));
         // 结果集合
         List<String> valueName = new ArrayList<>();
-        
+
         if (!CollectionUtils.isEmpty(globalDicList)) {
             split.forEach(a -> globalDicList.forEach(b -> {
                 if (b.getCode().equals(a)) {
@@ -114,10 +113,10 @@ public class GlobalDicInitRun implements CommandLineRunner {
                 }
             }));
         }
-        
+
         return String.join(",", valueName);
     }
-    
+
     /**
      * listDictionary:根据类型获取所有字典
      *
@@ -127,14 +126,14 @@ public class GlobalDicInitRun implements CommandLineRunner {
     public static List<GlobalDic> listDictionary(String type) {
         return GLOBAL_DIC.get(type);
     }
-    
+
     /**
      * 更新缓存
      */
     public static void updateSysDic() {
         initializeDictionary();
     }
-    
+
     /**
      * 系统启动时执行
      *
@@ -144,5 +143,5 @@ public class GlobalDicInitRun implements CommandLineRunner {
     public void run(String... args) {
         initializeDictionary();
     }
-    
+
 }

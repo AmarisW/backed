@@ -32,35 +32,34 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @NoArgsConstructor
 public class HuaweiObsPlatFrom implements FileStorageInterface {
-    
+
     /** 平台编码 */
     private String platform;
-    
+
     /** 桶 */
     private String bucketName;
-    
+
     /** 基础上传路径 */
     private String basePath;
-    
+
     /** 访问域名（访问地址前缀 domain+fileName 为实际的访问地址） */
     private String domain;
-    
+
     /** 工厂（包含配置信息及连接工具） */
     private FileStorageClientFactory<ObsClient> clientFactory;
-    
-    public HuaweiObsPlatFrom(HuaweiObsConfig huaweiObsConfig, FileStorageClientFactory<ObsClient> clientFactory)
-    {
+
+    public HuaweiObsPlatFrom(HuaweiObsConfig huaweiObsConfig, FileStorageClientFactory<ObsClient> clientFactory) {
         this.platform = huaweiObsConfig.getPlatform();
         this.bucketName = huaweiObsConfig.getBucketName();
         this.basePath = huaweiObsConfig.getBasePath();
         this.domain = huaweiObsConfig.getDomain();
         this.clientFactory = clientFactory;
     }
-    
+
     public ObsClient getClient() {
         return clientFactory.getClient();
     }
-    
+
     @Override
     public boolean upload(FileStorageInfo fileStorageInfo) {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
@@ -70,14 +69,13 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
             if (putObjectResult != null && putObjectResult.getStatusCode() == 200) {
                 return true;
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             log.error("【文件服务】obs上传失败", e);
             return false;
         }
         return false;
     }
-    
+
     @Override
     public boolean delete(FileStorageInfo fileStorageInfo) {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
@@ -86,14 +84,13 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
             ObsClient obsClient = getClient();
             // obs删除
             obsClient.deleteObject(bucketName, fileKey);
-        }
-        catch (ObsException e) {
+        } catch (ObsException e) {
             log.error("【文件服务】obs删除保存失败", e);
             return false;
         }
         return true;
     }
-    
+
     @Override
     public String getPreviewUrl(FileStorageInfo fileStorageInfo) {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
@@ -106,13 +103,12 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
             request.setBucketName(bucketName);
             request.setObjectKey(fileKey);
             response = obsClient.createTemporarySignature(request);
-        }
-        catch (ObsException e) {
+        } catch (ObsException e) {
             log.error("【文件服务】obs获取临时签名失败", e);
         }
         return Optional.ofNullable(response).map(TemporarySignatureResponse::getSignedUrl).orElse(null);
     }
-    
+
     @Override
     public void close() {
         clientFactory.close();

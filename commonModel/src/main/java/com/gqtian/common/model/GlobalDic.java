@@ -10,20 +10,20 @@ import lombok.Data;
  **/
 @Data
 public class GlobalDic {
-    
+
     /**
      * 编码
      */
     private String code;
-    
+
     /**
      * 值
      */
     private String value;
-    
+
     /**
      * 所属组
      */
     private String type;
-    
+
 }

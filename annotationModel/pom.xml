@@ -29,7 +29,7 @@
       <artifactId>commonModel</artifactId>
     </dependency>
   </dependencies>
-  
+
   <build>
     <plugins>
       <plugin>

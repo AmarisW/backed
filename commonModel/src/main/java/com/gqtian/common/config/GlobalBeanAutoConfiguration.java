@@ -17,8 +17,7 @@ import com.gqtian.common.web.GlobalExposedController;
  * @date 2025/7/25 10:53
  */
 @AutoConfiguration
-@Import(
-{GlobalResponseBodyAdvice.class, // 全局数据返回处理
+@Import({GlobalResponseBodyAdvice.class, // 全局数据返回处理
     GlobalExceptionAdvice.class, // 全局异常处理
     GlobalApiInfoScanner.class, // 扫描接口文档
     GlobalMyBatisConfiguration.class, // 配置MyBatis
@@ -26,5 +25,4 @@ import com.gqtian.common.web.GlobalExposedController;
     SpringApplicationUtil.class, // SpringApplicationUtil
     GlobalDicInitRun.class // 初始化字典
 })
-public class GlobalBeanAutoConfiguration {
-}
+public class GlobalBeanAutoConfiguration {}

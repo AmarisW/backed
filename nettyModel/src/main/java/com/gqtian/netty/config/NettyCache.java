@@ -16,26 +16,26 @@ import io.netty.channel.Channel;
  */
 @Component
 public class NettyCache {
-    
+
     /**
      * 客户端缓存
      */
     private static final Map<String, Channel> CLIENT_CHANNEL_CACHE = new ConcurrentHashMap<>();
-    
+
     /**
      * 存入客户端缓存
      */
     public static void putClientChannel(String key, Channel channel) {
         CLIENT_CHANNEL_CACHE.put(key, channel);
     }
-    
+
     /**
      * 获取全部的客户端缓存
      */
     public static Map<String, Channel> getClientChannelList() {
         return CLIENT_CHANNEL_CACHE;
     }
-    
+
     /**
      * 移除客户端缓存
      */

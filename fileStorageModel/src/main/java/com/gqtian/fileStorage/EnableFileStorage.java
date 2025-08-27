@@ -14,10 +14,7 @@ import com.gqtian.fileStorage.config.FileStorageProperties;
 
 /** 启用文件存储，会自动根据配置文件进行加载 */
 @Retention(RetentionPolicy.RUNTIME)
-@Target(
-{ElementType.TYPE})
+@Target({ElementType.TYPE})
 @Documented
-@Import(
-{FileStorageProperties.class, FileStorageAutoConfiguration.class})
-public @interface EnableFileStorage {
-}
+@Import({FileStorageProperties.class, FileStorageAutoConfiguration.class})
+public @interface EnableFileStorage {}

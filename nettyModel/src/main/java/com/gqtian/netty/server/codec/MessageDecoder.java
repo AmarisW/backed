@@ -15,7 +15,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class MessageDecoder extends MessageToMessageDecoder<String> {
-    
+
     @Override
     protected void decode(ChannelHandlerContext channelHandlerContext, String object, List<Object> list) {
         // 打印输入数据

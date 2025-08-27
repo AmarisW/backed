@@ -12,5 +12,5 @@ import com.gqtian.common.model.GlobalDic;
  */
 @Mapper
 public interface GlobalDicMapper extends BaseMapper<GlobalDic> {
-    
+
 }

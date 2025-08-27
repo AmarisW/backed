@@ -16,7 +16,7 @@ import lombok.Getter;
  **/
 @Component
 public class SpringApplicationUtil implements ApplicationContextAware {
-    
+
     /**
      * -- GETTER -- 获取applicationContext
      *
@@ -24,7 +24,7 @@ public class SpringApplicationUtil implements ApplicationContextAware {
     // Spring应用上下文环境
     @Getter
     private static ApplicationContext applicationContext;
-    
+
     /**
      * 通过name获取 Bean.
      *
@@ -34,7 +34,7 @@ public class SpringApplicationUtil implements ApplicationContextAware {
     public static Object getBean(String name) {
         return applicationContext.getBean(name);
     }
-    
+
     /**
      * 通过class获取Bean.
      *
@@ -47,7 +47,7 @@ public class SpringApplicationUtil implements ApplicationContextAware {
         }
         return applicationContext.getBean(clazz);
     }
-    
+
     /**
      * 通过name,以及Clazz返回指定的Bean
      *
@@ -58,10 +58,9 @@ public class SpringApplicationUtil implements ApplicationContextAware {
     public static <T> T getBean(String name, Class<T> clazz) {
         return applicationContext.getBean(name, clazz);
     }
-    
+
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext)
-        throws BeansException {
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         if (SpringApplicationUtil.applicationContext == null) {
             SpringApplicationUtil.applicationContext = applicationContext;
         }

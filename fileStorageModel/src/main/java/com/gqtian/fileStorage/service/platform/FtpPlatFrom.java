@@ -28,33 +28,32 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @NoArgsConstructor
 public class FtpPlatFrom implements FileStorageInterface {
-    
+
     private String platform;
-    
+
     private String domain;
-    
+
     private String basePath;
-    
+
     private FileStorageClientFactory<Ftp> clientFactory;
-    
-    public FtpPlatFrom(FtpOssConfig config, FileStorageClientFactory<Ftp> clientFactory)
-    {
+
+    public FtpPlatFrom(FtpOssConfig config, FileStorageClientFactory<Ftp> clientFactory) {
         this.platform = config.getPlatform();
         this.basePath = config.getBasePath();
         this.domain = config.getDomain();
         this.clientFactory = clientFactory;
     }
-    
+
     /** 获取 Client ，使用完后需要归还 */
     public Ftp getClient() {
         return clientFactory.getClient();
     }
-    
+
     /** 归还 Client */
     public void returnClient(Ftp client) {
         clientFactory.returnClient(client);
     }
-    
+
     @Override
     public boolean upload(FileStorageInfo fileStorageInfo) {
         Ftp client = getClient();
@@ -64,17 +63,15 @@ public class FtpPlatFrom implements FileStorageInterface {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), null);
         try (InputStream inputStream = fileStorageInfo.getInputStream()) {
             return client.upload(fileKey, fileStorageInfo.getFilename(), inputStream);
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             client.delFile(fileKey + fileStorageInfo.getFilename());
             log.error("【文件服务】ftp文件上传失败", e);
             throw new GlobalException("【文件服务】ftp文件上传失败");
-        }
-        finally {
+        } finally {
             returnClient(client);
         }
     }
-    
+
     @Override
     public boolean delete(FileStorageInfo fileStorageInfo) {
         // 文件全路径
@@ -82,13 +79,13 @@ public class FtpPlatFrom implements FileStorageInterface {
         Ftp client = getClient();
         return client.delFile(fileKey);
     }
-    
+
     @Override
     public String getPreviewUrl(FileStorageInfo fileStorageInfo) {
         return domain + StrUtil.SLASH
             + getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
     }
-    
+
     @Override
     public void close() {
         clientFactory.close();

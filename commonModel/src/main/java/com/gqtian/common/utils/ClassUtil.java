@@ -20,9 +20,9 @@ import org.springframework.web.method.HandlerMethod;
  * @date 2025/7/24 17:29
  **/
 public class ClassUtil extends ClassUtils {
-    
+
     private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
-    
+
     /**
      * 获取方法参数信息
      *
@@ -35,7 +35,7 @@ public class ClassUtil extends ClassUtils {
         methodParameter.initParameterNameDiscovery(PARAMETER_NAME_DISCOVERER);
         return methodParameter;
     }
-    
+
     /**
      * 获取方法参数信息
      *
@@ -48,7 +48,7 @@ public class ClassUtil extends ClassUtils {
         methodParameter.initParameterNameDiscovery(PARAMETER_NAME_DISCOVERER);
         return methodParameter;
     }
-    
+
     /**
      * 获取Annotation
      *
@@ -65,15 +65,14 @@ public class ClassUtil extends ClassUtils {
         // If we are dealing with method with generic parameters, find the original method.
         specificMethod = BridgeMethodResolver.findBridgedMethod(specificMethod);
         // 先找方法，再找方法上的类
-        A annotation = AnnotatedElementUtils.findMergedAnnotation(specificMethod, annotationType);
-        ;
+        A annotation = AnnotatedElementUtils.findMergedAnnotation(specificMethod, annotationType);;
         if (null != annotation) {
             return annotation;
         }
         // 获取类上面的Annotation，可能包含组合注解，故采用spring的工具类
         return AnnotatedElementUtils.findMergedAnnotation(specificMethod.getDeclaringClass(), annotationType);
     }
-    
+
     /**
      * 获取Annotation
      *
@@ -92,7 +91,7 @@ public class ClassUtil extends ClassUtils {
         Class<?> beanType = handlerMethod.getBeanType();
         return AnnotatedElementUtils.findMergedAnnotation(beanType, annotationType);
     }
-    
+
     /**
      * 判断是否有注解 Annotation
      *
@@ -111,5 +110,5 @@ public class ClassUtil extends ClassUtils {
         Class<?> targetClass = method.getDeclaringClass();
         return AnnotatedElementUtils.isAnnotated(targetClass, annotationType);
     }
-    
+
 }

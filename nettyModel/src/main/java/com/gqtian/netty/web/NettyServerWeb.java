@@ -20,9 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/server")
 @RequiredArgsConstructor
 public class NettyServerWeb {
-    
+
     private final NettyServer nettyServer;
-    
+
     /**
      * 启动服务端
      */
@@ -30,7 +30,7 @@ public class NettyServerWeb {
     public void startServer() {
         nettyServer.runServer();
     }
-    
+
     /**
      * 关闭服务端
      */
@@ -38,5 +38,5 @@ public class NettyServerWeb {
     public void stopServer() {
         nettyServer.stopServer();
     }
-    
+
 }

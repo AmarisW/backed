@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 @EnableCaching // 开启缓存
 @SpringBootApplication
 public class NettyModelApplication {
-    
+
     public static void main(String[] args) {
         GlobalBeautifyStart.start(NettyModelApplication.class, args);
     }

@@ -9,8 +9,7 @@ import lombok.Getter;
  * @date 2023/04/26 10:04
  */
 @Getter
-public enum GlobalResultCodeEnum
-{
+public enum GlobalResultCodeEnum {
     /**
      * 空
      **/
@@ -75,25 +74,24 @@ public enum GlobalResultCodeEnum
      * 不支持的认证模式
      **/
     UNSUPPORTED_GRANT_TYPE("1003", "不支持的认证模式");
-    
+
     /**
      * 自定义状态码
      **/
-    
+
     private final String code;
-    
+
     /**
      * 携 带 消 息
      */
-    
+
     private final String message;
-    
-    GlobalResultCodeEnum(String code, String message)
-    {
+
+    GlobalResultCodeEnum(String code, String message) {
         this.code = code;
         this.message = message;
     }
-    
+
     /**
      * 根据code获取message
      */

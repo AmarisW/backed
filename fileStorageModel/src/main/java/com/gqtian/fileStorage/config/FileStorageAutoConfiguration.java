@@ -17,12 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @ConditionalOnMissingBean(FileStorageService.class)
 public class FileStorageAutoConfiguration {
-    
+
     /**
      * 文件存储属性，用于配置文件存储服务
      */
     private final FileStorageProperties properties;
-    
+
     /**
      * 创建并配置文件存储服务
      *

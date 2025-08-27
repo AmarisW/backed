@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/globalExposed")
 @RequiredArgsConstructor
 public class GlobalExposedController {
-    
+
     /**
      * 全局开放Api列表
      */
@@ -32,5 +32,5 @@ public class GlobalExposedController {
     public List<GlobalApiOutEntity> list() {
         return GlobalBeautifyStart.GLOBAL_API_CACHE.stream().toList();
     }
-    
+
 }

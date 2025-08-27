@@ -41,26 +41,25 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Accessors(chain = true)
 public class FileStorageServiceBuilder {
-    
+
     /** 配置参数 */
     private FileStorageProperties properties;
-    
+
     /** Client 工厂列表 */
     private List<FileStorageClientFactory<?>> clientFactoryList = new ArrayList<>();
-    
+
     /** 文件存储平台列表 */
     private List<FileStorageInterface> fileStorageList = new ArrayList<>();
-    
+
     /**
      * 构造函数
      *
      * @param properties 配置参数
      */
-    public FileStorageServiceBuilder(FileStorageProperties properties)
-    {
+    public FileStorageServiceBuilder(FileStorageProperties properties) {
         this.properties = properties;
     }
-    
+
     /**
      * 创建一个 FileStorageService 的构造器
      *
@@ -70,7 +69,7 @@ public class FileStorageServiceBuilder {
     public static FileStorageServiceBuilder create(FileStorageProperties properties) {
         return new FileStorageServiceBuilder(properties);
     }
-    
+
     /**
      * 获取或创建指定存储平台的 Client 工厂对象
      *
@@ -82,25 +81,24 @@ public class FileStorageServiceBuilder {
      */
     public static <Client> FileStorageClientFactory<Client> getFactory(String platform,
         List<FileStorageClientFactory<?>> factoryList, Supplier<FileStorageClientFactory<Client>> defaultSupplier) {
-        
+
         // TODO 可扩展
         if (factoryList != null) {
             for (FileStorageClientFactory<?> factory : factoryList) {
                 if (Objects.equals(platform, factory.getPlatform())) {
                     try {
                         return Tools.cast(factory);
-                    }
-                    catch (Exception e) {
+                    } catch (Exception e) {
                         throw new GlobalException("【文件服务】获取 FileStorageClientFactory 失败，类型不匹配，platform：" + platform, e);
                     }
                 }
             }
         }
-        
+
         // 返回默认的 FileStorageClientFactory
         return defaultSupplier.get();
     }
-    
+
     /**
      * 创建存储平台时的依赖检查
      *
@@ -116,7 +114,7 @@ public class FileStorageServiceBuilder {
                 + platformEnum.getClassPath() + "】，所以无法加载此存储平台！");
         }
     }
-    
+
     /**
      * 判断是否没有引入指定 Class
      *
@@ -129,12 +127,11 @@ public class FileStorageServiceBuilder {
                 Class.forName(className);
             }
             return false;
-        }
-        catch (ClassNotFoundException e) {
+        } catch (ClassNotFoundException e) {
             return true;
         }
     }
-    
+
     /**
      * 创建 FileStorageService 实例
      *
@@ -163,7 +160,7 @@ public class FileStorageServiceBuilder {
         fileStorageService.setFileStorageInterfaceList(new CopyOnWriteArrayList<>(fileStorageList));
         return fileStorageService;
     }
-    
+
     private FileStorageInterface buildLocalFileStorage(LocalConfig local) {
         // 检查 FTP 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(local, null) || !local.isEnable()) {
@@ -173,7 +170,7 @@ public class FileStorageServiceBuilder {
         log.info("【文件服务】加载本地存储平台：{}，平台地址：{}", local.getPlatform(), local.getEndPoint());
         return new LocalPlatFrom(local);
     }
-    
+
     /**
      * 构建 FTP 文件存储实例
      *
@@ -196,7 +193,7 @@ public class FileStorageServiceBuilder {
         // 使用配置信息和客户端工厂创建并返回 FTP 文件存储实例
         return new FtpPlatFrom(ftp, clientFactory);
     }
-    
+
     /**
      * 构建华为 OBS 文件存储实例
      *
@@ -220,7 +217,7 @@ public class FileStorageServiceBuilder {
         // 使用配置信息和客户端工厂创建并返回华为 OBS 文件存储实例
         return new HuaweiObsPlatFrom(huaweiObs, clientFactory);
     }
-    
+
     /**
      * 构建 Minio 文件存储实例
      *
@@ -244,7 +241,7 @@ public class FileStorageServiceBuilder {
         // 使用配置信息和客户端工厂创建并返回 Minio 文件存储实例
         return new MinioOssPlatFrom(minio, clientFactory);
     }
-    
+
     /**
      * 构建阿里云 OSS 文件存储
      *
@@ -260,8 +257,7 @@ public class FileStorageServiceBuilder {
         }
         // buildFileStorageDetect(aliYunOssConfig, PlatformEnum.ALIYUN_OSS);
         log.info("【文件服务】加载阿里云 OSS 存储平台：{}，平台地址：{}", aliYunOssConfig.getPlatform(), aliYunOssConfig.getEndPoint());
-        FileStorageClientFactory<OSS> clientFactory = getFactory(aliYunOssConfig.getPlatform(),
-            clientFactoryList,
+        FileStorageClientFactory<OSS> clientFactory = getFactory(aliYunOssConfig.getPlatform(), clientFactoryList,
             () -> new AliYunOssClientFactory(aliYunOssConfig));
         return new AliyunOssPlatFrom(aliYunOssConfig, clientFactory);
     }

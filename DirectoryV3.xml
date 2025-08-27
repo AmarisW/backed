@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?> 
- <trees>
-     <tree path="/annotationModel" title="模板项目" extension="" presentableText="" tooltipTitle=""
-           icon="ToolwindowsToolWindowRunWithCoverage"/>
-     <tree path="/commonModel" title="公用模块" extension="" presentableText="" tooltipTitle=""
-           icon="ToolwindowsToolWindowModuleDependencies"/>
-     <tree path="/contrastModel" title="基线模块" extension="" presentableText="" tooltipTitle=""
-           icon="RunConfigurationsShowPassed"/>
- </trees>
+<?xml version="1.0" encoding="UTF-8"?>
+<trees>
+  <tree path="/annotationModel" title="模板项目" extension="" presentableText="" tooltipTitle=""
+      icon="ToolwindowsToolWindowRunWithCoverage"/>
+  <tree path="/commonModel" title="公用模块" extension="" presentableText="" tooltipTitle=""
+      icon="ToolwindowsToolWindowModuleDependencies"/>
+  <tree path="/contrastModel" title="基线模块" extension="" presentableText="" tooltipTitle=""
+      icon="RunConfigurationsShowPassed"/>
+</trees>

@@ -23,12 +23,12 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class InitServerChannel extends ChannelInitializer<SocketChannel> {
-    
+
     /**
      * 🔧 Netty配置类，通过构造函数自动注入 包含心跳检测时间等配置参数
      */
     private final NettyConfig nettyConfig;
-    
+
     /**
      * 🛠️ 初始化通道的方法 当新的客户端连接建立时，Netty会自动调用此方法 为该连接配置处理管道，按顺序添加各种处理器
      *
@@ -36,19 +36,18 @@ public class InitServerChannel extends ChannelInitializer<SocketChannel> {
      */
     @Override
     protected void initChannel(SocketChannel socketChannel) {
-        
+
         // 添加消息编码器，用于将Java对象编码为字节流发送
         socketChannel.pipeline().addLast(new MessageEncoder());
-        
+
         // 添加消息解码器，用于将接收到的字节流解码为Java对象
         socketChannel.pipeline().addLast(new MessageDecoder());
-        
+
         // 添加心跳检测处理器，用于检测空闲连接
         // 参数分别为：读空闲时间、写空闲时间、所有类型空闲时间，时间单位
-        socketChannel.pipeline()
-            .addLast(new IdleStateHandler(nettyConfig.getReaderIdleTimeSeconds(),
-                nettyConfig.getWriterIdleTimeSeconds(), nettyConfig.getAllIdleTimeSeconds(), TimeUnit.SECONDS));
-        
+        socketChannel.pipeline().addLast(new IdleStateHandler(nettyConfig.getReaderIdleTimeSeconds(),
+            nettyConfig.getWriterIdleTimeSeconds(), nettyConfig.getAllIdleTimeSeconds(), TimeUnit.SECONDS));
+
         // 添加通用业务处理器，处理具体的业务逻辑
         socketChannel.pipeline().addLast(new ServerHandler());
     }

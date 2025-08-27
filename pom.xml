@@ -53,6 +53,7 @@
     <module>nettyModel</module>
     <module>contrastModel</module>
     <module>fileStorageModel</module>
+    <module>logViewModel</module>
   </modules>
 
   <!-- 项目依赖统一管理 -->
@@ -78,6 +79,7 @@
         <groupId>io.netty</groupId>
         <version>${netty.version}</version>
       </dependency>
+
       <!--============================ 数据源 ============================-->
       <!-- Mybatis-Flex -->
       <dependency>

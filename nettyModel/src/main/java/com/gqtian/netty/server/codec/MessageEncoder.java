@@ -14,9 +14,9 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 public class MessageEncoder extends MessageToByteEncoder<String> {
-    
+
     @Override
     protected void encode(ChannelHandlerContext channelHandlerContext, String object, ByteBuf byteBuf) {
-        
+
     }
 }
