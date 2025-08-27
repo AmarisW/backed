@@ -1,5 +1,6 @@
 package com.gqtian.netty.server;
 
+import io.netty.buffer.PooledByteBufAllocator;
 import org.springframework.stereotype.Service;
 
 import com.gqtian.common.globalProcess.GlobalException;
@@ -59,6 +60,10 @@ public class NettyServer {
             serverBootstrap.handler(new LoggingHandler(LogLevel.INFO));
             // 接收到的信息处理器
             serverBootstrap.childHandler(initServerChannel);
+            // 设置内存分配器 - 用于接受连接的父通道
+            serverBootstrap.option(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
+            // 设置内存分配器 - 用于每个子通道（实际的数据通信）
+            serverBootstrap.childOption(ChannelOption.ALLOCATOR, PooledByteBufAllocator.DEFAULT);
             serverBootstrap.option(ChannelOption.SO_BACKLOG, 128);
             serverBootstrap.option(ChannelOption.TCP_NODELAY, true);
             serverBootstrap.childOption(ChannelOption.SO_KEEPALIVE, true);
