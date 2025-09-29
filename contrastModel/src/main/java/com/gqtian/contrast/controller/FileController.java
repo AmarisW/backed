@@ -24,13 +24,11 @@ import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-/**
- * 👻 文件控制器
- *
- * @className TestController
- * @author gqtian
- * @date 2025/8/15 00:00
- */
+/***👻文件控制器**
+
+@className TestController*
+@author gqtian*
+@date 2025/8/15 00:00*/
 @Slf4j
 @RestController
 @RequestMapping("/file")
@@ -40,8 +38,8 @@ public class FileController {
     private final FileStorageService fileStorageService;
 
     /**
-     * 读取相对路径下面的文件信息
-     */
+    * 读取相对路径下面的文件信息
+    */
     @RequestMapping("/readFile")
     public void readFile() {
         InputStream inputStream = null;
@@ -65,11 +63,11 @@ public class FileController {
     }
 
     /**
-     * 上传文件附件 （文件参数）
-     *
-     * @param uploadParam 上传参数
-     * @return 上传结果
-     */
+    * 上传文件附件 （文件参数）
+    *
+    * @param uploadParam 上传参数
+    * @return 上传结果
+    */
     @RequestMapping("/UploadParam")
     public boolean UploadParam(@ModelAttribute UploadParam uploadParam) {
         FileStorageInfo fileInfo = FileStorageInfo.builder().content(uploadParam.getFile())
@@ -80,11 +78,11 @@ public class FileController {
     }
 
     /**
-     * 文件上传
-     *
-     * @param platform 上传的平台
-     * @return 上传结果
-     */
+    * 文件上传
+    *
+    * @param platform 上传的平台
+    * @return 上传结果
+    */
     @RequestMapping("/upload")
     public String upload(@RequestParam String platform) {
         try {
@@ -143,10 +141,10 @@ public class FileController {
     }
 
     /**
-     * 将输入流转换为字节数组
-     *
-     * @param in 输入流
-     */
+    * 将输入流转换为字节数组
+    *
+    * @param in 输入流 
+    */
     private byte[] toByteArray(InputStream in) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         byte[] buffer = new byte[1024 * 4];

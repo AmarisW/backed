@@ -1,10 +1,10 @@
 package com.gqtian.contrast;
 
+import com.gqtian.fileStorage.EnableFileStorage;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;
 
 import com.gqtian.common.config.GlobalBeautifyStart;
-import com.gqtian.fileStorage.EnableFileStorage;
 
 import lombok.extern.slf4j.Slf4j;
 

@@ -67,6 +67,8 @@
   </dependencies>
 
   <build>
+    <!-- 移除 spring-boot-maven-plugin 插件，这样就不会生成可执行jar包，只生成普通的jar包 -->
+    <!--
     <plugins>
       <plugin>
         <groupId>org.springframework.boot</groupId>
@@ -79,14 +81,10 @@
             </exclude>
           </excludes>
         </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>repackage</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
+    </plugins>
+    -->
+    <plugins>
       <plugin>
         <groupId>io.github.git-commit-id</groupId>
         <artifactId>git-commit-id-maven-plugin</artifactId>

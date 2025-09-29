@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gqtian.common.annotation.GlobalApiOut;
 import com.gqtian.common.globalProcess.GlobalException;
+import com.gqtian.netty.service.TestService;
 import com.gqtian.netty.utils.MessageUtil;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,39 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/test")
 @RequiredArgsConstructor
 public class TestWeb {
+
+    /**
+     * 发送消息接口
+     * <p>
+     * 通过Netty客户端连接指定主机和端口，发送指定消息
+     * </p>
+     *
+     * @param host 主机地址
+     * @param port 端口号
+     * @param msg  待发送的消息内容
+     * @throws Exception 网络连接或发送过程中可能出现的异常
+     */
+    @GlobalApiOut(value = "消息发送")
+    @GetMapping("/sendMsg")
+    public void sendMsg(String host, Integer port, String msg) throws Exception {
+        TestService.SEND_MSG = msg;
+        new TestService().runClient(host, port);
+    }
+
+    /**
+     * 消息内容修改接口
+     * <p>
+     * 修改待发送的消息内容
+     * </p>
+     *
+     * @param msg 新的消息内容
+     */
+    @GlobalApiOut(value = "消息内容修改")
+    @GetMapping("/editMsg")
+    public String editMsg(String msg) {
+        TestService.SEND_MSG = msg;
+        return TestService.SEND_MSG;
+    }
 
     /**
      * 消息解码接口
@@ -61,7 +95,6 @@ public class TestWeb {
         } else {
             throw new GlobalException("请输入待编码的消息字符串");
         }
-
     }
 
 }

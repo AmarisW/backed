@@ -202,12 +202,15 @@ public class GlobalBeautifyStart {
      * 添加访问URL信息
      */
     private static void appendAccessUrls(StringBuilder output, String port, String path, String ip) {
+        String basePath = "http://localhost:" + port + path;
         output.append(COLOR_BOLD).append(COLOR_BLUE).append("Access URLs:").append(COLOR_RESET).append("\n")
-            .append(TREE_NODE).append(COLOR_WHITE).append("Local:   ").append(COLOR_RESET).append(COLOR_CYAN)
-            .append("http://localhost:").append(port).append(path).append("/").append(COLOR_RESET).append("\n")
-            .append(TREE_LAST_NODE).append(COLOR_WHITE).append("External:").append(COLOR_RESET).append(" ")
-            .append(COLOR_CYAN).append("http://").append(ip).append(":").append(port).append(path).append("/")
-            .append(COLOR_RESET).append("\n\n");
+            .append(TREE_NODE).append(COLOR_WHITE).append("Home:    ").append(COLOR_RESET).append(" ")
+            .append(COLOR_CYAN).append("http://").append(ip).append(":").append(port).append(path)
+            .append("/CommonIndex.html").append(COLOR_RESET).append("\n").append(TREE_NODE).append(COLOR_WHITE)
+            .append("Local:    ").append(COLOR_RESET).append(COLOR_CYAN).append(basePath).append("/")
+            .append(COLOR_RESET).append("\n").append(TREE_LAST_NODE).append(COLOR_WHITE).append("External:")
+            .append(COLOR_RESET).append(" ").append(COLOR_CYAN).append("http://").append(ip).append(":").append(port)
+            .append(path).append("/").append(COLOR_RESET).append("\n\n");
     }
 
     /**

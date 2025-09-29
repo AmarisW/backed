@@ -44,6 +44,7 @@
     <rocketmq.client.version>4.9.2</rocketmq.client.version>
     <rocketmq.spring.version>2.3.3</rocketmq.spring.version>
     <easyexcel.version>3.2.1</easyexcel.version>
+    <guava.version>33.4.8-jre</guava.version>
   </properties>
 
   <!-- 模块说明：这里声明多个子模块 -->
@@ -208,6 +209,12 @@
         <groupId>com.alibaba</groupId>
         <artifactId>easyexcel</artifactId>
         <version>${easyexcel.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
       </dependency>
 
     </dependencies>
