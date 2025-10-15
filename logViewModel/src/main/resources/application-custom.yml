@@ -12,7 +12,7 @@ log:
     # 单次查询最大行数
     max-lines: 1000
     # 文件最大大小（MB）
-    max-file-size: 100
+    max-file-size: 1000
     # 是否启用安全检查
     enable-security: true
 

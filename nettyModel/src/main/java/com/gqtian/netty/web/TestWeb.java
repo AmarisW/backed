@@ -1,5 +1,7 @@
 package com.gqtian.netty.web;
 
+import java.util.LinkedHashMap;
+
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -91,10 +93,43 @@ public class TestWeb {
     @GetMapping("/encode")
     public String encode(String msg) {
         if (StringUtils.hasLength(msg)) {
-            return MessageUtil.encodeMsg(msg);
+            return MessageUtil.encodeMsg(msg).toLowerCase();
+
         } else {
             throw new GlobalException("请输入待编码的消息字符串");
         }
+    }
+
+    /**
+     * GritLog 构建日志查询表达式
+     */
+    @GlobalApiOut(value = "GritLog 构建日志查询表达式")
+    @GetMapping("/buildGritLogQuery")
+    public LinkedHashMap<String, String> buildGritLogQuery(String msg) {
+        LinkedHashMap<String, String> resultMap = new LinkedHashMap<>();
+        String encodeMsg = MessageUtil.encodeMsg(msg).toLowerCase();
+        String tem = "((测0000)&(拍照指令)|(0000000000000000)&(【1500|【9500))";
+        String temFive = "(0000000000000000)&(【1500|【9500)";
+        String temOne = "grep '0000000000000000' | grep '【1500'";
+        String temTwo = "grep '0000000000000000' | grep '【9500'";
+        String temThree = "grep '拍照指令' | grep '测0000'";
+        String temFour = "grep '0000000000000000' | egrep '【9500|【1500'";
+
+        // 构建返回结果 - 替换车牌和编码值
+        String result = tem.replace("测0000", msg).replace("0000000000000000", encodeMsg);
+        String resultOne = temOne.replace("0000000000000000", encodeMsg);
+        String resultTwo = temTwo.replace("0000000000000000", encodeMsg);
+        String resultThree = temThree.replace("测0000", msg);
+        String resultFour = temFour.replace("0000000000000000", encodeMsg);
+        String resultFive = temFive.replace("0000000000000000", encodeMsg);
+
+        resultMap.put("GritLog全量日志", result);
+        resultMap.put("GritLog指令日志", resultFive);
+        resultMap.put("Linux指令下发9502", resultTwo);
+        resultMap.put("Linux报文返回1502", resultOne);
+        resultMap.put("Linux拍照常规日志", resultThree);
+        resultMap.put("Linux拍照全量日志", resultFour);
+        return resultMap;
     }
 
 }
