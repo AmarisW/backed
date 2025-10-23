@@ -1,0 +1,26 @@
+################################# Hbase配置 #################################
+hbase:
+  # 轨迹数据保存hbase，设置为true
+  enabled: true
+  path: '/linkcld/jarapps/v2x-transmit-8108/tmp_data'
+  thread-size: 5
+  table-name: gnss_gps_track_ph
+  zookeeper:
+    quorum: scjt-ma01,scjt-n02,scjt-n03,scjt-n04,scjt-n05,scjt-n06,scjt-n07,scjt-n08
+    port: 2181
+    znode-parent: /hbase-unsecure
+    pool-size: 3
+    user-name: hbase
+    password:
+  hadoop:
+    user: hbase
+
+################################# Rocketmq配置 #################################
+rocketmq:
+  # name-server服务地址多个用;隔开 例如127.0.0.1:9876;127.0.0.1:9877
+  name-server: http://192.168.90.103:9876
+  # 生产者配置
+  producer:
+    group: GID_DC_GPS_8108  # 生产者分组
+    topic: gps_020_8108  # 生产者主题
+    send-message-timeout: 3000 # 消费者发送消息超时时间单位毫秒
