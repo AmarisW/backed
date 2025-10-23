@@ -20,7 +20,7 @@ spring:
   # 日志配置
 logging:
   file:
-    name: ./logs/${logging.level.root}.log
+    name: ./adventLogs/${logging.level.root}.log
     max-size: 10MB
     max-history: 30
   pattern:

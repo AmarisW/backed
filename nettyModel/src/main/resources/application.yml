@@ -19,7 +19,7 @@ spring:
 #################################  日志配置  #################################
 logging:
   file:
-    name: ./logs/${logging.level.root}.log
+    name: ./adventLogs/${logging.level.root}.log
   level:
     root: info
   logback:

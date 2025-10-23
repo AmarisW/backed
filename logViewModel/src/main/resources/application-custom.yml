@@ -3,7 +3,7 @@
 log:
   viewer:
     # 日志文件根目录
-    log-path: ./logs
+    log-path: ./adventLogs
     # 允许访问的文件扩展名
     allowed-extensions:
       - .log

@@ -63,7 +63,6 @@ public class RocketMqConsumerInit {
                 messageList.forEach(messageExt -> {
                     log.debug("收到消息,topic：{}，tag：{}，消息来源：{}，msgId：{}", messageExt.getTopic(), messageExt.getTags(),
                         messageExt.getBornHost(), messageExt.getMsgId());
-                    log.info("接收到消息");
                 });
                 return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
             });
