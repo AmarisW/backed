@@ -1,10 +1,10 @@
-package com.gqtian.annotation;
+package com.gqtian.rocketSpring;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class AnnotationModelApplicationTests {
+public class RocketClientModelApplicationTests {
 
     @Test
     public void contextLoads() {}

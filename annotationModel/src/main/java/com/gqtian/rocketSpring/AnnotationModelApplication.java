@@ -1,4 +1,4 @@
-package com.gqtian.annotation;
+package com.gqtian.rocketSpring;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.annotation.EnableCaching;

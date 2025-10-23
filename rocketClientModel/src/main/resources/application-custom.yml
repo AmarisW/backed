@@ -1,0 +1,36 @@
+#################################  自定义配置 #################################
+rocket:
+  # 生产者配置
+  producerList:
+    - groupName: ${spring.application.name}
+      # 生产者唯一标识
+      producerId: demo-producer
+      # mq的nameserver地址 若是集群，用;作为地址的分隔符
+      nameSrvAddr: http://192.168.90.103:9876
+      # 消息最大长度 默认 1024 * 4 (4M)
+      maxMessageSize: 409600
+      # 发送消息超时时间，默认 3000
+      sendMsgTimeOut: 3000
+      # 发送消息失败重试次数，默认2
+      retryTimesWhenSendFailed: 2
+
+  # 消费者配置
+  consumerList:
+    - groupName: demo-consumer1  #  同一个实例下面 必须不通
+      # mq的nameserver地址 若是集群，用;作为地址的分隔符
+      nameSrvAddr: http://192.168.90.103:9876
+      # 消费者订阅的主题topic和tags,tagName=*则代表监听topic所有,tag=tag1||tag2||tags3则代表监听部分
+      # 实际业务处理类必须实现MqConsumerInterface接口
+      # 每个topic对应一个处理类,根据topicName获取对应类,例如:mqConsumerHandle.custom-topic,mqConsumerHandle固定值
+      topics:
+        - topic: V2X_GPS_DEV_DEL
+          tag: '*'
+      # 消费者线程数据量
+      consumeThreadMin: 4
+      consumeThreadMax: 4
+      # 设置一次消费的条数，默认1
+      consumeMessageBatchMaxSize: 1
+      # 消费模式 集群CLUSTERING 顺序ORDERLY
+      messageModel: CLUSTERING
+
+

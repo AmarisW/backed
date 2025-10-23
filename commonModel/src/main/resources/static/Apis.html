@@ -670,7 +670,18 @@
       // 尝试美化JSON响应
       try {
         const jsonData = JSON.parse(data);
-        responseContent.textContent = JSON.stringify(jsonData, null, 2);
+        // 检查是否是全局包装响应，如果是则只显示data部分
+        if (jsonData.hasOwnProperty('success') && jsonData.hasOwnProperty('code') && jsonData.hasOwnProperty('data')) {
+          // 只显示data部分
+          if (jsonData.data !== null && typeof jsonData.data === 'object') {
+            responseContent.textContent = JSON.stringify(jsonData.data, null, 2);
+          } else {
+            responseContent.textContent = jsonData.data;
+          }
+        } else {
+          // 不是包装响应，显示完整数据
+          responseContent.textContent = JSON.stringify(jsonData, null, 2);
+        }
       } catch (e) {
         // 如果不是有效的JSON，直接显示原始数据
         responseContent.textContent = data;

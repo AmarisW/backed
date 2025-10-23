@@ -1,0 +1,17 @@
+##################################  Rocket-Spring  #################################
+rocketmq:
+  accessKey: REDACTED
+  secretKey: REDACTED
+  nameSrvAddr: http://192.168.90.103:9876       # mq的nameserver地址 若是集群，用;作为地址的分隔符
+  consumeThreadMin: 4                           # 消费者线程数
+  consumeThreadMax: 4                           # 消费者线程数
+  consumeMessageBatchMaxSize: 5                 # 批量消费消息数
+  #------------------------------- 消费者配置 ----------------------------------#
+  consumerList:
+    - listener: gps                          # 监听器类别（固定取值）
+      enabled: true                          # 是否开启消费
+      data-type: normal                      # gps的类型old, ats, normal, old_bus(部分对接天津通卡)
+      groupName: REST-NORMAL-GPS-GROUP       # 消费组名（应该保持不同）
+      topics: # 订阅的topic（支持同时消费多个topic）
+        - topic: TT_NORMAL_GPS_DEL
+          tag: '*'
