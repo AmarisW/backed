@@ -1,0 +1,32 @@
+[
+  {
+    "bodyColor": 0,
+    "brandModel": "车辆厂牌型号",
+    "businessEndDate": "2025-06-13 17:56:18.228",
+    "businessScope": "经营业户经营范围",
+    "businessStartDate": "2025-06-13 17:56:18.228",
+    "businessType": 0,
+    "cityBriefly": "道路运输证地市简称",
+    "dataOperator": 0,
+    "emissionStandard": "排放标准",
+    "engineDisplacement": 0.0,
+    "engineNo": "车辆发动机号",
+    "fareType": 0,
+    "fuelType": 0,
+    "issuingAuthority": "道路运输证发证机构",
+    "maintenanceStatus": 0,
+    "manufactureDate": "2025-06-13 17:56:18.228",
+    "organizationCode": "123123123",
+    "passengerSeat": 0,
+    "provinceBriefly": "道路运输证省简称",
+    "roadTransportNo": "道路运输证号",
+    "transportEndDate": "2025-06-13 17:56:18.228",
+    "transportStartDate": "2025-06-13 17:56:18.228",
+    "vehicleColor": 0,
+    "vehicleNo": "浙A2112312",
+    "vehiclePhoto": "",
+    "vehicleStatus": 0,
+    "verificationStatus": 0,
+    "vin": "车辆识别"
+  }
+]

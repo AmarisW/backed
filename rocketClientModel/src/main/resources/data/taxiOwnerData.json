@@ -1,0 +1,26 @@
+[
+  {
+    "areaCode": "行政区划代码",
+    "baseFlag": "123123123",
+    "businessScope": "经营业户经营范围",
+    "businessStatus": 0,
+    "commAddress": "通信地址",
+    "dataOperator": 0,
+    "economicType": 0,
+    "enterpriseName": "经营业户名称",
+    "haveVehicleNumber": 0,
+    "legalRepresentative": "法定代表人",
+    "licenseEndDate": "2025-06-13 17:58:46.786",
+    "licenseFirstIssueDate": "2025-06-13 17:58:46.786",
+    "licenseIssuingAuthority": "经营许可证发证机关",
+    "licenseNumber": "经营许可证号",
+    "licenseStartDate": "2025-06-13 17:58:46.786",
+    "licenseWord": "经营许可证字",
+    "managerName": "经营业户负责人姓名",
+    "managerPhone": "17355380711",
+    "organizationCode": "12312312",
+    "qualityRating": "企业质量信誉等级",
+    "qualityRatingDate": "2025-06-13 17:58:46.786",
+    "registeredCapital": 0.0
+  }
+]

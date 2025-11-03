@@ -1,0 +1,32 @@
+[
+  {
+    "alarmId": "11111111",
+    "alarmState": 0,
+    "alarmTime": "2025-06-13 17:56:18.221",
+    "altitude": 12312,
+    "attachmentCount": "3",
+    "cellPhoneNumber": "123123123",
+    "dateTime": "2025-06-13 17:56:18.221",
+    "deviceId": 101,
+    "direction": 123,
+    "endTime": "2025-06-13 17:56:18.221",
+    "gcj02Lat": 35.718326,
+    "gcj02Lng": 115.38010306044103,
+    "gpsId": "11111111",
+    "gpsSpeed": 123.0,
+    "gpsSystem": "GCJ-02",
+    "level": 2,
+    "mileage": 123123.0,
+    "orgGpsSystem": "GCJ-02",
+    "plateColor": 2,
+    "plateNumber": "浙A123123",
+    "realAlarmType": 24126,
+    "receiveTime": "2025-06-13 17:56:18.221",
+    "speed": 123.0,
+    "startTime": "2025-06-13 17:56:18.221",
+    "state": 0,
+    "type": 24126,
+    "wgs84Lat": 35.718326,
+    "wgs84Lng": 115.38010306044103
+  }
+]

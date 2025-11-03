@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Import;
 
 import com.gqtian.common.globalProcess.GlobalExceptionAdvice;
 import com.gqtian.common.globalProcess.GlobalResponseBodyAdvice;
-import com.gqtian.common.initialization.GlobalDicInitRun;
+import com.gqtian.common.initialization.GlobalDictInitRun;
 import com.gqtian.common.utils.SpringApplicationUtil;
 import com.gqtian.common.web.GlobalExposedController;
 
@@ -23,6 +23,6 @@ import com.gqtian.common.web.GlobalExposedController;
     GlobalMyBatisConfiguration.class, // 配置MyBatis
     GlobalExposedController.class, // 全局开放Api列表
     SpringApplicationUtil.class, // SpringApplicationUtil
-    GlobalDicInitRun.class // 初始化字典
+    GlobalDictInitRun.class // 初始化字典
 })
 public class GlobalBeanAutoConfiguration {}

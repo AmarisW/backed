@@ -1,0 +1,22 @@
+[
+  {
+    "amount": 0,
+    "employeeId": "",
+    "emptyMileage": 0,
+    "encrypt": 0,
+    "evaluate": "一般",
+    "getOnLat": 0,
+    "getOnLon": 0,
+    "getOnTime": "2025-06-13 17:56:18.233",
+    "getUpLat": 0,
+    "getUpLon": 0,
+    "getUpTime": "2025-06-13 17:56:18.233",
+    "icFlag": 0,
+    "plateColor": "2",
+    "plateNumber": "浙A2112312",
+    "runMileage": 0,
+    "runTime": 0,
+    "surcharges": 0,
+    "waitTime": 0
+  }
+]

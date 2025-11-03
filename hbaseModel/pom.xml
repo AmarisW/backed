@@ -31,6 +31,7 @@
 
 
     <dependency>
+      <groupId>com.aliyun.hbase</groupId>
       <artifactId>alihbase-client</artifactId>
       <exclusions>
         <exclusion>
@@ -42,7 +43,14 @@
           <groupId>jdk.tools</groupId>
         </exclusion>
       </exclusions>
-      <groupId>com.aliyun.hbase</groupId>
+
+      <version>1.8.7</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.rocketmq</groupId>
+      <artifactId>rocketmq-spring-boot</artifactId>
+      <version>2.3.3</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 

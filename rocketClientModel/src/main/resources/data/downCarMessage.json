@@ -1,0 +1,28 @@
+[
+  {
+    "approvedTonnage": 1000.0,
+    "cargoName": "危险品",
+    "cargoTonnage": 31.0,
+    "dgType": "2",
+    "driverInfo": "驾驶员情况",
+    "guardsInfo": "押运员情况",
+    "owersName": "运输企业名称",
+    "owersOrigId": "122213",
+    "owersTel": "13728181111",
+    "rtoln": "3123113311",
+    "rtpn": "车辆道路运输证编号",
+    "traction": "牵引力",
+    "trailerVin": "挂车车牌号",
+    "transType": "010",
+    "transportDes": "杭州",
+    "transportOrigin": "芜湖",
+    "tssl": "1261486591|1261488899",
+    "vehicleColor": "2",
+    "vehicleMode": "2",
+    "vehicleNationality": "行政区划代码",
+    "vehicleNo": "浙A1231231",
+    "vehicleOrigId": "5000532",
+    "vehicleType": "车辆类型",
+    "vin": "111111111"
+  }
+]

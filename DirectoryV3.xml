@@ -6,4 +6,5 @@
       icon="ToolwindowsToolWindowModuleDependencies"/>
   <tree path="/contrastModel" title="基线模块" extension="" presentableText="" tooltipTitle=""
       icon="RunConfigurationsShowPassed"/>
+  <tree path="/rocketSpringModel" icon="RunConfigurationsTestStateRed2"/>
 </trees>
