@@ -46,6 +46,25 @@ public class GlobalDictUtil {
         return downOperate(list);
     }
 
+    /**
+     * 批量处理字段
+     * @param list 列表
+     * @return List<T>
+     * @param <T> 泛型
+     */
+    private static <T> List<T> downOperate(List<T> list) {
+        if (CollectionUtils.isEmpty(list)) {
+            return Collections.emptyList();
+        }
+        return list.stream().map(GlobalDictUtil::translateDic).collect(Collectors.toList());
+    }
+
+    /**
+     * 字段处理
+     * @param t 对象
+     * @return  T
+     * @param <T> 泛型
+     */
     public static <T> T translateDic(T t) {
         if (t == null) {
             return null;
@@ -55,41 +74,34 @@ public class GlobalDictUtil {
             Field[] fields = aClass.getDeclaredFields();
 
             for (Field field : fields) {
-                if (field.isAnnotationPresent(GlobalDict.class)) {
-                    GlobalDict translateDic = field.getAnnotation(GlobalDict.class);
-                    field.setAccessible(true);
+                Class<?> type = field.getType();
+                field.setAccessible(true);
+
+                // 处理自定义对象类型
+                if (type.getClassLoader() != null) {
                     Object object = field.get(t);
-
-                    // 获取字段值
-                    String code = object == null ? null : object.toString();
-                    String dicType = StringUtils.EMPTY;
-
-                    assert translateDic != null;
-                    String annotationDicType = translateDic.type();
-                    if (StringUtils.isNotBlank(annotationDicType)) {
-                        dicType = annotationDicType;
-                    } else {
-                        Object objectDicType = field.get(t);
-                        if (objectDicType != null) {
-                            dicType = objectDicType.toString();
-                        }
+                    if (object != null) {
+                        translateDic(object);
                     }
-
-                    String dicString = getDicString(dicType, code);
-                    Field codeField = aClass.getDeclaredField(field.getName() + "Txt");
-                    // 如果codeField存在
-                    codeField.setAccessible(true);
-
-                    if (StringUtils.isNotBlank(dicString)) {
-                        if (codeField.getType().isAssignableFrom(String.class)) {
-                            codeField.set(t, dicString);
-                        } else {
-                            log.warn("字段 {} 类型不支持设置字典值：{}", field.getName(), field.getType());
-                        }
-                    } else {
-                        codeField.set(t, StringUtils.EMPTY);
-                    }
+                    continue;
                 }
+
+                // 处理List类型字段
+                if (List.class.isAssignableFrom(type)) {
+                    @SuppressWarnings("unchecked")
+                    List<Object> list = (List<Object>)field.get(t);
+                    if (!CollectionUtils.isEmpty(list)) {
+                        list.forEach(item -> {
+                            if (item != null && item.getClass().getClassLoader() != null) {
+                                translateDic(item);
+                            }
+                        });
+                    }
+                    continue;
+                }
+
+                // 处理基本类型和String类型字段
+                handleField(t, field, aClass);
             }
         } catch (Exception e) {
             log.error("字典转换失败，对象类型：{}, 错误信息：{}", t.getClass().getName(), e.getMessage(), e);
@@ -97,11 +109,50 @@ public class GlobalDictUtil {
         return t;
     }
 
-    private static <T> List<T> downOperate(List<T> list) {
-        if (CollectionUtils.isEmpty(list)) {
-            return Collections.emptyList();
+    /**
+     * 字段处理
+     * @param t 对象
+     * @param field 字段
+     * @param aClass  类
+     * @param <T> 泛型
+     */
+    private static <T> void handleField(T t, Field field, Class<?> aClass)
+        throws IllegalAccessException, NoSuchFieldException {
+        if (field.isAnnotationPresent(GlobalDict.class)) {
+            GlobalDict translateDic = field.getAnnotation(GlobalDict.class);
+            field.setAccessible(true);
+            Object object = field.get(t);
+
+            // 获取字段值
+            String code = object == null ? null : object.toString();
+            String dicType = StringUtils.EMPTY;
+
+            assert translateDic != null;
+            String annotationDicType = translateDic.type();
+            if (StringUtils.isNotBlank(annotationDicType)) {
+                dicType = annotationDicType;
+            } else {
+                Object objectDicType = field.get(t);
+                if (objectDicType != null) {
+                    dicType = objectDicType.toString();
+                }
+            }
+
+            String dicString = getDicString(dicType, code);
+            Field codeField = aClass.getDeclaredField(field.getName() + "Txt");
+            // 如果codeField存在
+            codeField.setAccessible(true);
+
+            if (StringUtils.isNotBlank(dicString)) {
+                if (codeField.getType().isAssignableFrom(String.class)) {
+                    codeField.set(t, dicString);
+                } else {
+                    log.warn("字段 {} 类型不支持设置字典值：{}", field.getName(), field.getType());
+                }
+            } else {
+                codeField.set(t, StringUtils.EMPTY);
+            }
         }
-        return list.stream().map(GlobalDictUtil::translateDic).collect(Collectors.toList());
     }
 
     /**
@@ -111,7 +162,7 @@ public class GlobalDictUtil {
      * @param code 编码
      * @return 字典对象
      */
-    public static String getDicString(String type, String code) {
+    private static String getDicString(String type, String code) {
         List<GlobalDic> sysDicList = listDictionary(type);
 
         if (sysDicList.isEmpty()) {
