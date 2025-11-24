@@ -1,12 +1,12 @@
 package com.gqtian.contrast.demo.eventListenerDemo.listeners;
 
-import com.gqtian.contrast.demo.eventListenerDemo.event.MessageObjectList;
-import com.gqtian.contrast.demo.eventListenerDemo.event.MessageThree;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson2.JSON;
+import com.gqtian.contrast.demo.eventListenerDemo.event.MessageObjectList;
+import com.gqtian.contrast.demo.eventListenerDemo.event.MessageThree;
 
 import lombok.extern.slf4j.Slf4j;
 

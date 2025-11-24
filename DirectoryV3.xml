@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <trees>
-  <tree path="/annotationModel" title="模板项目" extension="" presentableText="" tooltipTitle=""
-      icon="ToolwindowsToolWindowRunWithCoverage"/>
-  <tree path="/commonModel" title="公用模块" extension="" presentableText="" tooltipTitle=""
-      icon="ToolwindowsToolWindowModuleDependencies"/>
-  <tree path="/contrastModel" title="基线模块" extension="" presentableText="" tooltipTitle=""
-      icon="RunConfigurationsShowPassed"/>
-  <tree path="/rocketSpringModel" icon="RunConfigurationsTestStateRed2"/>
+  <tree extension="" icon="ToolwindowsToolWindowRunWithCoverage" path="/annotationModel" presentableText=""
+      title="模板项目"
+      tooltipTitle=""/>
+  <tree extension="" icon="ToolwindowsToolWindowModuleDependencies" path="/commonModel" presentableText=""
+      title="公用模块"
+      tooltipTitle=""/>
+  <tree backgroundColor="" extension="" icon="RunConfigurationsShowPassed" path="/contrastModel" presentableText=""
+      textColor="" title="基础模块" tooltipTitle=""/>
+  <tree icon="RunConfigurationsTestStateRed2" path="/rocketSpringModel"/>
 </trees>

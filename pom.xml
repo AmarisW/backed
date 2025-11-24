@@ -1,81 +1,53 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+  <artifactId>IndividualProject</artifactId>
 
   <!-- parent指明继承关系，给出被继承的父项目的具体信息 设置全局springboot版本-->
-  <parent>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <groupId>org.springframework.boot</groupId>
-    <version>3.5.3</version>
-    <relativePath/>
-  </parent>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>flatten-maven-plugin</artifactId>
+        <configuration>
+          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          <updatePomFile>true</updatePomFile>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>flatten</goal>
+            </goals>
+            <id>flatten</id>
+            <phase>process-resources</phase>
+          </execution>
+          <execution>
+            <goals>
+              <goal>clean</goal>
+            </goals>
+            <id>flatten.clean</id>
+            <phase>clean</phase>
+          </execution>
+        </executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>1.5.0</version>
+      </plugin>
+    </plugins>
+  </build>
 
 
   <!-- 多模块项目父工程必须指定为 pom -->
-  <packaging>pom</packaging>
-
-  <!-- 项目信息 -->
-  <groupId>com.gqtian</groupId>
-  <artifactId>IndividualProject</artifactId>
-  <name>IndividualProject</name>
-  <version>${revision}</version>
-  <description>构建个人多模块化体系</description>
-
-  <!-- 版本控制 -->
-  <properties>
-    <!-- 全局项目版本控制 Start -->
-    <revision>1.0.0</revision>
-    <!-- 全局项目版本控制 End -->
-
-    <mybatis-plus.version>3.5.5</mybatis-plus.version>
-    <hutool.version>5.8.24</hutool.version>
-    <mysql.version>8.2.0</mysql.version>
-    <druid.version>1.2.18</druid.version>
-    <fastjson2.version>2.0.43</fastjson2.version>
-    <commons-lang3.version>3.18.0</commons-lang3.version>
-    <obs.aliyun.version>3.15.1</obs.aliyun.version>
-    <obs.hw.version>3.22.12</obs.hw.version>
-    <obs.minio.version>8.2.1</obs.minio.version>
-    <jsch.version>0.1.55</jsch.version>
-    <commons-net.version>3.9.0</commons-net.version>
-    <netty.version>4.1.94.Final</netty.version>
-    <rocketmq.client.version>4.9.2</rocketmq.client.version>
-    <rocketmq.spring.version>2.3.3</rocketmq.spring.version>
-    <easyexcel.version>3.2.1</easyexcel.version>
-    <guava.version>33.4.8-jre</guava.version>
-    <jyaml.version>1.3</jyaml.version>
-    <jts-core.version>1.20.0</jts-core.version>
-    <ali.hbase.version>1.8.7</ali.hbase.version>
-
-  </properties>
-
-  <!-- 模块说明：这里声明多个子模块 -->
-  <modules>
-    <module>annotationModel</module>
-    <module>commonModel</module>
-    <module>nettyModel</module>
-    <module>contrastModel</module>
-    <module>fileStorageModel</module>
-    <module>logViewModel</module>
-    <module>rocketClientModel</module>
-    <module>rocketSpringModel</module>
-    <module>hbaseModel</module>
-  </modules>
-
-  <!-- 项目依赖统一管理 -->
   <dependencyManagement>
     <!--============================ 子包依赖 ============================-->
     <dependencies>
       <dependency>
-        <groupId>com.gqtian</groupId>
         <artifactId>commonModel</artifactId>
+        <groupId>com.gqtian</groupId>
         <version>${revision}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.gqtian</groupId>
         <artifactId>fileStorageModel</artifactId>
+        <groupId>com.gqtian</groupId>
         <version>${revision}</version>
       </dependency>
 
@@ -90,22 +62,22 @@
       <!--============================ 数据源 ============================-->
       <!-- Mybatis-Plus -->
       <dependency>
-        <groupId>com.baomidou</groupId>
         <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        <groupId>com.baomidou</groupId>
         <version>${mybatis-plus.version}</version>
       </dependency>
 
       <!-- Druid连接池 -->
       <dependency>
-        <groupId>com.alibaba</groupId>
         <artifactId>druid-spring-boot-starter</artifactId>
+        <groupId>com.alibaba</groupId>
         <version>${druid.version}</version>
       </dependency>
 
       <!-- MySQL驱动 -->
       <dependency>
-        <groupId>com.mysql</groupId>
         <artifactId>mysql-connector-j</artifactId>
+        <groupId>com.mysql</groupId>
         <version>${mysql.version}</version>
       </dependency>
 
@@ -135,17 +107,17 @@
 
       <!-- SFTP -->
       <dependency>
-        <groupId>com.jcraft</groupId>
         <artifactId>jsch</artifactId>
-        <scope>provided</scope>
+        <groupId>com.jcraft</groupId>
         <optional>true</optional>
+        <scope>provided</scope>
         <version>${jsch.version}</version>
       </dependency>
 
       <!-- FTP -->
       <dependency>
-        <groupId>commons-net</groupId>
         <artifactId>commons-net</artifactId>
+        <groupId>commons-net</groupId>
         <optional>true</optional>
         <version>${commons-net.version}</version>
       </dependency>
@@ -172,8 +144,8 @@
       </dependency>
 
       <dependency>
-        <groupId>cn.hutool</groupId>
         <artifactId>hutool-all</artifactId>
+        <groupId>cn.hutool</groupId>
         <version>${hutool.version}</version>
       </dependency>
 
@@ -184,8 +156,8 @@
       </dependency>
 
       <dependency>
-        <groupId>org.apache.commons</groupId>
         <artifactId>commons-pool2</artifactId>
+        <groupId>org.apache.commons</groupId>
         <version>${commons-pool2.version}</version>
       </dependency>
 
@@ -198,20 +170,20 @@
 
 
       <dependency>
-        <groupId>com.alibaba</groupId>
         <artifactId>easyexcel</artifactId>
+        <groupId>com.alibaba</groupId>
         <version>${easyexcel.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
+        <groupId>com.google.guava</groupId>
         <version>${guava.version}</version>
       </dependency>
 
       <dependency>
-        <groupId>org.jyaml</groupId>
         <artifactId>jyaml</artifactId>
+        <groupId>org.jyaml</groupId>
         <version>${jyaml.version}</version>
       </dependency>
 
@@ -231,33 +203,61 @@
     </dependencies>
   </dependencyManagement>
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>flatten-maven-plugin</artifactId>
-        <version>1.5.0</version>
-        <configuration>
-          <updatePomFile>true</updatePomFile>
-          <flattenMode>resolveCiFriendliesOnly</flattenMode>
-        </configuration>
-        <executions>
-          <execution>
-            <id>flatten</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>flatten</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>flatten.clean</id>
-            <phase>clean</phase>
-            <goals>
-              <goal>clean</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+  <!-- 项目信息 -->
+  <description>构建个人多模块化体系</description>
+  <groupId>com.gqtian</groupId>
+  <modelVersion>4.0.0</modelVersion>
+  <modules>
+    <module>annotationModel</module>
+    <module>commonModel</module>
+    <module>nettyModel</module>
+    <module>contrastModel</module>
+    <module>fileStorageModel</module>
+    <module>logViewModel</module>
+    <module>rocketClientModel</module>
+    <module>rocketSpringModel</module>
+    <module>hbaseModel</module>
+  </modules>
+  <name>IndividualProject</name>
+
+  <!-- 版本控制 -->
+  <packaging>pom</packaging>
+
+  <!-- 模块说明：这里声明多个子模块 -->
+  <parent>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <groupId>org.springframework.boot</groupId>
+    <relativePath/>
+    <version>3.5.3</version>
+  </parent>
+
+  <!-- 项目依赖统一管理 -->
+  <properties>
+    <!-- 全局项目版本控制 Start -->
+    <ali.hbase.version>1.8.7</ali.hbase.version>
+    <!-- 全局项目版本控制 End -->
+
+    <commons-lang3.version>3.18.0</commons-lang3.version>
+    <commons-net.version>3.9.0</commons-net.version>
+    <druid.version>1.2.18</druid.version>
+    <easyexcel.version>3.2.1</easyexcel.version>
+    <fastjson2.version>2.0.43</fastjson2.version>
+    <guava.version>33.4.8-jre</guava.version>
+    <hutool.version>5.8.24</hutool.version>
+    <jsch.version>0.1.55</jsch.version>
+    <jts-core.version>1.20.0</jts-core.version>
+    <jyaml.version>1.3</jyaml.version>
+    <mybatis-plus.version>3.5.5</mybatis-plus.version>
+    <mysql.version>8.2.0</mysql.version>
+    <netty.version>4.1.94.Final</netty.version>
+    <obs.aliyun.version>3.15.1</obs.aliyun.version>
+    <obs.hw.version>3.22.12</obs.hw.version>
+    <obs.minio.version>8.2.1</obs.minio.version>
+    <revision>1.0.0</revision>
+    <rocketmq.client.version>4.9.2</rocketmq.client.version>
+    <rocketmq.spring.version>2.3.3</rocketmq.spring.version>
+
+  </properties>
+
+  <version>${revision}</version>
 </project>

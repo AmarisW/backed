@@ -24,9 +24,9 @@ public class ThreadPoolConfig {
         // 核心线程数
         taskExecutor.setCorePoolSize(1);
         // 最大线程数
-        taskExecutor.setMaxPoolSize(1);
+        taskExecutor.setMaxPoolSize(2);
         // 阻塞队列长度
-        taskExecutor.setQueueCapacity(1);
+        taskExecutor.setQueueCapacity(100);
         // 空闲线程最大存活时间
         // taskExecutor.setKeepAliveSeconds(100);
         // 指定用于新创建的线程名称的前缀
@@ -40,10 +40,25 @@ public class ThreadPoolConfig {
     @Bean(name = "testThread")
     public ThreadPoolTaskExecutor getTest() {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(10);
-        taskExecutor.setMaxPoolSize(20);
+        taskExecutor.setCorePoolSize(1);
+        taskExecutor.setMaxPoolSize(2);
         taskExecutor.setQueueCapacity(100);
         taskExecutor.setThreadNamePrefix("查询线程-");
+        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
+        taskExecutor.initialize();
+        return taskExecutor;
+    }
+
+    /**
+     * 异步线程
+     */
+    @Bean(name = "asyncThread")
+    public ThreadPoolTaskExecutor getAsyncThreadPoolTaskExecutor() {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setCorePoolSize(1);
+        taskExecutor.setMaxPoolSize(2);
+        taskExecutor.setQueueCapacity(100);
+        taskExecutor.setThreadNamePrefix("异步线程-");
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
         taskExecutor.initialize();
         return taskExecutor;

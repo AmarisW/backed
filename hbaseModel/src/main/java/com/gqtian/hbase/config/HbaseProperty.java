@@ -20,55 +20,47 @@ import lombok.Data;
 @ConditionalOnExpression("${hbase.enabled:true}")
 @ConfigurationProperties(prefix = "hbase.zookeeper")
 @Data
-public class HbaseProperty
-{
-    
+public class HbaseProperty {
+
     private String quorum;
-    
+
     private Integer port;
-    
+
     private String znodeParent;
-    
+
     private Integer poolSize;
-    
+
     private String userName;
-    
+
     private String password;
-    
+
     @Value("${hbase.hadoop.user}")
     private String hadoopUser;
-    
-    public Properties getProperties()
-    {
+
+    public Properties getProperties() {
         Properties properties = new Properties();
-        if (StringUtils.isNotBlank(this.getQuorum()))
-        {
+        if (StringUtils.isNotBlank(this.getQuorum())) {
             properties.setProperty("hbase.zookeeper.quorum", this.getQuorum());
         }
-        
-        if (this.getPort() != null)
-        {
+
+        if (this.getPort() != null) {
             properties.setProperty("hbase.zookeeper.property.clientPort", this.getPort().toString());
         }
-        
-        if (StringUtils.isNotBlank(this.getZnodeParent()))
-        {
+
+        if (StringUtils.isNotBlank(this.getZnodeParent())) {
             properties.setProperty("zookeeper.znode.parent", this.getZnodeParent());
         }
-        
-        if (this.getPoolSize() != null)
-        {
+
+        if (this.getPoolSize() != null) {
             properties.setProperty("hbase.client.ipc.pool.size", this.getPoolSize().toString());
         }
-        if (this.getUserName() != null)
-        {
+        if (this.getUserName() != null) {
             properties.setProperty("hbase.client.username", this.getUserName());
         }
-        if (this.getPassword() != null)
-        {
+        if (this.getPassword() != null) {
             properties.setProperty("hbase.client.password", this.getPassword());
         }
         return properties;
     }
-    
+
 }

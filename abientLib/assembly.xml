@@ -1,9 +1,5 @@
-<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<assembly xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/ASSEMBLY/2.2.0"
     xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
-  <id>bin</id>
-  <formats>
-    <format>zip</format>
-  </formats>
   <fileSets>
     <fileSet>
       <directory>src/main/resources/db</directory>
@@ -30,13 +26,13 @@
     </fileSet>
     <fileSet>
       <directory>target/classes</directory>
+      <excludes>
+        <exclude>git.properties</exclude>
+      </excludes>
       <includes>
         <include>*.yml</include>
         <include>*.properties</include>
       </includes>
-      <excludes>
-        <exclude>git.properties</exclude>
-      </excludes>
       <outputDirectory>config</outputDirectory>
     </fileSet>
     <fileSet>
@@ -48,17 +44,21 @@
     </fileSet>
     <fileSet>
       <directory>${project.basedir}/</directory>
-      <outputDirectory/>
       <includes>
         <include>README*</include>
         <include>CHANGELOG*</include>
       </includes>
+      <outputDirectory/>
     </fileSet>
   </fileSets>
   <files>
     <file>
-      <source>target/${project.build.finalName}.jar</source>
       <outputDirectory/>
+      <source>target/${project.build.finalName}.jar</source>
     </file>
   </files>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <id>bin</id>
 </assembly>

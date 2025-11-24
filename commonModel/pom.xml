@@ -2,22 +2,49 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>commonModel</artifactId>
-  <modelVersion>4.0.0</modelVersion>
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
+        <groupId>io.github.git-commit-id</groupId>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <target>
+                <unzip dest="target/jar" src="${project.basedir}/../abientLib/jar-integrate.zip"/>
+              </target>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <id>prepare</id>
+            <phase>validate</phase>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>${project.basedir}/../abientLib/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <id>make-assembly</id>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 
-  <parent>
-    <artifactId>IndividualProject</artifactId>
-    <groupId>com.gqtian</groupId>
-    <version>${revision}</version>
-  </parent>
-
-  <!-- 项目基本信息 -->
-  <name>commonModel</name>
-  <description>初始化模板信息</description>
-
-  <!-- 打包方式 -->
-  <packaging>jar</packaging>
-
-  <!-- 模块信息 -->
   <dependencies>
     <dependency>
       <artifactId>spring-boot-starter-web</artifactId>
@@ -39,8 +66,8 @@
     <!--=============================== 工具类 ===========================-->
 
     <dependency>
-      <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
     </dependency>
 
     <dependency>
@@ -79,49 +106,22 @@
     </dependency>
   </dependencies>
 
+  <!-- 项目基本信息 -->
+  <description>初始化模板信息</description>
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- 打包方式 -->
+  <name>commonModel</name>
+
+  <!-- 模块信息 -->
+  <packaging>jar</packaging>
+
   <!-- 组件 -->
 
-  <build>
-    <plugins>
-      <plugin>
-        <groupId>io.github.git-commit-id</groupId>
-        <artifactId>git-commit-id-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <configuration>
-              <target>
-                <unzip dest="target/jar" src="${project.basedir}/../abientLib/jar-integrate.zip"/>
-              </target>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <id>prepare</id>
-            <phase>validate</phase>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>${project.basedir}/../abientLib/assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
+  <parent>
+    <artifactId>IndividualProject</artifactId>
+    <groupId>com.gqtian</groupId>
+    <version>${revision}</version>
+  </parent>
 
 </project>

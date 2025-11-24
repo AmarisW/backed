@@ -1,7 +1,8 @@
 package com.gqtian.contrast.demo.eventListenerDemo.listeners;
 
-import com.gqtian.contrast.demo.eventListenerDemo.event.MessageTwo;
 import org.springframework.stereotype.Service;
+
+import com.gqtian.contrast.demo.eventListenerDemo.event.MessageTwo;
 
 import lombok.extern.slf4j.Slf4j;
 

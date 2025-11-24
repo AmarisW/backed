@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
   <title>日志查询系统</title>
   <!-- SockJS 和 STOMP 客户端库 -->
   <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1.6.1/dist/sockjs.min.js"></script>
@@ -614,7 +614,7 @@
   <!-- 文件选择区域 -->
   <div class="search-panel fade-in">
     <h3>📁 选择日志文件</h3>
-    <div id="fileList" class="file-list">
+    <div class="file-list" id="fileList">
       <div class="loading">正在加载文件列表...</div>
     </div>
   </div>
@@ -626,7 +626,7 @@
     <div class="form-row">
       <div class="form-group">
         <label for="keyword">关键字</label>
-        <input type="text" id="keyword" placeholder="输入搜索关键字">
+        <input id="keyword" placeholder="输入搜索关键字" type="text">
       </div>
       <div class="form-group">
         <label for="level">日志级别</label>
@@ -642,7 +642,7 @@
         <label for="pageSize">每页行数</label>
         <select id="pageSize">
           <option value="50">50</option>
-          <option value="100" selected>100</option>
+          <option selected value="100">100</option>
           <option value="200">200</option>
           <option value="500">500</option>
         </select>
@@ -652,11 +652,11 @@
     <div class="form-row">
       <div class="form-group">
         <label for="startTime">开始时间</label>
-        <input type="datetime-local" id="startTime">
+        <input id="startTime" type="datetime-local">
       </div>
       <div class="form-group">
         <label for="endTime">结束时间</label>
-        <input type="datetime-local" id="endTime">
+        <input id="endTime" type="datetime-local">
       </div>
       <div class="form-group">
         <label for="reverse">排序方式</label>
@@ -675,11 +675,11 @@
           <span class="status-indicator disconnected" id="connectionStatus"></span>
           <span id="connectionText">未连接</span>
         </div>
-        <button class="btn btn-toggle" onclick="toggleRealtimeMonitor()" id="realtimeToggleBtn">
+        <button class="btn btn-toggle" id="realtimeToggleBtn" onclick="toggleRealtimeMonitor()">
           📡 实时监控
         </button>
         <label>
-          <input type="checkbox" id="autoScrollCheckbox" checked> 自动滚动
+          <input checked id="autoScrollCheckbox" type="checkbox"> 自动滚动
         </label>
       </div>
     </div>
@@ -702,10 +702,10 @@
     <div class="pagination">
       <div class="pagination-info" id="paginationInfo"></div>
       <div class="pagination-controls">
-        <button class="btn btn-primary" onclick="previousPage()" id="prevBtn">上一页</button>
-        <input type="number" id="currentPage" value="1" min="1" onchange="goToPage()">
+        <button class="btn btn-primary" id="prevBtn" onclick="previousPage()">上一页</button>
+        <input id="currentPage" min="1" onchange="goToPage()" type="number" value="1">
         <span>/ <span id="totalPages">1</span></span>
-        <button class="btn btn-primary" onclick="nextPage()" id="nextBtn">下一页</button>
+        <button class="btn btn-primary" id="nextBtn" onclick="nextPage()">下一页</button>
       </div>
     </div>
   </div>

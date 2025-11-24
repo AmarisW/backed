@@ -22,6 +22,22 @@ import com.gqtian.contrast.demo.jsonDemo.dto.JsonPropertyDto;
 @RequestMapping("/jsonDemo")
 public class JsonPropertyAndJsonFieldController {
 
+    public static void main(String[] args) {
+        JsonFieldDto jsonFieldDto3 = new JsonFieldDto();
+        jsonFieldDto3.setName("name");
+        jsonFieldDto3.setUnTest("unTest");
+        jsonFieldDto3.setAge(1);
+        jsonFieldDto3.setJsonOne("jsonOne");
+        System.out.println(JSON.toJSONString(jsonFieldDto3));
+
+        // JsonList
+        String jsonList = "[{\"na\":\"na\",\"un_test\":\"un_test\",\"ag\":1,\"jsonOne\":\"jsonOne\"},"
+            + "{\"name\":\"name\",\"unTest\":\"unTest\",\"age\":1,\"jo\":\"jsonOne\"}]";
+        List<JsonFieldDto> jsonFieldDtoList = JSON.parseArray(jsonList, JsonFieldDto.class);
+        System.out.println(jsonFieldDtoList);
+
+    }
+
     /**
      * 测试 jsonFieldAndJsonPropertyDto 参数接收
      */
@@ -63,22 +79,6 @@ public class JsonPropertyAndJsonFieldController {
         System.out.println(JSON.toJSONString(jsonFieldDto3));
 
         return jsonFieldDto1;
-    }
-
-    public static void main(String[] args) {
-        JsonFieldDto jsonFieldDto3 = new JsonFieldDto();
-        jsonFieldDto3.setName("name");
-        jsonFieldDto3.setUnTest("unTest");
-        jsonFieldDto3.setAge(1);
-        jsonFieldDto3.setJsonOne("jsonOne");
-        System.out.println(JSON.toJSONString(jsonFieldDto3));
-
-        // JsonList
-        String jsonList = "[{\"na\":\"na\",\"un_test\":\"un_test\",\"ag\":1,\"jsonOne\":\"jsonOne\"},"
-            + "{\"name\":\"name\",\"unTest\":\"unTest\",\"age\":1,\"jo\":\"jsonOne\"}]";
-        List<JsonFieldDto> jsonFieldDtoList = JSON.parseArray(jsonList, JsonFieldDto.class);
-        System.out.println(jsonFieldDtoList);
-
     }
 
 }

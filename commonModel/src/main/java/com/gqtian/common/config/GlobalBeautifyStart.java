@@ -24,50 +24,31 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalBeautifyStart {
 
-    private static final String SERVER_PORT = "server.port";
-
-    private static final String SERVER_SERVLET_CONTEXT_PATH = "server.servlet.context-path";
-
-    private static final String SPRING_APPLICATION_NAME = "spring.application.name";
-
-    private static final String SPRING_APPLICATION_VERSION = "spring.application.version";
-
-    // 彩色输出常量
-    private static final String COLOR_PREFIX = "\u001B[";
-
-    private static final String COLOR_RESET = COLOR_PREFIX + "0m";
-
-    private static final String COLOR_MAGENTA = COLOR_PREFIX + "35m";
-
-    private static final String COLOR_CYAN = COLOR_PREFIX + "36m";
-
-    private static final String COLOR_BLUE = COLOR_PREFIX + "94m";
-
-    private static final String COLOR_GREEN = COLOR_PREFIX + "92m";
-
-    private static final String COLOR_YELLOW = COLOR_PREFIX + "93m";
-
-    private static final String COLOR_WHITE = COLOR_PREFIX + "97m";
-
-    private static final String COLOR_PINK = COLOR_PREFIX + "95m";
-
-    private static final String COLOR_RED = COLOR_PREFIX + "91m";
-
-    private static final String COLOR_ORANGE = COLOR_PREFIX + "33m";
-
-    private static final String COLOR_BOLD = COLOR_PREFIX + "1m";
-
-    // 符号常量
-    private static final String TREE_LAST_NODE = COLOR_PINK + "└─ " + COLOR_RESET;
-
-    private static final String TREE_NODE = COLOR_PINK + "├─ " + COLOR_RESET;
-
-    private static final String TREE_BAR = COLOR_PINK + "│  " + COLOR_RESET;
-
     /**
      * 开放接口请求
      */
     public final static LinkedBlockingQueue<GlobalApiOutEntity> GLOBAL_API_CACHE = new LinkedBlockingQueue<>();
+    private static final String SERVER_PORT = "server.port";
+    private static final String SERVER_SERVLET_CONTEXT_PATH = "server.servlet.context-path";
+    private static final String SPRING_APPLICATION_NAME = "spring.application.name";
+    private static final String SPRING_APPLICATION_VERSION = "spring.application.version";
+    // 彩色输出常量
+    private static final String COLOR_PREFIX = "\u001B[";
+    private static final String COLOR_RESET = COLOR_PREFIX + "0m";
+    private static final String COLOR_MAGENTA = COLOR_PREFIX + "35m";
+    private static final String COLOR_CYAN = COLOR_PREFIX + "36m";
+    private static final String COLOR_BLUE = COLOR_PREFIX + "94m";
+    private static final String COLOR_GREEN = COLOR_PREFIX + "92m";
+    private static final String COLOR_YELLOW = COLOR_PREFIX + "93m";
+    private static final String COLOR_WHITE = COLOR_PREFIX + "97m";
+    private static final String COLOR_PINK = COLOR_PREFIX + "95m";
+    // 符号常量
+    private static final String TREE_LAST_NODE = COLOR_PINK + "└─ " + COLOR_RESET;
+    private static final String TREE_NODE = COLOR_PINK + "├─ " + COLOR_RESET;
+    private static final String TREE_BAR = COLOR_PINK + "│  " + COLOR_RESET;
+    private static final String COLOR_RED = COLOR_PREFIX + "91m";
+    private static final String COLOR_ORANGE = COLOR_PREFIX + "33m";
+    private static final String COLOR_BOLD = COLOR_PREFIX + "1m";
 
     /**
      * 启动

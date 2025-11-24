@@ -20,25 +20,20 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Configuration
-public class ThreadPoolConfig
-{
-    
+public class ThreadPoolConfig {
+
     @Value("${hbase.thread-size}")
     private int dealThreadPoolSize;
-    
+
     /**
      * 查询处理线程池
      */
     @Bean(name = "dealThread")
-    public ThreadPoolExecutor get()
-    {
-        
-        if (dealThreadPoolSize == 0)
-        {
+    public ThreadPoolExecutor get() {
+
+        if (dealThreadPoolSize == 0) {
             log.info("dealThreadPoolSize is 0,please check your config");
-        }
-        else
-        {
+        } else {
             dealThreadPoolSize = 5;
         }
         return new ThreadPoolExecutor(dealThreadPoolSize, dealThreadPoolSize * 2, 0, TimeUnit.SECONDS,

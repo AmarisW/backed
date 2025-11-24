@@ -41,16 +41,12 @@ public class LogMonitorService implements InitializingBean, DisposableBean {
     private final SimpMessagingTemplate messagingTemplate;
 
     private final LogParser logParser;
-
-    // 文件监控服务
-    private WatchService watchService;
-
-    // 线程池
-    private ScheduledExecutorService executorService;
-
     // 存储每个文件的读取位置
     private final Map<String, Long> filePositions = new ConcurrentHashMap<>();
-
+    // 文件监控服务
+    private WatchService watchService;
+    // 线程池
+    private ScheduledExecutorService executorService;
     // 当前监控的文件
     private volatile String currentMonitorFile;
 

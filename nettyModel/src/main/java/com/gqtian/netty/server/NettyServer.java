@@ -1,6 +1,5 @@
 package com.gqtian.netty.server;
 
-import io.netty.buffer.PooledByteBufAllocator;
 import org.springframework.stereotype.Service;
 
 import com.gqtian.common.globalProcess.GlobalException;
@@ -8,6 +7,7 @@ import com.gqtian.netty.config.NettyConfig;
 import com.gqtian.netty.server.init.InitServerChannel;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -29,11 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class NettyServer {
 
-    private final NettyConfig nettyConfig;
-
-    private final InitServerChannel initServerChannel;
-
     public static Channel serverChannel;
+    private final NettyConfig nettyConfig;
+    private final InitServerChannel initServerChannel;
 
     /**
      * 主链路（服务端）引导入口

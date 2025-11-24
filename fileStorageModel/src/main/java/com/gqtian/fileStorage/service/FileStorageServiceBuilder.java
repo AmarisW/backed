@@ -133,6 +133,26 @@ public class FileStorageServiceBuilder {
     }
 
     /**
+     * 构建阿里云 OSS 文件存储
+     *
+     * @param aliYunOssConfig 阿里云 OSS 配置
+     * @param clientFactoryList Client 工厂列表
+     * @return AliyunOssPlatFrom 实例
+     */
+    public static AliyunOssPlatFrom buildAliyunOssFileStorage(AliYunOssConfig aliYunOssConfig,
+        List<FileStorageClientFactory<?>> clientFactoryList) {
+        if (Objects.equals(aliYunOssConfig, null) || !aliYunOssConfig.isEnable()) {
+            log.info("【文件服务】未启用阿里云 OSS 存储平台：{}", aliYunOssConfig.getPlatform());
+            return null;
+        }
+        // buildFileStorageDetect(aliYunOssConfig, PlatformEnum.ALIYUN_OSS);
+        log.info("【文件服务】加载阿里云 OSS 存储平台：{}，平台地址：{}", aliYunOssConfig.getPlatform(), aliYunOssConfig.getEndPoint());
+        FileStorageClientFactory<OSS> clientFactory = getFactory(aliYunOssConfig.getPlatform(), clientFactoryList,
+            () -> new AliYunOssClientFactory(aliYunOssConfig));
+        return new AliyunOssPlatFrom(aliYunOssConfig, clientFactory);
+    }
+
+    /**
      * 创建 FileStorageService 实例
      *
      * @return FileStorageService 实例
@@ -240,25 +260,5 @@ public class FileStorageServiceBuilder {
             getFactory(minio.getPlatform(), clientFactoryList, () -> new MinioOssClientFactory(minio));
         // 使用配置信息和客户端工厂创建并返回 Minio 文件存储实例
         return new MinioOssPlatFrom(minio, clientFactory);
-    }
-
-    /**
-     * 构建阿里云 OSS 文件存储
-     *
-     * @param aliYunOssConfig 阿里云 OSS 配置
-     * @param clientFactoryList Client 工厂列表
-     * @return AliyunOssPlatFrom 实例
-     */
-    public static AliyunOssPlatFrom buildAliyunOssFileStorage(AliYunOssConfig aliYunOssConfig,
-        List<FileStorageClientFactory<?>> clientFactoryList) {
-        if (Objects.equals(aliYunOssConfig, null) || !aliYunOssConfig.isEnable()) {
-            log.info("【文件服务】未启用阿里云 OSS 存储平台：{}", aliYunOssConfig.getPlatform());
-            return null;
-        }
-        // buildFileStorageDetect(aliYunOssConfig, PlatformEnum.ALIYUN_OSS);
-        log.info("【文件服务】加载阿里云 OSS 存储平台：{}，平台地址：{}", aliYunOssConfig.getPlatform(), aliYunOssConfig.getEndPoint());
-        FileStorageClientFactory<OSS> clientFactory = getFactory(aliYunOssConfig.getPlatform(), clientFactoryList,
-            () -> new AliYunOssClientFactory(aliYunOssConfig));
-        return new AliyunOssPlatFrom(aliYunOssConfig, clientFactory);
     }
 }

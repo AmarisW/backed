@@ -59,6 +59,16 @@ public class SimulationService {
     }
 
     /**
+     * 生成随机的经纬度（国内）
+     */
+    public static double[] getRandomLatLng() {
+        Random random = new Random();
+        double lat = 22.0 + random.nextDouble() * (30.0 - 22.0);
+        double lng = 113.0 + random.nextDouble() * (125.0 - 113.0);
+        return new double[] {lng, lat};
+    }
+
+    /**
      * 生成模拟数据
      */
     public void simulationGpsData(String rocketId, String topic, boolean isSend) {
@@ -79,16 +89,6 @@ public class SimulationService {
                 producerService.sendMessage(rocketId, JSON.toJSONString(gpsDataList), topic);
             });
         }
-    }
-
-    /**
-     * 生成随机的经纬度（国内）
-     */
-    public static double[] getRandomLatLng() {
-        Random random = new Random();
-        double lat = 22.0 + random.nextDouble() * (30.0 - 22.0);
-        double lng = 113.0 + random.nextDouble() * (125.0 - 113.0);
-        return new double[] {lng, lat};
     }
 
 }

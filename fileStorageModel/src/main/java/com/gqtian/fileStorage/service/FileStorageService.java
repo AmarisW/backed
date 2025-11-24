@@ -28,6 +28,10 @@ public class FileStorageService {
 
     private CopyOnWriteArrayList<FileStorageInterface> fileStorageInterfaceList;
 
+    public static void main(String[] args) {
+
+    }
+
     /**
      * 获取对应的存储平台
      *
@@ -60,7 +64,7 @@ public class FileStorageService {
 
     /**
      * 上传文件到存储平台（优化资源关闭）
-     * 
+     *
      * @param fileStorageInfo 文件信息对象
      * @return 上传成功返回true，否则false
      */
@@ -160,9 +164,5 @@ public class FileStorageService {
                 log.error("【文件服务】销毁存储平台 {} 失败，{}", fileStorageInterface.getPlatform(), e.getMessage(), e);
             }
         }
-    }
-
-    public static void main(String[] args) {
-
     }
 }

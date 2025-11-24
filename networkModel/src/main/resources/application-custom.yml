@@ -1,0 +1,7 @@
+#################################  自定义配置 #################################
+platform:
+  # 接口地址配置
+  request_url_prefix: http://127.0.0.1:2000/networkModel
+  # 各类数据接口路径
+  user_info_object: /user/queryUserInfoObject
+  user_info_page: /user/queryUserInfoPage

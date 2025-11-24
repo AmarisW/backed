@@ -1,56 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+  <artifactId>rocketSpringModel</artifactId>
 
   <!-- 父类信息 -->
-  <parent>
-    <groupId>com.gqtian</groupId>
-    <artifactId>IndividualProject</artifactId>
-    <version>${revision}</version>
-  </parent>
-
-  <!-- 模块信息 -->
-  <artifactId>rocketSpringModel</artifactId>
-  <name>rocketSpringModel</name>
-  <description>Rocket Spring Model</description>
-
-  <!-- 打包方式 -->
-  <packaging>jar</packaging>
-
-  <!-- 依赖版本控制 -->
-  <properties>
-  </properties>
-
-  <!-- 依赖控制 -->
-  <dependencies>
-    <dependency>
-      <groupId>com.gqtian</groupId>
-      <artifactId>commonModel</artifactId>
-    </dependency>
-
-    <!--在pom.xml中添加依赖-->
-    <dependency>
-      <artifactId>rocketmq-spring-boot-starter</artifactId>
-      <groupId>org.apache.rocketmq</groupId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.rocketmq</groupId>
-      <artifactId>rocketmq-client</artifactId>
-    </dependency>
-  </dependencies>
-
   <build>
     <plugins>
       <plugin>
-        <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
         <configuration>
           <excludes>
             <exclude>
-              <groupId>org.springframework.boot</groupId>
               <artifactId>spring-boot-configuration-processor</artifactId>
+              <groupId>org.springframework.boot</groupId>
             </exclude>
           </excludes>
         </configuration>
@@ -61,10 +23,11 @@
             </goals>
           </execution>
         </executions>
+        <groupId>org.springframework.boot</groupId>
       </plugin>
       <plugin>
-        <groupId>io.github.git-commit-id</groupId>
         <artifactId>git-commit-id-maven-plugin</artifactId>
+        <groupId>io.github.git-commit-id</groupId>
       </plugin>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -92,14 +55,51 @@
         </configuration>
         <executions>
           <execution>
-            <id>make-assembly</id>
             <goals>
               <goal>single</goal>
             </goals>
+            <id>make-assembly</id>
             <phase>package</phase>
           </execution>
         </executions>
       </plugin>
     </plugins>
   </build>
+
+  <!-- 模块信息 -->
+  <dependencies>
+    <dependency>
+      <artifactId>commonModel</artifactId>
+      <groupId>com.gqtian</groupId>
+    </dependency>
+
+    <!--在pom.xml中添加依赖-->
+    <dependency>
+      <artifactId>rocketmq-spring-boot-starter</artifactId>
+      <groupId>org.apache.rocketmq</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>rocketmq-client</artifactId>
+      <groupId>org.apache.rocketmq</groupId>
+    </dependency>
+  </dependencies>
+  <description>Rocket Spring Model</description>
+  <modelVersion>4.0.0</modelVersion>
+
+  <!-- 打包方式 -->
+  <name>rocketSpringModel</name>
+
+  <!-- 依赖版本控制 -->
+  <packaging>jar</packaging>
+
+  <!-- 依赖控制 -->
+  <parent>
+    <artifactId>IndividualProject</artifactId>
+    <groupId>com.gqtian</groupId>
+    <version>${revision}</version>
+  </parent>
+
+  <properties>
+  </properties>
 </project>
