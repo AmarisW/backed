@@ -15,7 +15,7 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.support.ExcelTypeEnum;
 import com.gqtian.common.annotation.GlobalApiOut;
 import com.gqtian.common.globalProcess.GlobalException;
-import com.gqtian.contrast.demo.excelDemo.ExcelExporter;
+import com.gqtian.contrast.demo.easyExcel.ExcelExporter;
 import com.gqtian.contrast.entity.SystemUser;
 import com.gqtian.contrast.service.SystemUserService;
 

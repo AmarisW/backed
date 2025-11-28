@@ -13,6 +13,7 @@ import com.gqtian.network.request.SyncRequest;
 import com.gqtian.network.request.entity.RequestHead;
 import com.gqtian.network.request.entity.RequestParam;
 import com.gqtian.network.request.entity.ResponseResult;
+import com.gqtian.network.utils.CommonUtil;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SyncService {
 
     private final PlatformProperties platformProperties;
+    private final CommonUtil commonUtil;
 
     /**
      * 查询用户信息（个体）
@@ -61,11 +63,12 @@ public class SyncService {
         // 构造请求头
         RequestHead headers = RequestHead.builder().authorization(SystemCache.AUTHORIZATION).build();
 
-        // 发起请求
-        ResponseResult<List<UserInfo>> resultList = new SyncRequest<List<UserInfo>>(requestUrl, requestParam,
-            JSON.toJSONString(headers), new TypeReference<>() {}).get();
+        // 发起分页请求
+        List<UserInfo> userInfos = CommonUtil.fetchDataWithPage(requestParam,
+            (param, requestHead) -> new SyncRequest<List<UserInfo>>(requestUrl, param, JSON.toJSONString(headers),
+                new TypeReference<>() {}).get());
 
-        log.info(" 查询查询用户信息（分页）结束，结果总数: {}", resultList.getData().size());
+        log.info(" 查询查询用户信息（分页）结束，结果总数: {}", userInfos.size());
 
     }
 

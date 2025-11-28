@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.gqtian.contrast.demo.excelDemo.PageQuerySupplier;
+import com.gqtian.contrast.demo.easyExcel.PageQuerySupplier;
 import com.gqtian.contrast.entity.SystemUser;
 import com.gqtian.contrast.mapper.SystemUserMapper;
 
