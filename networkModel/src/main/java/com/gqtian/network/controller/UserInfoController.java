@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gqtian.network.entity.UserInfo;
-import com.gqtian.network.service.SyncService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class UserInfoController {
 
-    private final SyncService syncService;
-
     /**
      * 查询用户信息（个体）
      */
@@ -35,7 +32,7 @@ public class UserInfoController {
     }
 
     /**
-     * 查询用户信息（分页）
+     * 查询用户信息集合
      */
     @RequestMapping("queryUserInfoPage")
     public List<UserInfo> queryUserInfoPage() {

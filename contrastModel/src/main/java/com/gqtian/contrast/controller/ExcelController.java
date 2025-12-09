@@ -17,7 +17,7 @@ import com.gqtian.common.annotation.GlobalApiOut;
 import com.gqtian.common.globalProcess.GlobalException;
 import com.gqtian.contrast.demo.easyExcel.ExcelExporter;
 import com.gqtian.contrast.entity.SystemUser;
-import com.gqtian.contrast.service.SystemUserService;
+import com.gqtian.contrast.service.SystemUserRepository;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @RequestMapping("/excel")
 public class ExcelController {
-    private final SystemUserService globalUserService;
+    private final SystemUserRepository globalUserService;
 
     @GlobalApiOut("数据导出")
     @GetMapping("/export")

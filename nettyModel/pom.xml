@@ -1,9 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>nettyModel</artifactId>
+  <modelVersion>4.0.0</modelVersion>
 
-  <!-- 父类信息 -->
+  <!-- 父级信息 -->
+  <parent>
+    <artifactId>IndividualProject</artifactId>
+    <groupId>com.gqtian</groupId>
+    <version>${revision}</version>
+  </parent>
+
+  <!-- 模块信息 -->
+  <artifactId>nettyModel</artifactId>
+  <name>nettyModel</name>
+  <version>${revision}</version>
+  <description>初始化模板信息</description>
+
+  <!-- 打包方式 -->
+  <packaging>jar</packaging>
+
+  <!-- 依赖版本控制 -->
+  <properties>
+  </properties>
+
+  <!-- 依赖控制 -->
+  <dependencies>
+    <dependency>
+      <artifactId>commonModel</artifactId>
+      <groupId>com.gqtian</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>netty-all</artifactId>
+      <groupId>io.netty</groupId>
+    </dependency>
+  </dependencies>
+
+  <!-- 构建信息 -->
   <build>
     <plugins>
       <plugin>
@@ -66,37 +99,4 @@
     </plugins>
   </build>
 
-  <!-- 模块信息 -->
-  <dependencies>
-    <dependency>
-      <artifactId>commonModel</artifactId>
-      <groupId>com.gqtian</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>netty-all</artifactId>
-      <groupId>io.netty</groupId>
-    </dependency>
-
-
-  </dependencies>
-  <description>初始化模板信息</description>
-  <modelVersion>4.0.0</modelVersion>
-
-  <!-- 打包方式 -->
-  <name>nettyModel</name>
-
-  <!-- 依赖版本控制 -->
-  <packaging>jar</packaging>
-
-  <!-- 依赖控制 -->
-  <parent>
-    <artifactId>IndividualProject</artifactId>
-    <groupId>com.gqtian</groupId>
-    <version>${revision}</version>
-  </parent>
-
-
-  <properties>
-  </properties>
 </project>

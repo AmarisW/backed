@@ -1,9 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>contrastModel</artifactId>
+  <modelVersion>4.0.0</modelVersion>
 
   <!-- 父类信息 -->
+  <parent>
+    <artifactId>IndividualProject</artifactId>
+    <groupId>com.gqtian</groupId>
+    <version>${revision}</version>
+  </parent>
+
+  <!-- 模块信息 -->
+  <artifactId>contrastModel</artifactId>
+  <name>contrastModel</name>
+  <version>${revision}</version>
+  <description>初始化模板信息</description>
+
+  <!-- 打包方式 -->
+  <packaging>jar</packaging>
+
+  <!-- 依赖版本控制 -->
+  <properties>
+  </properties>
+
+  <!-- 依赖控制 -->
+  <dependencies>
+    <dependency>
+      <artifactId>commonModel</artifactId>
+      <groupId>com.gqtian</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>fileStorageModel</artifactId>
+      <groupId>com.gqtian</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>easyexcel</artifactId>
+      <groupId>com.alibaba</groupId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-jsqlparser</artifactId>
+    </dependency>
+
+    <!-- 视频抽帧功能实现 -->
+    <dependency>
+      <groupId>org.bytedeco</groupId>
+      <artifactId>javacv</artifactId>
+    </dependency>
+
+    <!-- 根据系统平台选择性导入 -->
+    <dependency>
+      <groupId>org.bytedeco</groupId>
+      <artifactId>ffmpeg</artifactId>
+      <classifier>windows-x86_64</classifier>
+    </dependency>
+
+    <!-- 根据系统平台选择性导入 -->
+    <dependency>
+      <groupId>org.bytedeco</groupId>
+      <artifactId>ffmpeg</artifactId>
+      <classifier>linux-x86_64</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.baomidou</groupId>
+      <artifactId>mybatis-plus-extension</artifactId>
+      <version>3.5.15</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+  <!-- 构建信息 -->
   <build>
     <plugins>
       <plugin>
@@ -66,40 +135,4 @@
     </plugins>
   </build>
 
-  <!-- 模块信息 -->
-  <dependencies>
-    <dependency>
-      <artifactId>commonModel</artifactId>
-      <groupId>com.gqtian</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>fileStorageModel</artifactId>
-      <groupId>com.gqtian</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>easyexcel</artifactId>
-      <groupId>com.alibaba</groupId>
-    </dependency>
-
-  </dependencies>
-  <description>初始化模板信息</description>
-  <modelVersion>4.0.0</modelVersion>
-
-  <!-- 打包方式 -->
-  <name>contrastModel</name>
-
-  <!-- 依赖版本控制 -->
-  <packaging>jar</packaging>
-
-  <!-- 依赖控制 -->
-  <parent>
-    <artifactId>IndividualProject</artifactId>
-    <groupId>com.gqtian</groupId>
-    <version>${revision}</version>
-  </parent>
-
-  <properties>
-  </properties>
 </project>

@@ -1,9 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <artifactId>hbaseModel</artifactId>
+  <modelVersion>4.0.0</modelVersion>
 
   <!-- 父类信息 -->
+  <parent>
+    <artifactId>IndividualProject</artifactId>
+    <groupId>com.gqtian</groupId>
+    <version>${revision}</version>
+  </parent>
+
+  <!-- 模块信息 -->
+  <artifactId>hbaseModel</artifactId>
+  <name>hbaseModel</name>
+  <version>${revision}</version>
+  <description>Hbase示例</description>
+
+  <!-- 打包方式 -->
+  <packaging>jar</packaging>
+  
+  <!-- 依赖控制 -->
+  <properties>
+  </properties>
+
+  <!-- 依赖版本控制 -->
+  <dependencies>
+    <dependency>
+      <artifactId>commonModel</artifactId>
+      <groupId>com.gqtian</groupId>
+    </dependency>
+
+
+    <dependency>
+      <artifactId>alihbase-client</artifactId>
+      <exclusions>
+        <exclusion>
+          <artifactId>slf4j-log4j12</artifactId>
+          <groupId>org.slf4j</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>jdk.tools</artifactId>
+          <groupId>jdk.tools</groupId>
+        </exclusion>
+      </exclusions>
+      <groupId>com.aliyun.hbase</groupId>
+
+      <version>1.8.7</version>
+    </dependency>
+    <dependency>
+      <artifactId>rocketmq-spring-boot</artifactId>
+      <groupId>org.apache.rocketmq</groupId>
+      <scope>compile</scope>
+      <version>2.3.3</version>
+    </dependency>
+  </dependencies>
+
+
   <build>
     <plugins>
       <plugin>
@@ -66,53 +118,5 @@
     </plugins>
   </build>
 
-  <!-- 模块信息 -->
-  <dependencies>
-    <dependency>
-      <artifactId>commonModel</artifactId>
-      <groupId>com.gqtian</groupId>
-    </dependency>
 
-
-    <dependency>
-      <artifactId>alihbase-client</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>slf4j-log4j12</artifactId>
-          <groupId>org.slf4j</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>jdk.tools</artifactId>
-          <groupId>jdk.tools</groupId>
-        </exclusion>
-      </exclusions>
-      <groupId>com.aliyun.hbase</groupId>
-
-      <version>1.8.7</version>
-    </dependency>
-    <dependency>
-      <artifactId>rocketmq-spring-boot</artifactId>
-      <groupId>org.apache.rocketmq</groupId>
-      <scope>compile</scope>
-      <version>2.3.3</version>
-    </dependency>
-  </dependencies>
-  <description>Hbase示例</description>
-  <modelVersion>4.0.0</modelVersion>
-
-  <!-- 打包方式 -->
-  <name>hbaseModel</name>
-
-  <!-- 依赖版本控制 -->
-  <packaging>jar</packaging>
-
-  <!-- 依赖控制 -->
-  <parent>
-    <artifactId>IndividualProject</artifactId>
-    <groupId>com.gqtian</groupId>
-    <version>${revision}</version>
-  </parent>
-
-  <properties>
-  </properties>
 </project>

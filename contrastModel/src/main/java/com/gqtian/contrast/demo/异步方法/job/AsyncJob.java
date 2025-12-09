@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AsyncJob {
     private final AsyncService asyncService;
 
-    @Scheduled(cron = "0/5 * * * * ?")
+    @Scheduled(cron = "0/10 * * * * ?")
     public void async() {
         asyncService.asyncMethod();
     }

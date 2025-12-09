@@ -15,7 +15,7 @@ import jakarta.annotation.Resource;
  * @date 2023/10/20 11:15
  */
 @Service
-public class CompletableFutureBothDemo {
+public class FutureBothDemo {
 
     @Resource
     @Qualifier("queryThread")

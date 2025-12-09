@@ -1,7 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  
+  <parent>
+    <artifactId>IndividualProject</artifactId>
+    <groupId>com.gqtian</groupId>
+    <version>${revision}</version>
+  </parent>
+
+  <!-- 模块信息 -->
   <artifactId>fileStorageModel</artifactId>
+  <name>fileStorageModel</name>
+  <version>${revision}</version>
+  <description>文件模块</description>
+
+  <!-- 打包方式 -->
+  <packaging>jar</packaging>
+
+  <!-- 依赖控制 -->
+  <properties>
+  </properties>
+
+  <!-- 依赖版本控制 -->
+  <dependencies>
+    <dependency>
+      <artifactId>commonModel</artifactId>
+      <groupId>com.gqtian</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>commons-pool2</artifactId>
+      <groupId>org.apache.commons</groupId>
+    </dependency>
+
+    <!--华为Obs云储存-->
+    <dependency>
+      <artifactId>esdk-obs-java</artifactId>
+      <groupId>com.huaweicloud</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>aliyun-sdk-oss</artifactId>
+      <groupId>com.aliyun.oss</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>minio</artifactId>
+      <groupId>io.minio</groupId>
+    </dependency>
+
+    <!-- SFTP -->
+    <dependency>
+      <artifactId>jsch</artifactId>
+      <groupId>com.jcraft</groupId>
+      <optional>true</optional>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- FTP -->
+    <dependency>
+      <artifactId>commons-net</artifactId>
+      <groupId>commons-net</groupId>
+    </dependency>
+  </dependencies>
 
   <!-- 父类信息 -->
   <build>
@@ -64,65 +126,4 @@
     </plugins>
   </build>
 
-  <!-- 模块信息 -->
-  <dependencies>
-    <dependency>
-      <artifactId>commonModel</artifactId>
-      <groupId>com.gqtian</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>commons-pool2</artifactId>
-      <groupId>org.apache.commons</groupId>
-    </dependency>
-
-    <!--华为Obs云储存-->
-    <dependency>
-      <artifactId>esdk-obs-java</artifactId>
-      <groupId>com.huaweicloud</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>aliyun-sdk-oss</artifactId>
-      <groupId>com.aliyun.oss</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>minio</artifactId>
-      <groupId>io.minio</groupId>
-    </dependency>
-
-    <!-- SFTP -->
-    <dependency>
-      <artifactId>jsch</artifactId>
-      <groupId>com.jcraft</groupId>
-      <optional>true</optional>
-      <scope>provided</scope>
-    </dependency>
-
-    <!-- FTP -->
-    <dependency>
-      <artifactId>commons-net</artifactId>
-      <groupId>commons-net</groupId>
-    </dependency>
-  </dependencies>
-  <description>文件模块</description>
-  <modelVersion>4.0.0</modelVersion>
-  <name>fileStorageModel</name>
-
-  <!-- 打包方式 -->
-  <packaging>jar</packaging>
-
-  <!-- 依赖版本控制 -->
-  <parent>
-    <artifactId>IndividualProject</artifactId>
-    <groupId>com.gqtian</groupId>
-    <version>${revision}</version>
-  </parent>
-
-  <!-- 依赖控制 -->
-  <properties>
-  </properties>
-
-  <version>${revision}</version>
 </project>

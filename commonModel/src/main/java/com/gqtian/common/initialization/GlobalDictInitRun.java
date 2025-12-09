@@ -40,34 +40,49 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalDictInitRun implements CommandLineRunner {
 
     /**
+     * 系统启动时执行
+     *
+     * @param args 参数
+     */
+    @Override
+    public void run(String... args) {
+        initializeDictionary();
+    }
+
+    /**
      * 初始化字典缓存
      */
     private static void initializeDictionary() {
-        log.info("【字典缓存】字典缓存开始初始化！");
-        LocalDateTime startTime = LocalDateTime.now();
-        // 清空字典缓存
-        GLOBAL_DIC.clear();
-        // 获取字典SysDicDao实例
-        GlobalDicMapper sysDicMapper = SpringApplicationUtil.getBean(GlobalDicMapper.class);
-        LambdaQueryWrapper<GlobalDic> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.select(GlobalDic::getCode, GlobalDic::getValue, GlobalDic::getType);
+        try {
+            log.info("【字典缓存】字典缓存开始初始化！");
+            LocalDateTime startTime = LocalDateTime.now();
+            // 清空字典缓存
+            GLOBAL_DIC.clear();
+            // 获取字典SysDicDao实例
+            GlobalDicMapper sysDicMapper = SpringApplicationUtil.getBean(GlobalDicMapper.class);
+            LambdaQueryWrapper<GlobalDic> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.select(GlobalDic::getCode, GlobalDic::getValue, GlobalDic::getType);
 
-        List<GlobalDic> globalDicList = sysDicMapper.selectList(queryWrapper);
+            List<GlobalDic> globalDicList = sysDicMapper.selectList(queryWrapper);
 
-        for (GlobalDic globalDic : globalDicList) {
-            // 如果当前Key存在,则直接将元素存储进去
-            if (GLOBAL_DIC.containsKey(globalDic.getType())) {
-                GLOBAL_DIC.get(globalDic.getType()).add(globalDic);
+            for (GlobalDic globalDic : globalDicList) {
+                // 如果当前Key存在,则直接将元素存储进去
+                if (GLOBAL_DIC.containsKey(globalDic.getType())) {
+                    GLOBAL_DIC.get(globalDic.getType()).add(globalDic);
+                }
+                // 不存在,新建Key
+                else {
+                    List<GlobalDic> globalDices = new ArrayList<>();
+                    globalDices.add(globalDic);
+                    GLOBAL_DIC.put(globalDic.getType(), globalDices);
+                }
             }
-            // 不存在,新建Key
-            else {
-                List<GlobalDic> globalDices = new ArrayList<>();
-                globalDices.add(globalDic);
-                GLOBAL_DIC.put(globalDic.getType(), globalDices);
-            }
+            log.info("【字典缓存】字典缓存初始化完成！总数：{} 条，用时：{} ms", GLOBAL_DIC.size(),
+                Duration.between(startTime, LocalDateTime.now()).toMillis());
+        } catch (Exception e) {
+            log.error("【字典缓存】字典缓存初始化异常！请检查字典表是否存在，或者修改配置文件启用字典配置", e);
         }
-        log.info("【字典缓存】字典缓存初始化完成！总数：{} 条，用时：{} ms", GLOBAL_DIC.size(),
-            Duration.between(startTime, LocalDateTime.now()).toMillis());
+
     }
 
     /**
@@ -128,16 +143,6 @@ public class GlobalDictInitRun implements CommandLineRunner {
      * 更新缓存
      */
     public static void updateSysDic() {
-        initializeDictionary();
-    }
-
-    /**
-     * 系统启动时执行
-     *
-     * @param args 参数
-     */
-    @Override
-    public void run(String... args) {
         initializeDictionary();
     }
 

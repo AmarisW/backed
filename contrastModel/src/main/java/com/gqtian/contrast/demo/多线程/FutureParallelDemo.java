@@ -15,7 +15,7 @@ import jakarta.annotation.Resource;
  * @date 2023/10/20 15:07
  */
 @Service
-public class CompletableFutureParallelDemo {
+public class FutureParallelDemo {
 
     @Resource
     @Qualifier("queryThread")
@@ -35,6 +35,12 @@ public class CompletableFutureParallelDemo {
             System.out.println("thenRunAsync，不可接受传来的值，自己无返回值的串行化---");
         }, threadPool);
 
+        try {
+            System.out.println("thenRunAsync " + voidCompletableFuture1.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // thenAccept(x)
         CompletableFuture<Void> voidCompletableFuture2 = CompletableFuture.supplyAsync(() -> {
             System.out.println("线程号为***" + Thread.currentThread().getId());
@@ -45,6 +51,12 @@ public class CompletableFutureParallelDemo {
             System.out.println("thenAccept可接受传来的值，自己无返回值的串行化---" + r);
         });
 
+        try {
+            System.out.println("thenAccept " + voidCompletableFuture2.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         // thenApply(x)
         CompletableFuture<Integer> voidCompletableFuture3 = CompletableFuture.supplyAsync(() -> {
             System.out.println("线程号为***" + Thread.currentThread().getId());
@@ -53,8 +65,14 @@ public class CompletableFutureParallelDemo {
             return i;
         }, threadPool).thenApplyAsync((r) -> {
             System.out.println("thenApply可接受传来的值，自己有返回值的串行化---");
-            return 10;
+            return 10 + r;
         }, threadPool);
+
+        try {
+            System.out.println("thenApply " + voidCompletableFuture3.get());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
     }
 }

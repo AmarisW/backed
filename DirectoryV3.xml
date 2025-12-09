@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <trees>
-  <tree extension="" icon="ToolwindowsToolWindowRunWithCoverage" path="/annotationModel" presentableText=""
+  <tree extension="" icon="ActionsGroupBy" path="/annotationModel" presentableText=""
       title="模板项目"
       tooltipTitle=""/>
   <tree extension="" icon="ToolwindowsToolWindowModuleDependencies" path="/commonModel" presentableText=""
@@ -9,4 +9,8 @@
   <tree backgroundColor="" extension="" icon="RunConfigurationsShowPassed" path="/contrastModel" presentableText=""
       textColor="" title="基础模块" tooltipTitle=""/>
   <tree icon="RunConfigurationsTestStateRed2" path="/rocketSpringModel"/>
+  <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureBothDemo.java" title="任务组合"/>
+  <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureMainDemo.java" title="测试主程序"/>
+  <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureParallelDemo.java" title="线程串行化"/>
+  <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureSingleDemo.java" title="单任务异步"/>
 </trees>

@@ -4,9 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
 
 import com.gqtian.network.cache.SystemCache;
 import com.gqtian.network.request.entity.RequestHead;
@@ -25,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2025/11/24 14:40
  */
 @Slf4j
+@Component
 public class CommonUtil {
 
     /**
@@ -75,7 +77,7 @@ public class CommonUtil {
      * @param saveFunction 保存函数
      * @param <T>
      */
-    public static <T> void saveBatch(String message, List<T> dataList, Consumer<List<T>> saveFunction) {
+    public static <T> void saveBatch(String message, List<T> dataList, Function<List<T>, Boolean> saveFunction) {
         if (CollectionUtil.isEmpty(dataList)) {
             log.info("数据列表为空，不进行保存");
             return;
@@ -86,22 +88,24 @@ public class CommonUtil {
         int fromIndex = 0;
         int batchNumber = 1;
 
-        log.info("{} 开始批量保存数据，总记录数: {}, 批次大小: {}", message, total, batchSize);
+        log.info("{} 开始批量保存数据，总记录数: {}, 总批次数: {}", message, total, batchSize);
 
         while (fromIndex < total) {
             int toIndex = Math.min(fromIndex + batchSize, total);
             List<T> batch = dataList.subList(fromIndex, toIndex);
-
             try {
-                saveFunction.accept(batch);
-                log.info("{} 第{}批次保存完成，记录数: {}", message, batchNumber, batch.size());
+                Boolean saveResult = saveFunction.apply(batch);
+                if (saveResult) {
+                    log.info("{} 第{}批次保存成功，记录数: {}", message, batchNumber, batch.size());
+                } else {
+                    log.error("{} 第{}批次保存失败，记录数: {}", message, batchNumber, batch.size());
+                }
             } catch (Exception e) {
                 log.error("{} 第{}批次保存失败，记录数: {}, 错误信息: {}", message, batchNumber, batch.size(), e.getMessage());
-                throw e;
+            } finally {
+                fromIndex += batchSize;
+                batchNumber++;
             }
-
-            fromIndex += batchSize;
-            batchNumber++;
         }
 
         log.info("{} 所有数据批量保存完成，总记录数: {}", message, total);

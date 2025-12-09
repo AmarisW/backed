@@ -4,7 +4,7 @@ yml:
     #---------------普通用法---------------#
     ## 普通属性
     normalBoolean: true
-    normalString: "string"
+    normalString: "字符串"
     normalNumber: 1
     #---------------数组集合---------------#
     myListOrArray:
@@ -88,7 +88,7 @@ file-storage: # minio | aliYunOss | huaweiObs | ftp | local
   local:
     platform: local                                                   # 本地
     enable: true                                                      # 是否启用对象存储服务
-    base-path: G:\桌面\                                                # 基础路
+    base-path: D:\Desktop\临时项目                                      # 基础路
   aliYunOss:
     platform: aliYunOss                                               # 阿里云
     enable: true                                                      # 是否启用对象存储服务

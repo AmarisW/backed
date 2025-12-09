@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.gqtian.common.globalProcess.GlobalException;
+import com.gqtian.contrast.demo.ffmpeg.FfmpegService;
 import com.gqtian.fileStorage.domain.FileStorageInfo;
 import com.gqtian.fileStorage.domain.UploadParam;
 import com.gqtian.fileStorage.service.FileStorageService;
@@ -36,6 +37,7 @@ import lombok.extern.slf4j.Slf4j;
 public class FileController {
 
     private final FileStorageService fileStorageService;
+    private final FfmpegService ffmpegService;
 
     /**
     * 读取相对路径下面的文件信息
@@ -68,7 +70,7 @@ public class FileController {
     * @param uploadParam 上传参数
     * @return 上传结果
     */
-    @RequestMapping("/UploadParam")
+    @RequestMapping("/uploadParam")
     public boolean UploadParam(@ModelAttribute UploadParam uploadParam) {
         FileStorageInfo fileInfo = FileStorageInfo.builder().content(uploadParam.getFile())
             .filename(uploadParam.getFile().getOriginalFilename())
@@ -137,6 +139,20 @@ public class FileController {
         } catch (Exception e) {
             log.error("文件预览失败：{}", e.getMessage(), e);
             throw new GlobalException("文件预览失败!");
+        }
+    }
+
+    /**
+     * 抓拍视频帧数做封面
+     */
+    @RequestMapping("/capture")
+    public String capture() {
+        try {
+            ffmpegService.startCapture("https://yzzy.play-cdn19.com/20231110/7920_14890de3/index.m3u8");
+            return "视频帧数抓取成功";
+        } catch (Exception e) {
+            log.error("视频帧数抓取失败：{}", e.getMessage(), e);
+            throw new GlobalException("视频帧数抓取失败!");
         }
     }
 

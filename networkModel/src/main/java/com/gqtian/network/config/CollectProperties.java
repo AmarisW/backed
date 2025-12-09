@@ -13,13 +13,13 @@ import lombok.Data;
  */
 @Data
 @Component
-@ConfigurationProperties(prefix = "platform")
-public class PlatformProperties {
+@ConfigurationProperties(prefix = "collect")
+public class CollectProperties {
 
     /**
      * 请求地址前缀
      */
-    private String requestUrlPrefix;
+    private String urlPrefix;
 
     /**
      * 用户信息（个体）

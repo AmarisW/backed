@@ -21,7 +21,7 @@ import cn.hutool.core.date.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class CompletableFutureDemo {
+public class FutureMainDemo {
 
     /**
      * CPU核数
@@ -43,8 +43,8 @@ public class CompletableFutureDemo {
         // demo3();
         // demo4();
 
-        // resultGet
         resultGet();
+
         log.info("✅ demo end.....costTime = {}", (System.currentTimeMillis() - startTime));
 
     }
@@ -330,6 +330,31 @@ public class CompletableFutureDemo {
     public static <T> CompletableFuture<List<T>> sequence(Stream<CompletableFuture<T>> futures) {
         List<CompletableFuture<T>> futureList = futures.filter(Objects::nonNull).collect(Collectors.toList());
         return sequence(futureList);
+    }
+
+    public static void 多任务超时测试() {
+        List<CompletableFuture<Void>> futureList = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            int finalI = i;
+            CompletableFuture.runAsync(() -> {
+                任务超时方法(finalI);
+            }).orTimeout(3, TimeUnit.SECONDS);
+        }
+    }
+
+    public static void 任务超时方法(int i) {
+        try {
+            // 如果 能被 2 整除 则休眠5秒
+            if (i % 2 == 0) {
+                Thread.sleep(5000);
+            } else {
+                // 如果不能被 2 整除 则休眠1秒
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            // 继续向上抛出
+            throw new RuntimeException(e);
+        }
     }
 
 }
