@@ -28,6 +28,13 @@ public class FutureMainDemo {
      */
     private static final int AVAILABLE_PROCESSORS = Runtime.getRuntime().availableProcessors();
 
+    /**
+     * 自定义线程池
+     * 核心线程数：CPU核心数
+     * 最大线程数：CPU核心数的3倍
+     * 空闲线程存活时间：3秒
+     * 工作队列：容量为20的有界队列
+     */
     private static final ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(AVAILABLE_PROCESSORS, // 核心线程数
         3 * AVAILABLE_PROCESSORS, // 最大线程数
         3, TimeUnit.SECONDS, // keepAliveTime
@@ -49,6 +56,10 @@ public class FutureMainDemo {
 
     }
 
+    /**
+     * 基础示例：顺序执行多个任务并将结果存储到共享Map中
+     * 任务之间没有并发执行，性能较低
+     */
     private static void demo() {
         // 用于整体接收各个任务的返回值
         Map<String, Object> dataMap = new ConcurrentHashMap<>();
@@ -60,6 +71,7 @@ public class FutureMainDemo {
 
     /**
      * 基于allOf，并行处理多个任务，等待所有任务执行完毕后返回
+     * 适用于需要并行执行多个独立任务并在全部完成后进行后续处理的场景
      */
     public static void demo3() {
         // 用于整体接收各个任务的返回值
@@ -70,6 +82,7 @@ public class FutureMainDemo {
         futureList.add(doSomethingB("B", dataMap));
         futureList.add(doSomethingC("C", dataMap));
 
+        // 使用allOf等待所有任务完成
         CompletableFuture<Void> result = CompletableFuture.allOf(futureList.toArray(new CompletableFuture[0]));
 
         try {
@@ -85,6 +98,7 @@ public class FutureMainDemo {
 
     /**
      * 基于thenCompose，第一个任务执行完后，第二个任务使用第一个任务的返回作为参数
+     * 适用于需要串行执行有依赖关系的任务的场景
      */
     public static void demo1() throws Exception {
         Map<String, Object> dataMap = new ConcurrentHashMap<>();
@@ -99,6 +113,7 @@ public class FutureMainDemo {
 
     /**
      * 基于thenCombine，当两个任务都完成后，使用两者的结果作为参数再执行一个异步任务
+     * 适用于需要并行执行两个任务并在都完成后合并结果的场景
      */
     public static void demo2() throws Exception {
         Map<String, Object> dataMap = new ConcurrentHashMap<>();
@@ -114,7 +129,9 @@ public class FutureMainDemo {
     /**
      * 使用CompletionService批量异步处理
      *
-     * CompletionService 能够让异步任务的执行结果有序化，先执行完的先进入阻塞队列， 利用这个特性，你可以轻松实现后续处理的有序性，避免无谓的等待
+     * CompletionService 能够让异步任务的执行结果有序化，先执行完的先进入阻塞队列， 
+     * 利用这个特性，你可以轻松实现后续处理的有序性，避免无谓的等待
+     * 适用于需要按任务完成顺序处理结果的场景
      */
     public static void demo4() {
         Map<String, Object> dataMap = new ConcurrentHashMap<>();
@@ -127,7 +144,7 @@ public class FutureMainDemo {
         for (int i = 0; i < 3; i++) {
             Map resultMap = null;
             try {
-                // 依次从队列中取任务执行结果
+                // 依次从队列中取任务执行结果，按照完成顺序获取
                 resultMap = cs.take().get();
             } catch (Exception e) {
                 log.error("❌ Exception occurred: ", e);
@@ -224,6 +241,10 @@ public class FutureMainDemo {
 
     // ===========================================================================================//
 
+    /**
+     * 批量任务执行与结果收集示例
+     * 演示如何并行执行多个任务并收集成功和失败的结果
+     */
     public static void resultGet() {
         long start = System.currentTimeMillis();
         // 结果集
@@ -287,6 +308,13 @@ public class FutureMainDemo {
         log.warn("⚠️ 任务完成先后顺序，结果list=【{}】；任务提交顺序,耗时=【{}】", list, (System.currentTimeMillis() - start));
     }
 
+    /**
+     * 模拟耗时计算任务
+     * 不同输入会有不同的处理时间和可能的异常
+     * 
+     * @param i 输入参数
+     * @return 计算结果(i*10)
+     */
     public static Integer calc(Integer i) {
         try {
             if (i == 1) {
@@ -332,6 +360,10 @@ public class FutureMainDemo {
         return sequence(futureList);
     }
 
+    /**
+     * 多任务超时测试示例
+     * 演示如何为多个异步任务设置超时时间
+     */
     public static void 多任务超时测试() {
         List<CompletableFuture<Void>> futureList = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
@@ -342,6 +374,12 @@ public class FutureMainDemo {
         }
     }
 
+    /**
+     * 模拟可能超时的任务执行方法
+     * 偶数索引任务耗时5秒，奇数索引任务耗时1秒
+     * 
+     * @param i 任务索引
+     */
     public static void 任务超时方法(int i) {
         try {
             // 如果 能被 2 整除 则休眠5秒

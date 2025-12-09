@@ -10,7 +10,7 @@ import java.util.concurrent.Future;
  * @author gqtian
  * @date 2023/08/25 16:38
  */
-public class 线程池异常例子 {
+public class 线程池异常 {
     public static void main(String[] args) {
         ExecutorService executor = Executors.newFixedThreadPool(5);
         for (int i = 0; i < 5; i++) {

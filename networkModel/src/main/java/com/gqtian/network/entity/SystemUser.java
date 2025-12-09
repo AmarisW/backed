@@ -15,15 +15,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserInfo {
+public class SystemUser {
 
     /**
      * 名称
      */
-    private String name;
+    private String username;
 
     /**
-     * 年龄
+     * 昵称
      */
-    private Integer age;
+    private String nickname;
+
+    /**
+     * 密码
+     */
+    private String password;
 }

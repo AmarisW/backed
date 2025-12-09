@@ -9,7 +9,7 @@ import lombok.Data;
  * @date 2025/7/24 17:23
  **/
 @Data
-public class GlobalDic {
+public class GlobalDict {
 
     /**
      * 编码

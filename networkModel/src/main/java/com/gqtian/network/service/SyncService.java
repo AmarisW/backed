@@ -9,7 +9,7 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.TypeReference;
 import com.gqtian.network.cache.SystemCache;
 import com.gqtian.network.config.CollectProperties;
-import com.gqtian.network.entity.UserInfo;
+import com.gqtian.network.entity.SystemUser;
 import com.gqtian.network.request.SyncRequest;
 import com.gqtian.network.request.entity.RequestHead;
 import com.gqtian.network.request.entity.RequestParam;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SyncService {
 
     private final CollectProperties collectProperties;
-    private final UserInfoRepository userInfoRepository;
+    private final SystemUserService systemUserService;
 
     /**
      * 查询用户信息（个体）
@@ -47,16 +47,16 @@ public class SyncService {
         RequestHead headers = RequestHead.builder().authorization(SystemCache.AUTHORIZATION).build();
 
         // 发起请求
-        ResponseResult<UserInfo> result =
-            new SyncRequest<UserInfo>(requestUrl, requestParam, JSON.toJSONString(headers), new TypeReference<>() {})
+        ResponseResult<SystemUser> result =
+            new SyncRequest<SystemUser>(requestUrl, requestParam, JSON.toJSONString(headers), new TypeReference<>() {})
                 .get();
 
-        UserInfo userInfo = result.getData();
-        log.info(" 开始查询用户信息（个体），结果: {}", JSON.toJSON(userInfo));
+        SystemUser systemUser = result.getData();
+        log.info(" 开始查询用户信息（个体），结果: {}", JSON.toJSON(systemUser));
 
         // 开始保存
-        CommonUtil.saveBatch("保存用户信息", Collections.singletonList(userInfo),
-            (dataList) -> userInfoRepository.saveBatch(dataList, 500));
+        CommonUtil.saveBatch("保存用户信息", Collections.singletonList(systemUser),
+            (dataList) -> systemUserService.saveBatch(dataList, 500));
 
     }
 
@@ -74,14 +74,14 @@ public class SyncService {
         RequestHead headers = RequestHead.builder().authorization(SystemCache.AUTHORIZATION).build();
 
         // 发起分页请求
-        List<UserInfo> userInfos = CommonUtil.fetchDataWithPage(requestParam,
-            (param, requestHead) -> new SyncRequest<List<UserInfo>>(requestUrl, param, JSON.toJSONString(headers),
+        List<SystemUser> systemUsers = CommonUtil.fetchDataWithPage(requestParam,
+            (param, requestHead) -> new SyncRequest<List<SystemUser>>(requestUrl, param, JSON.toJSONString(headers),
                 new TypeReference<>() {}).get());
 
-        log.info(" 查询查询用户信息（分页）结束，结果总数: {}", userInfos.size());
+        log.info(" 查询查询用户信息（分页）结束，结果总数: {}", systemUsers.size());
 
         // 批量保存
-        CommonUtil.saveBatch("保存用户信息", userInfos, (dataList) -> userInfoRepository.saveBatch(dataList, 500));
+        CommonUtil.saveBatch("保存用户信息", systemUsers, (dataList) -> systemUserService.saveBatch(dataList, 500));
 
     }
 

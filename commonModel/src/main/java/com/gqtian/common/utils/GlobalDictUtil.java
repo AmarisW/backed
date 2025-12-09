@@ -12,9 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.gqtian.common.annotation.GlobalDict;
 import com.gqtian.common.cache.GlobalCache;
-import com.gqtian.common.model.GlobalDic;
+import com.gqtian.common.model.GlobalDict;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -118,8 +117,9 @@ public class GlobalDictUtil {
      */
     private static <T> void handleField(T t, Field field, Class<?> aClass)
         throws IllegalAccessException, NoSuchFieldException {
-        if (field.isAnnotationPresent(GlobalDict.class)) {
-            GlobalDict translateDic = field.getAnnotation(GlobalDict.class);
+        if (field.isAnnotationPresent(com.gqtian.common.annotation.GlobalDict.class)) {
+            com.gqtian.common.annotation.GlobalDict translateDic =
+                field.getAnnotation(com.gqtian.common.annotation.GlobalDict.class);
             field.setAccessible(true);
             Object object = field.get(t);
 
@@ -163,7 +163,7 @@ public class GlobalDictUtil {
      * @return 字典对象
      */
     private static String getDicString(String type, String code) {
-        List<GlobalDic> sysDicList = listDictionary(type);
+        List<GlobalDict> sysDicList = listDictionary(type);
 
         if (sysDicList.isEmpty()) {
             return StringUtils.EMPTY;
@@ -171,7 +171,7 @@ public class GlobalDictUtil {
 
         // 构建字典Map提高查询效率
         Map<String, String> dictMap = sysDicList.stream()
-            .collect(Collectors.toMap(GlobalDic::getCode, GlobalDic::getValue, (existing, replacement) -> existing));
+            .collect(Collectors.toMap(GlobalDict::getCode, GlobalDict::getValue, (existing, replacement) -> existing));
 
         // 安全分割字符串
         List<String> split = new ArrayList<>();
@@ -197,8 +197,8 @@ public class GlobalDictUtil {
      * @param type 字典类型
      * @return List<SysDic>
      */
-    public static List<GlobalDic> listDictionary(String type) {
-        List<GlobalDic> list = GlobalCache.GLOBAL_DIC.get(type);
+    public static List<GlobalDict> listDictionary(String type) {
+        List<GlobalDict> list = GlobalCache.GLOBAL_DICT.get(type);
         return list == null ? Collections.emptyList() : new ArrayList<>(list);
     }
 

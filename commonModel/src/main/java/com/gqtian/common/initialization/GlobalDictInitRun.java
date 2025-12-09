@@ -1,6 +1,6 @@
 package com.gqtian.common.initialization;
 
-import static com.gqtian.common.cache.GlobalCache.GLOBAL_DIC;
+import static com.gqtian.common.cache.GlobalCache.GLOBAL_DICT;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -16,7 +16,7 @@ import org.springframework.util.CollectionUtils;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.gqtian.common.mapper.GlobalDicMapper;
-import com.gqtian.common.model.GlobalDic;
+import com.gqtian.common.model.GlobalDict;
 import com.gqtian.common.utils.SpringApplicationUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -57,27 +57,27 @@ public class GlobalDictInitRun implements CommandLineRunner {
             log.info("【字典缓存】字典缓存开始初始化！");
             LocalDateTime startTime = LocalDateTime.now();
             // 清空字典缓存
-            GLOBAL_DIC.clear();
+            GLOBAL_DICT.clear();
             // 获取字典SysDicDao实例
             GlobalDicMapper sysDicMapper = SpringApplicationUtil.getBean(GlobalDicMapper.class);
-            LambdaQueryWrapper<GlobalDic> queryWrapper = new LambdaQueryWrapper<>();
-            queryWrapper.select(GlobalDic::getCode, GlobalDic::getValue, GlobalDic::getType);
+            LambdaQueryWrapper<GlobalDict> queryWrapper = new LambdaQueryWrapper<>();
+            queryWrapper.select(GlobalDict::getCode, GlobalDict::getValue, GlobalDict::getType);
 
-            List<GlobalDic> globalDicList = sysDicMapper.selectList(queryWrapper);
+            List<GlobalDict> globalDictList = sysDicMapper.selectList(queryWrapper);
 
-            for (GlobalDic globalDic : globalDicList) {
+            for (GlobalDict globalDict : globalDictList) {
                 // 如果当前Key存在,则直接将元素存储进去
-                if (GLOBAL_DIC.containsKey(globalDic.getType())) {
-                    GLOBAL_DIC.get(globalDic.getType()).add(globalDic);
+                if (GLOBAL_DICT.containsKey(globalDict.getType())) {
+                    GLOBAL_DICT.get(globalDict.getType()).add(globalDict);
                 }
                 // 不存在,新建Key
                 else {
-                    List<GlobalDic> globalDices = new ArrayList<>();
-                    globalDices.add(globalDic);
-                    GLOBAL_DIC.put(globalDic.getType(), globalDices);
+                    List<GlobalDict> globalDices = new ArrayList<>();
+                    globalDices.add(globalDict);
+                    GLOBAL_DICT.put(globalDict.getType(), globalDices);
                 }
             }
-            log.info("【字典缓存】字典缓存初始化完成！总数：{} 条，用时：{} ms", GLOBAL_DIC.size(),
+            log.info("【字典缓存】字典缓存初始化完成！总数：{} 条，用时：{} ms", GLOBAL_DICT.size(),
                 Duration.between(startTime, LocalDateTime.now()).toMillis());
         } catch (Exception e) {
             log.error("【字典缓存】字典缓存初始化异常！请检查字典表是否存在，或者修改配置文件启用字典配置", e);
@@ -92,12 +92,12 @@ public class GlobalDictInitRun implements CommandLineRunner {
      * @param code 编码
      * @return 字典对象
      */
-    public static GlobalDic getSysDic(String type, String code) {
-        List<GlobalDic> globalDicList = listDictionary(type);
-        if (!CollectionUtils.isEmpty(globalDicList)) {
-            for (GlobalDic globalDic : globalDicList) {
-                if (globalDic.getCode().equals(code)) {
-                    return globalDic;
+    public static GlobalDict getSysDic(String type, String code) {
+        List<GlobalDict> globalDictList = listDictionary(type);
+        if (!CollectionUtils.isEmpty(globalDictList)) {
+            for (GlobalDict globalDict : globalDictList) {
+                if (globalDict.getCode().equals(code)) {
+                    return globalDict;
                 }
             }
         }
@@ -112,14 +112,14 @@ public class GlobalDictInitRun implements CommandLineRunner {
      * @return 字典对象
      */
     public static String getDicString(String type, String code) {
-        List<GlobalDic> globalDicList = listDictionary(type);
+        List<GlobalDict> globalDictList = listDictionary(type);
         // 字符串转List<String>
         List<String> split = Arrays.asList(code.split(","));
         // 结果集合
         List<String> valueName = new ArrayList<>();
 
-        if (!CollectionUtils.isEmpty(globalDicList)) {
-            split.forEach(a -> globalDicList.forEach(b -> {
+        if (!CollectionUtils.isEmpty(globalDictList)) {
+            split.forEach(a -> globalDictList.forEach(b -> {
                 if (b.getCode().equals(a)) {
                     valueName.add(b.getValue());
                 }
@@ -135,8 +135,8 @@ public class GlobalDictInitRun implements CommandLineRunner {
      * @param type 字典类型
      * @return List<SysDic>
      */
-    public static List<GlobalDic> listDictionary(String type) {
-        return GLOBAL_DIC.get(type);
+    public static List<GlobalDict> listDictionary(String type) {
+        return GLOBAL_DICT.get(type);
     }
 
     /**

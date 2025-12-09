@@ -13,4 +13,6 @@
   <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureMainDemo.java" title="测试主程序"/>
   <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureParallelDemo.java" title="线程串行化"/>
   <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureSingleDemo.java" title="单任务异步"/>
+  <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureTimeoutDemo.java" title="任务超时"
+      extension="" presentableText="" tooltipTitle="" icon="" textColor="" backgroundColor=""/>
 </trees>

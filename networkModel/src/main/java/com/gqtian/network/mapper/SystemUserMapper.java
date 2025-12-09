@@ -1,7 +1,7 @@
 package com.gqtian.network.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.gqtian.network.entity.UserInfo;
+import com.gqtian.network.entity.SystemUser;
 
 /**
  * 😑 UserInfoMapper
@@ -9,6 +9,6 @@ import com.gqtian.network.entity.UserInfo;
  * @author gqtian
  * @date 2025/12/8 17:35
  */
-public interface UserInfoMapper extends BaseMapper<UserInfo> {
+public interface SystemUserMapper extends BaseMapper<SystemUser> {
 
 }
