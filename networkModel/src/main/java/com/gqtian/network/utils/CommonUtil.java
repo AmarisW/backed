@@ -43,7 +43,7 @@ public class CommonUtil {
         // 初始化 页码
         int pageNo = 1;
         // 每页数量
-        final int pageSize = 100;
+        final int pageSize = 5;
         boolean hasMoreData = true;
 
         while (hasMoreData) {

@@ -32,7 +32,7 @@ public class SystemUserService
      */
     public SystemUser queryUserInfoObject() {
         LambdaQueryWrapper<SystemUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        return this.getOne(lambdaQueryWrapper);
+        return this.list(lambdaQueryWrapper).stream().findFirst().orElse(null);
     }
 
     /**

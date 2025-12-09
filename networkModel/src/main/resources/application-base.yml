@@ -3,7 +3,7 @@ spring:
   datasource:
     #----------------------- Mysql -----------------------#
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
     username: root
     password: REDACTED
     type: com.alibaba.druid.pool.DruidDataSource

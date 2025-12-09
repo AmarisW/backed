@@ -20,7 +20,7 @@ import com.gqtian.common.web.GlobalExposedController;
 @Import({GlobalResponseBodyAdvice.class, // 全局数据返回处理
     GlobalExceptionAdvice.class, // 全局异常处理
     GlobalApiInfoScanner.class, // 扫描接口文档
-    GlobalMyBatisConfiguration.class, // 配置MyBatis
+    GlobalMyBatisPlusConfiguration.class, // 配置MyBatis
     GlobalExposedController.class, // 全局开放Api列表
     SpringApplicationUtil.class, // SpringApplicationUtil
     GlobalDictInitRun.class // 初始化字典

@@ -23,13 +23,13 @@ public class RequestParam {
     /**
      * 页码
      */
-    @JSONField(name = "PageNo")
+    @JSONField(name = "current")
     private int pageNo;
 
     /**
      * 每页数量
      */
-    @JSONField(name = "PageSize")
+    @JSONField(name = "size")
     private int pageSize;
 
 }
