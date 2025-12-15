@@ -211,7 +211,7 @@ public class GlobalBeautifyStart {
                 appendApiInfo(output, api, prefix, i == apis.length - 1);
             }
         } else {
-            output.append(TREE_LAST_NODE).append(COLOR_YELLOW).append("No APIs exposed").append(COLOR_RESET)
+            output.append(TREE_LAST_NODE).append(COLOR_YELLOW).append("No APIs Exposed").append(COLOR_RESET)
                 .append("\n");
         }
         output.append("\n");

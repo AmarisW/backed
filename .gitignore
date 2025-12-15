@@ -1,5 +1,5 @@
 /logs/
 
 /**/target/
-/adventLogs/info.log
-/adventLogs/info.log.2025-10-23.0.gz
+/adventLogs/*
+

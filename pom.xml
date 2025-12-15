@@ -33,12 +33,13 @@
     <module>rocketSpringModel</module>
     <module>hbaseModel</module>
     <module>networkModel</module>
+    <module>redisModel</module>
   </modules>
 
 
   <!-- 版本控制 -->
   <properties>
-    
+
     <!-- 全局项目版本控制 Start -->
     <revision>1.0.0</revision>
     <!-- 全局项目版本控制 End -->
@@ -57,15 +58,17 @@
     <mybatis-plus-jsqlparser.version>3.5.9</mybatis-plus-jsqlparser.version>
     <mysql.version>8.2.0</mysql.version>
     <netty.version>4.1.94.Final</netty.version>
-    <obs.aliyun.version>3.15.1</obs.aliyun.version>
-    <obs.hw.version>3.22.12</obs.hw.version>
-    <obs.minio.version>8.2.1</obs.minio.version>
-    <ali.hbase.version>1.8.7</ali.hbase.version>
-    <rocketmq.client.version>4.9.2</rocketmq.client.version>
-    <rocketmq.spring.version>2.3.3</rocketmq.spring.version>
+    <obs-aliyun.version>3.15.1</obs-aliyun.version>
+    <obs-hw.version>3.22.12</obs-hw.version>
+    <obs-minio.version>8.2.1</obs-minio.version>
+    <ali-hbase.version>1.8.7</ali-hbase.version>
+    <rocketmq-client.version>4.9.2</rocketmq-client.version>
+    <rocketmq-spring.version>2.3.3</rocketmq-spring.version>
     <javacv.version>1.5.9</javacv.version>
     <ffmpeg-win.version>6.0-1.5.9</ffmpeg-win.version>
     <ffmpeg-linux.version>6.0-1.5.9</ffmpeg-linux.version>
+    <spring-data-redis.version>4.0.0</spring-data-redis.version>
+    <jackson-datatype-jsr310.version>2.13.0</jackson-datatype-jsr310.version>
   </properties>
 
   <!-- 项目依赖统一管理 -->
@@ -121,27 +124,41 @@
       </dependency>
 
 
+      <!--============================ Redis依赖 ============================-->
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-redis</artifactId>
+        <version>${spring-data-redis.version}</version>
+      </dependency>
+
+      <!-- 解决在实体类使用java.time包下的LocalDateTime、LocalDate等类时序列化/反序列化报错的问题 -->
+      <dependency>
+        <groupId>com.fasterxml.jackson.datatype</groupId>
+        <artifactId>jackson-datatype-jsr310</artifactId>
+        <version>${jackson-datatype-jsr310.version}</version>
+      </dependency>
+
       <!--============================ 存储 ============================-->
 
       <!--华为Obs云储存-->
       <dependency>
         <artifactId>esdk-obs-java</artifactId>
         <groupId>com.huaweicloud</groupId>
-        <version>${obs.hw.version}</version>
+        <version>${obs-hw.version}</version>
       </dependency>
 
       <!-- Minio -->
       <dependency>
         <artifactId>minio</artifactId>
         <groupId>io.minio</groupId>
-        <version>${obs.minio.version}</version>
+        <version>${obs-minio.version}</version>
       </dependency>
 
       <!-- Aliyun Oss -->
       <dependency>
         <artifactId>aliyun-sdk-oss</artifactId>
         <groupId>com.aliyun.oss</groupId>
-        <version>${obs.aliyun.version}</version>
+        <version>${obs-aliyun.version}</version>
       </dependency>
 
       <!-- SFTP -->
@@ -164,13 +181,13 @@
       <dependency>
         <artifactId>rocketmq-client</artifactId>
         <groupId>org.apache.rocketmq</groupId>
-        <version>${rocketmq.client.version}</version>
+        <version>${rocketmq-client.version}</version>
       </dependency>
 
       <dependency>
         <artifactId>rocketmq-spring-boot-starter</artifactId>
         <groupId>org.apache.rocketmq</groupId>
-        <version>${rocketmq.spring.version}</version>
+        <version>${rocketmq-spring.version}</version>
       </dependency>
 
 
@@ -235,7 +252,7 @@
       <dependency>
         <artifactId>alihbase-client</artifactId>
         <groupId>com.aliyun.hbase</groupId>
-        <version>${ali.hbase.version}</version>
+        <version>${ali-hbase.version}</version>
       </dependency>
 
       <!-- 视频抽帧功能实现 -->
