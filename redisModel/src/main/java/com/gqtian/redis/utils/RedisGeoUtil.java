@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Redis Geo工具类
- * 
+ * <p> 
  * 提供基于Redis的地理位置相关操作，包括：
  * 1. 添加地理位置信息
  * 2. 计算两个位置之间的距离

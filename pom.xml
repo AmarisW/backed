@@ -67,7 +67,9 @@
     <javacv.version>1.5.9</javacv.version>
     <ffmpeg-win.version>6.0-1.5.9</ffmpeg-win.version>
     <ffmpeg-linux.version>6.0-1.5.9</ffmpeg-linux.version>
-    <spring-data-redis.version>4.0.0</spring-data-redis.version>
+    <spring-data-redis.version>3.5.8</spring-data-redis.version>
+    <spring-data-redisson.version>3.52.0</spring-data-redisson.version>
+    <redisson.version>3.52.0</redisson.version>
     <jackson-datatype-jsr310.version>2.13.0</jackson-datatype-jsr310.version>
   </properties>
 
@@ -130,6 +132,19 @@
         <artifactId>spring-boot-starter-data-redis</artifactId>
         <version>${spring-data-redis.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>org.redisson</groupId>
+        <artifactId>redisson-spring-boot-starter</artifactId>
+        <version>${spring-data-redisson.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.redisson</groupId>
+        <artifactId>redisson</artifactId>
+        <version>${redisson.version}</version>
+      </dependency>
+
 
       <!-- 解决在实体类使用java.time包下的LocalDateTime、LocalDate等类时序列化/反序列化报错的问题 -->
       <dependency>

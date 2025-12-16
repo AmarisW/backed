@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Data
 @Slf4j
 @Component
-public class CacheData {
+public class SystemDataCache {
 
     public static LongAdder flowCountStatic = new LongAdder();
 

@@ -6,8 +6,8 @@
   <tree extension="" icon="ObjectBrowserShowMembers" path="/commonModel" presentableText=""
       title="公用模块"
       tooltipTitle=""/>
-  <tree backgroundColor="" extension="" icon="RunConfigurationsShowPassed" path="/contrastModel" presentableText=""
-      textColor="" title="基础模块" tooltipTitle=""/>
+  <tree extension="" icon="ToolwindowsDependencies" path="/contrastModel" presentableText=""
+      title="基础模块" tooltipTitle=""/>
   <tree icon="RunConfigurationsTestStateRed2" path="/rocketSpringModel"/>
   <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureBothDemo.java" title="任务组合"/>
   <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureMainDemo.java" title="测试主程序"/>

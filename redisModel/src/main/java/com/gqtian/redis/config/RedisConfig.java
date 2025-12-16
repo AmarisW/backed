@@ -1,23 +1,5 @@
 package com.gqtian.redis.config;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.data.redis.core.HashOperations;
-import org.springframework.data.redis.core.ListOperations;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.SetOperations;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.core.ZSetOperations;
-import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
-import org.springframework.data.redis.serializer.RedisSerializer;
-import org.springframework.data.redis.serializer.StringRedisSerializer;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
@@ -33,8 +15,22 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import com.gqtian.common.constant.GlobalConstant.DATE_FORMAT_TYPE;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
  * Redis配置类
@@ -50,181 +46,155 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 public class RedisConfig {
-    
+
+
     /**
-     * 配置RedisTemplate模板
-     * 
-     * RedisTemplate是Spring Data Redis提供的用于操作Redis的模板类，
-     * 它封装了对Redis的各种操作，包括对不同数据类型的增删改查。
-     * 
-     * 序列化配置说明：
-     * - key使用StringRedisSerializer序列化，保证key为可读的字符串格式
-     * - value使用Jackson2JsonRedisSerializer序列化，将Java对象转换为JSON格式存储
-     * - hash的key和value都使用StringRedisSerializer序列化
-     * 
-     * @param factory Redis连接工厂，由Spring Boot自动配置提供
-     * @return 配置好的RedisTemplate实例
+     * 创建RedisTemplate实例
+     *
+     * @param redisConnectionFactory Redis连接工厂
+     * @return RedisTemplate实例
      */
     @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory factory) {
-
+    public RedisTemplate<String, Object> redisTemplate(
+        RedisConnectionFactory redisConnectionFactory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
-        // 配置连接工厂
-        template.setConnectionFactory(factory);
-        
-        // 配置ObjectMapper用于JSON序列化
-        ObjectMapper objectMapper = new ObjectMapper();
-        
-        // 使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值
-        Jackson2JsonRedisSerializer<Object> jacksonSerial =
-            new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
+        template.setConnectionFactory(redisConnectionFactory);
 
-        // 指定要序列化的域，field,get和set,以及修饰符范围，ANY是都有包括private和public
+        // 创建ObjectMapper用于序列化/反序列化Java对象
+        ObjectMapper objectMapper = new ObjectMapper();
+        // 设置所有属性可见，允许访问所有字段（包括private）
         objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        
-        // null值字段不显示，减少存储空间占用
-        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        
-        // 美化JSON输出，便于调试时查看
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
-        
-        // 指定序列化输入的类型，类必须是非final修饰的，final修饰的类会抛出异常
-        // 使用WRAPPER_ARRAY方式包装类型信息，避免类型丢失
-        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, 
+
+        // 启用默认的类型信息：将对象类型信息包含在JSON中，便于反序列化时恢复原始对象类型
+        // LaissezFaireSubTypeValidator.instance - 允许任何子类型（较为宽松的验证策略）
+        // NON_FINAL - 只为非final类的属性添加类型信息
+        // WRAPPER_ARRAY - 以数组包装形式存储类型信息，格式为: ["class.path", {...data...}]
+        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
             ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.WRAPPER_ARRAY);
 
-        // 设置value的序列化规则为JSON序列化
-        template.setValueSerializer(jacksonSerial);
-        
-        // 设置key的序列化规则为字符串序列化
-        template.setKeySerializer(new StringRedisSerializer());
-        
-        // 设置hash key和value的序列化规则
-        template.setHashKeySerializer(new StringRedisSerializer());
-        template.setHashValueSerializer(new StringRedisSerializer());
-        
-        // 初始化template配置
-        template.afterPropertiesSet();
-
-        return template;
-    }
-
-    /**
-     * 配置Redis专用的序列化器
-     * 
-     * 该序列化器主要用于处理Java 8的时间类型（LocalDateTime、LocalDate、LocalTime），
-     * 保证这些时间类型在Redis中能够正确地序列化和反序列化。
-     * 
-     * @return RedisSerializer实例，用于处理Object类型数据的序列化
-     */
-    @Bean
-    public RedisSerializer<Object> redisSerializer() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        
-        // 必须设置，否则无法将JSON转化为对象，会转化成Map类型
-        objectMapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance, 
-            ObjectMapper.DefaultTyping.NON_FINAL);
-
-        // 自定义ObjectMapper的时间处理模块，支持Java 8的时间类型
+        // 注册JavaTimeModule以支持Java 8时间类型（LocalDateTime、LocalDate、LocalTime）的序列化/反序列化
         JavaTimeModule javaTimeModule = new JavaTimeModule();
 
-        // 配置LocalDateTime的序列化和反序列化规则
+        // 配置LocalDateTime的序列化器和反序列化器，使用全局时间格式常量
         javaTimeModule.addSerializer(LocalDateTime.class,
             new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_FORMAT_TYPE.DATE_TIME)));
         javaTimeModule.addDeserializer(LocalDateTime.class,
             new LocalDateTimeDeserializer(DateTimeFormatter.ofPattern(DATE_FORMAT_TYPE.DATE_TIME)));
 
-        // 配置LocalDate的序列化和反序列化规则
+        // 配置LocalDate的序列化器和反序列化器
         javaTimeModule.addSerializer(LocalDate.class,
             new LocalDateSerializer(DateTimeFormatter.ofPattern(DATE_FORMAT_TYPE.DATE)));
         javaTimeModule.addDeserializer(LocalDate.class,
             new LocalDateDeserializer(DateTimeFormatter.ofPattern(DATE_FORMAT_TYPE.DATE)));
 
-        // 配置LocalTime的序列化和反序列化规则
+        // 配置LocalTime的序列化器和反序列化器
         javaTimeModule.addSerializer(LocalTime.class,
             new LocalTimeSerializer(DateTimeFormatter.ofPattern(DATE_FORMAT_TYPE.TIME)));
         javaTimeModule.addDeserializer(LocalTime.class,
             new LocalTimeDeserializer(DateTimeFormatter.ofPattern(DATE_FORMAT_TYPE.TIME)));
-            
-        // 注册时间处理模块
+
+        // 将时间模块注册到ObjectMapper中
         objectMapper.registerModule(javaTimeModule);
 
-        // 禁用将日期序列化为时间戳的行为，保持可读性
+        // 禁用将日期序列化为时间戳的默认行为，保持日期的可读性格式
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        // 设置序列化时忽略null值字段，减少存储空间占用
+        objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        // 创建Jackson序列化器，使用上述配置的ObjectMapper进行JSON序列化
+        Jackson2JsonRedisSerializer<Object> jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer<>(
+            objectMapper, Object.class);
+        // 创建字符串序列化器，用于Redis键的序列化（保持为字符串格式）
+        StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
 
-        // 创建并返回JSON序列化器
-        return new Jackson2JsonRedisSerializer<>(objectMapper, Object.class);
+        // 配置RedisTemplate的序列化策略
+        // Key使用StringRedisSerializer，保证key为可读的字符串格式
+        template.setKeySerializer(stringRedisSerializer);
+        // Value使用Jackson2JsonRedisSerializer，将Java对象转换为JSON格式存储
+        template.setValueSerializer(jackson2JsonRedisSerializer);
+        // Hash的Key也使用字符串序列化
+        template.setHashKeySerializer(stringRedisSerializer);
+        // Hash的Value使用JSON序列化
+        template.setHashValueSerializer(jackson2JsonRedisSerializer);
+
+        // 初始化RedisTemplate，设置上述配置后必须调用此方法以生效
+        template.afterPropertiesSet();
+        return template;
     }
 
     /**
      * 对hash类型的数据操作
-     * 
-     * Hash是一种键值对集合，类似于一个HashMap，适合存储对象。
+     *
+     * Hash是一种键值对集合，类似于Java中的HashMap，特残适合存储带有多个属性的对象。
+     * 需要注意的是，Hash类型不支持整个对象的序列化，辙只有流式序列化的效果。
      * 每个Hash可以存储2^32-1个键值对。
-     * 
-     * @param redisTemplate RedisTemplate实例
-     * @return HashOperations实例，用于操作Redis中的Hash数据结构
+     *
+     * @param redisTemplate RedisTemplate实例，妹绑已配置好的RedisTemplate
+     * @return HashOperations实例，下游代码可直接注入使用
      */
     @Bean
-    public HashOperations<String, String, Object> hashOperations(RedisTemplate<String, Object> redisTemplate) {
+    public HashOperations<String, String, Object> hashOperations(
+        RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForHash();
     }
 
     /**
      * 对redis字符串类型数据操作
-     * 
+     *
      * String是Redis最基本的数据类型，一个key对应一个value。
      * String类型是二进制安全的，可以包含任何数据。
-     * 
+     *
      * @param redisTemplate RedisTemplate实例
      * @return ValueOperations实例，用于操作Redis中的String数据结构
      */
     @Bean
-    public ValueOperations<String, Object> valueOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ValueOperations<String, Object> valueOperations(
+        RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForValue();
     }
 
     /**
      * 对链表类型的数据操作
-     * 
+     *
      * List是简单的字符串列表，按照插入顺序排序。
      * 可以在头部（左边）和尾部（右边）添加元素。
-     * 
+     *
      * @param redisTemplate RedisTemplate实例
      * @return ListOperations实例，用于操作Redis中的List数据结构
      */
     @Bean
-    public ListOperations<String, Object> listOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ListOperations<String, Object> listOperations(
+        RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForList();
     }
 
     /**
      * 对无序集合类型的数据操作
-     * 
+     *
      * Set是String类型的无序集合，通过哈希表实现，添加、删除、查找的复杂度都是O(1)。
      * 集合内不允许有重复的数据。
-     * 
+     *
      * @param redisTemplate RedisTemplate实例
      * @return SetOperations实例，用于操作Redis中的Set数据结构
      */
     @Bean
-    public SetOperations<String, Object> setOperations(RedisTemplate<String, Object> redisTemplate) {
+    public SetOperations<String, Object> setOperations(
+        RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForSet();
     }
 
     /**
      * 对有序集合类型的数据操作
-     * 
+     *
      * ZSet和Set一样也是String类型元素的集合，且不允许重复的成员。
      * 不同的是每个元素都会关联一个double类型的分数(score)。
      * Redis通过分数来为集合中的成员进行从小到大的排序。
-     * 
+     *
      * @param redisTemplate RedisTemplate实例
      * @return ZSetOperations实例，用于操作Redis中的ZSet数据结构
      */
     @Bean
-    public ZSetOperations<String, Object> zSetOperations(RedisTemplate<String, Object> redisTemplate) {
+    public ZSetOperations<String, Object> zSetOperations(
+        RedisTemplate<String, Object> redisTemplate) {
         return redisTemplate.opsForZSet();
     }
 }
