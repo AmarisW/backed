@@ -1,22 +1,26 @@
 package com.gqtian.redis.service;
 
-import com.gqtian.redis.entity.RedisEntity;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.ListOperations;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ZSetOperations;
+import org.springframework.stereotype.Service;
+
+import com.gqtian.redis.entity.RedisEntity;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.redisson.api.RLock;
-import org.redisson.api.RReadWriteLock;
-import org.redisson.api.RSemaphore;
-import org.redisson.api.RedissonClient;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Service;
 
 /**
  * Redis相关服务
@@ -36,11 +40,7 @@ public class RedisService {
      * Redis模板
      */
     private final RedisTemplate<String, Object> redisTemplate;
-    
-    /**
-     * Redisson客户端
-     */
-    private final RedissonClient redissonClient;
+
 
     /**
      * 基础字符串操作
@@ -87,7 +87,7 @@ public class RedisService {
         RedisEntity user = (RedisEntity) redisTemplate.opsForValue().get("user");
         log.info("取出对象值：{}", user);
 
-        // 6. 批量操作
+        // 6.1 批量操作
         redisTemplate.opsForValue().multiSet(new HashMap<>() {
             {
                 put("user:gender", "男");
@@ -99,194 +99,159 @@ public class RedisService {
             .multiGet(Arrays.asList("user:gender", "user:city"));
         log.info("批量获取结果：{}", multiGet);
 
-        // 7. 获取所有user开头的key对应的value
+        // 7.1 获取所有user开头的key对应的value
         Set<String> userKeys = redisTemplate.keys("user:*");
         List<Object> userValues = redisTemplate.opsForValue().multiGet(userKeys);
         log.info("获取所有user开头的value：{}", userValues);
     }
 
     /**
-     * Redisson分布式锁示例 - 通常使用的锁
+     * 哈希操作
      *
-     * 演示如何使用Redisson实现基础的分布式锁，适用于大多数场景
-     *
-     * @param lockKey 锁的键名
-     * @param waitTime 尝试获取锁的最大等待时间（秒）
-     * @param leaseTime 获取锁后的过期时间（秒），防止程序崩溃导致死锁
-     * @return 操作结果
+     * 演示Redis的Hash类型操作，包括：
+     * - 单个属性的存取
+     * - 批量属性操作
+     * - 属性删除
+     * - 整个哈希数据的删除
      */
-    public String lock(String lockKey, long waitTime, long leaseTime) {
-        try {
-            // 获取锁对象
-            RLock lock = redissonClient.getLock(lockKey);
+    public void hashOps() {
 
-            // 尝试获取锁
-            // waitTime: 尝试获取锁的最大等待时间
-            // leaseTime: 获取锁后的过期时间，防止业务执行超时导致锁被其他线程释放
-            // TimeUnit.SECONDS: 时间单位
-            boolean isLocked = lock.tryLock(waitTime, leaseTime, TimeUnit.SECONDS);
+        // 1. 存入哈希数据（用户 ID 为 1001 的信息）
+        HashOperations<String, Object, Object> hashOps = redisTemplate.opsForHash();
+        hashOps.put("user:1001", "name", "李四");
+        hashOps.put("user:1001", "age", 30);
+        hashOps.put("user:1001", "email", "lisi@xxx.com");
 
-            if (isLocked) {
-                try {
-                    // 获取锁成功，执行业务逻辑
-                    log.info("成功获取分布式锁: {}", lockKey);
+        // 2. 获取单个属性
+        String email = (String)hashOps.get("user:1001", "email");
+        log.info("用户 1001 的邮箱：{}", email);
 
-                    // 模拟业务处理（这里可以替换为实际业务代码）
-                    Thread.sleep(2000);
+        // 3. 获取所有属性
+        Map<Object, Object> userMap = hashOps.entries("user:1001");
+        log.info("用户 1001 的属性：{}", userMap);
 
-                    log.info("业务处理完成");
-                    return "分布式锁获取成功，业务处理完成";
-                } finally {
-                    // 确保释放锁
-                    lock.unlock();
-                    log.info("分布式锁已释放: {}", lockKey);
-                }
-            } else {
-                log.warn("在指定时间内未能获取分布式锁: {}", lockKey);
-                return "分布式锁获取失败，请稍后重试";
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("获取分布式锁被中断", e);
-            return "获取分布式锁被中断";
-        } catch (Exception e) {
-            log.error("获取分布式锁异常", e);
-            return "获取分布式锁异常: " + e.getMessage();
-        }
+        // 4. 批量存入属性
+        Map<Object, Object> newAttrs = new HashMap<>();
+        newAttrs.put("gender", "男");
+        newAttrs.put("city", "上海");
+        hashOps.putAll("user:1001", newAttrs);
+
+        // 5. 删除某个属性
+        hashOps.delete("user:1001", "email");
+
+        // 6. 删除整个哈希数据
+        hashOps.delete("user:1001");
     }
 
     /**
-     * Redisson公平锁示例
+     * 列表操作
      *
-     * 公平锁确保多个线程按照获取锁的顺序来执行，避免某些线程长期无法获取锁
-     * 但公平锁的性能低于普通锁，应在需要公平性的场景中使用
-     *
-     * @param lockKey 锁的键名
-     * @return 操作结果
+     * 演示Redis的List类型操作，包括：
+     * - 队列操作（先进先出）
+     * - 栈操作（先进后出）
+     * - 列表范围查询
+     * - 列表长度修剪
      */
-    public String fairLock(String lockKey) {
-        try {
-            // 获取公平锁对象
-            RLock fairLock = redissonClient.getFairLock(lockKey);
+    public void listOps() {
 
-            log.info("尝试获取公平锁: {}", lockKey);
-            // 获取公平锁（如果获取不到会一直阻塞，直到获取到为止）
-            fairLock.lock();
+        ListOperations<String, Object> listOps = redisTemplate.opsForList();
+        String key = "message:queue";
 
-            try {
-                log.info("成功获取公平锁: {}", lockKey);
-                // 执行业务逻辑
-                Thread.sleep(2000);
-                return "公平锁获取成功，按顺序执行";
-            } finally {
-                fairLock.unlock();
-                log.info("公平锁已释放: {}", lockKey);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("获取公平锁被中断", e);
-            return "获取公平锁被中断";
-        } catch (Exception e) {
-            log.error("获取公平锁异常", e);
-            return "获取公平锁异常: " + e.getMessage();
-        }
+        // 1. 左进（队列：先进先出）
+        listOps.leftPush(key, "消息1");
+        listOps.leftPush(key, "消息2");
+        listOps.leftPush(key, "消息3");
+
+        // 2. 右出（获取并移除队尾元素）
+        Object msg1 = listOps.rightPop(key);
+        Object msg2 = listOps.rightPop(key);
+        log.info("消费消息：{}，{}", msg1, msg2);
+
+        // 3. 获取列表范围（0 到 -1 表示所有元素）
+        List<Object> allMsg = listOps.range(key, 0, -1);
+        log.info("剩余消息：{}", allMsg);
+
+        // 4. 栈操作（左进左出）
+        listOps.leftPush("stack", "元素A");
+        listOps.leftPush("stack", "元素B");
+        Object stackMsg1 = listOps.leftPop("stack");
+        log.info("栈弹出元素：{}", stackMsg1);
+
+        // 5. 设置列表长度
+        listOps.trim(key, 0, 0); // 只保留第一个元素
     }
 
     /**
-     * Redisson读写锁示例
+     * 集合操作
      *
-     * 读写锁允许多个读线程同时执行，但写线程需要独占。
-     * 适用于读多写少的场景
-     *
-     * @param lockKey 锁的键名
-     * @param isWrite 是否执行写操作
-     * @return 操作结果
+     * 演示Redis的Set类型操作，包括：
+     * - 元素的添加和移除
+     * - 集合交集运算
+     * - 集合并集运算
+     * - 集合差集运算
      */
-    public String readWriteLock(String lockKey, boolean isWrite) {
-        try {
-            // 获取读写锁对象
-            RReadWriteLock readWriteLock = redissonClient.getReadWriteLock(lockKey);
+    public void setOps() {
+        SetOperations<String, Object> setOps = redisTemplate.opsForSet();
 
-            if (isWrite) {
-                // 获取写锁（需要独占，阻塞其他读和写操作）
-                RLock writeLock = readWriteLock.writeLock();
-                log.info("尝试获取写锁: {}", lockKey);
-                writeLock.lock();
+        // 1. 向集合添加元素
+        setOps.add("user:tags:1001", "Java", "Redis", "Spring Boot");
+        setOps.add("user:tags:1002", "Java", "MySQL", "Docker");
 
-                try {
-                    log.info("成功获取写锁，执行写操作");
-                    Thread.sleep(2000);
-                    return "写锁获取成功，执行写操作完成";
-                } finally {
-                    writeLock.unlock();
-                    log.info("写锁已释放: {}", lockKey);
-                }
-            } else {
-                // 获取读锁（多个读操作可以并发执行）
-                RLock readLock = readWriteLock.readLock();
-                log.info("尝试获取读锁: {}", lockKey);
-                readLock.lock();
+        // 2. 获取集合所有元素
+        Set<Object> tags1001 = setOps.members("user:tags:1001");
+        log.info("用户 1001 标签：{}", tags1001);
 
-                try {
-                    log.info("成功获取读锁，执行读操作");
-                    Thread.sleep(1000);
-                    return "读锁获取成功，执行读操作完成（支持并发读）";
-                } finally {
-                    readLock.unlock();
-                    log.info("读锁已释放: {}", lockKey);
-                }
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("获取读写锁被中断", e);
-            return "获取读写锁被中断";
-        } catch (Exception e) {
-            log.error("获取读写锁异常", e);
-            return "获取读写锁异常: " + e.getMessage();
-        }
+        // 3. 交集（共同标签）
+        Set<Object> commonTags = setOps.intersect("user:tags:1001", "user:tags:1002");
+        log.info("共同标签：{}", commonTags);
+
+        // 4. 并集（所有标签）
+        Set<Object> allTags = setOps.union("user:tags:1001", "user:tags:1002");
+        log.info("所有标签：{}", allTags);
+
+        // 5. 差集（用户 1001 独有的标签）
+        Set<Object> diffTags = setOps.difference("user:tags:1001", "user:tags:1002");
+        log.info("用户 1001 独有标签：{}", diffTags);
+
+        // 6. 移除元素
+        setOps.remove("user:tags:1001", "Redis");
     }
 
     /**
-     * Redisson信号量示例
+     * 有序集合操作
      *
-     * 信号量用于限制同时访问某个资源的线程数量
-     * 适用于资源限流、连接池管理等场景
-     *
-     * @param semaphoreKey 信号量的键名
-     * @param permits 允许的并发数量
-     * @return 操作结果
+     * 演示Redis的ZSet类型操作，包括：
+     * - 元素的添加和分数管理
+     * - 升序和降序排列
+     * - 分数增加
+     * - 元素排名查询
      */
-    public String semaphore(String semaphoreKey, int permits) {
-        try {
-            // 获取信号量对象
-            RSemaphore semaphore = redissonClient.getSemaphore(semaphoreKey);
+    public void zSetOps() {
+        ZSetOperations<String, Object> zSetOps = redisTemplate.opsForZSet();
+        String key = "article:rank";
 
-            // 初始化信号量（只在第一次需要）
-            if (semaphore.availablePermits() == 0) {
-                semaphore.trySetPermits(permits);
-            }
+        // 1. 添加元素（分数为文章阅读量）
+        zSetOps.add(key, "文章1001", 100);
+        zSetOps.add(key, "文章1002", 200);
+        zSetOps.add(key, "文章1003", 150);
 
-            log.info("尝试获取信号量，可用许可数: {}", semaphore.availablePermits());
-            // 获取一个信号量许可（如果没有可用许可会阻塞）
-            semaphore.acquire();
+        // 2. 按分数升序排列（0 到 -1 表示所有元素）
+        Set<Object> ascRank = zSetOps.range(key, 0, -1);
+        log.info("阅读量升序排行：{}", ascRank);
 
-            try {
-                log.info("成功获取信号量许可");
-                // 执行业务逻辑
-                Thread.sleep(2000);
-                log.info("业务处理完成，剩余许可数: {}", semaphore.availablePermits());
-                return "信号量获取成功，当前许可数: " + semaphore.availablePermits();
-            } finally {
-                semaphore.release();
-                log.info("信号量许可已释放，剩余许可数: {}", semaphore.availablePermits());
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            log.error("获取信号量被中断", e);
-            return "获取信号量被中断";
-        } catch (Exception e) {
-            log.error("获取信号量异常", e);
-            return "获取信号量异常: " + e.getMessage();
-        }
+        // 3. 按分数降序排列（排行榜常用）
+        Set<Object> descRank = zSetOps.reverseRange(key, 0, -1);
+        log.info("阅读量降序排行：{}", descRank);
+
+        // 4. 增加元素分数（阅读量 +50）
+        zSetOps.incrementScore(key, "文章1001", 50);
+
+        // 5. 获取元素分数
+        Double score = zSetOps.score(key, "文章1001");
+        log.info("文章1001 最新阅读量：{}", score);
+
+        // 6. 获取元素排名（降序，从 0 开始）
+        Long rank = zSetOps.reverseRank(key, "文章1001");
+        log.info("文章1001 排名：第{}名", (rank + 1));
     }
 }
