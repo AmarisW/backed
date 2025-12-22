@@ -5,6 +5,7 @@ import static com.gqtian.redis.constant.SystemConstant.REDIS_KEY.AOP_LIMIT;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -15,7 +16,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.gqtian.common.globalProcess.GlobalException;
 import com.gqtian.redis.annotation.RequestLimitAop;
-import com.gqtian.redis.utils.RedisCommonUtil;
 import com.gqtian.redis.utils.RedisUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -65,7 +65,7 @@ public class RequestLimitAspect {
             ServletRequestAttributes attributes =
                 (ServletRequestAttributes)RequestContextHolder.getRequestAttributes();
             if (Objects.isNull(attributes)) {
-                log.warn("无法获取request对象，跳过限流检查");
+                log.warn("【Aop限流】无法获取request对象，跳过限流检查");
                 return joinPoint.proceed();
             }
             HttpServletRequest request = attributes.getRequest();
@@ -84,15 +84,21 @@ public class RequestLimitAspect {
 
             // 4. 验证超时时间的有效性，禁止将负数传入Redis
             if (timeoutInSeconds <= 0) {
-                log.error("限流超时时间无效：name={}, timeout={}, timeUnit={}", limitName, timeout,
+                log.error("【Aop限流】限流超时时间无效：name={}, timeout={}, timeUnit={}", limitName, timeout,
                     requestLimit.timeUnit());
-                throw new GlobalException("限流配置错误：超时时间必须大于0");
+                throw new GlobalException("【Aop限流】限流配置错误：超时时间必须大于0");
             }
 
-            // 5. 提取客户端IP地址作为限流的唯一标识
-            String clientIp = RedisCommonUtil.findClientIp(request);
-            // 构建Redis key："limit:{limitName}:{clientIp}"
-            String redisKey = AOP_LIMIT + limitName + clientIp;
+            // region 5.Token获取方式
+            String token = StringUtils.EMPTY;
+            // 请求参数中获取
+            token = request.getParameter(requestLimit.name());
+
+            // 从请求头中获取{
+            // token = request.getHeader(requestLimit.name());
+            // endregion
+
+            String redisKey = AOP_LIMIT + limitName + token;
 
             // 6. 从Redis获取当前请求计数器值
             Object currentCountObj = redisUtil.get(redisKey);
@@ -100,9 +106,9 @@ public class RequestLimitAspect {
 
             // 7. 检查是否已超过限流阈值
             if (currentCount >= limitTimes) {
-                log.warn("请求被限流：name={}, ip={}, currentCount={}, limitTimes={}", limitName, clientIp,
+                log.warn("【Aop限流】请求被限流：token={}, currentCount={}, limitTimes={}", token,
                     currentCount, limitTimes);
-                throw new GlobalException("请求过于频繁，已被限流");
+                throw new GlobalException("【Aop限流】请求过于频繁，已被限流");
             }
 
             // 8. 若未超限，则计数器+1，并设置过期时间
@@ -121,7 +127,7 @@ public class RequestLimitAspect {
             throw e;
         } catch (Throwable e) {
             // 其他异常记录日志后重新抛出
-            log.error("限流 Aop 处理异常", e);
+            log.error("【Aop限流】限流 Aop 处理异常", e);
             throw e;
         }
     }

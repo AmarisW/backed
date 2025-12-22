@@ -53,6 +53,22 @@ public class RedisCommonUtil {
     }
 
     /**
+     * 将指定的时间单位转换为毫秒
+     *
+     * 例如：
+     * - convertToMillis(10, TimeUnit.SECONDS) 返回 10000
+     * - convertToMillis(1, TimeUnit.MINUTES) 返回 60000
+     * - convertToMillis(100, TimeUnit.MILLISECONDS) 返回 100
+     *
+     * @param time 时间数值
+     * @param timeUnit 时间单位（支持毫秒、秒、分钟、小时、天）
+     * @return 转换后的毫秒数
+     */
+    public static long convertToMillis(long time, TimeUnit timeUnit) {
+        return timeUnit.toMillis(time);
+    }
+
+    /**
      * 从HTTP请求中智能提取客户端真实IP地址
      *
      * 此方法用于从HTTP请求中获取客户端的真实IP地址。在分布式系统中，请求可能经过多个代理层

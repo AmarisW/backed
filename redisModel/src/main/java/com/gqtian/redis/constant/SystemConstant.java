@@ -26,8 +26,39 @@ public class SystemConstant {
         String FIXED_WINDOW_LIMIT = "fixed_window_limit:";
 
         /**
-         * 滑动窗口限流
-         */
+        * 滑动窗口限流
+        */
         String SLIDING_WINDOW_LIMIT = "sliding_window_limit:";
+
+        /**
+         * 令牌桶限流
+         */
+        String TOKEN_BUCKET_LIMIT = "token_bucket_limit:";
+
+        /**
+         * 漏桶限流（基于漏桶算法的令牌桶实现）
+         */
+        String LEAKY_BUCKET_LIMIT = "leaky_bucket_limit:";
+    }
+
+    /**
+     * Redis Lua 脚本
+     */
+    public interface REDIS_LUA_SCRIPT_KEY {
+
+        /**
+         * 商品库存 Key 
+         */
+        String GOODS_KEY = "lua:goods:";
+
+        /**
+         * 已下单订单 Key
+         */
+        String ORDER_KEY = "lua:order:";
+
+        /**
+         * 已下单信息流
+         */
+        String ORDER_STREAM = "lua:order-stream";
     }
 }

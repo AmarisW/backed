@@ -141,7 +141,8 @@ public class SlidingWindowLimitInterceptor implements HandlerInterceptor {
 
         // 计算滑动窗口的起始时间：currentTime - 窗口大小
         // 例如：当前时间10000ms，窗口大小5000ms，则windowStartTime = 5000ms
-        long windowStartTime = currentTime - convertToMillis(limit.timeout(), limit.timeUnit());
+        long windowStartTime =
+            currentTime - RedisCommonUtil.convertToMillis(limit.timeout(), limit.timeUnit());
 
         try {
             // ============ 步骤1：清理过期数据 ============
@@ -174,7 +175,7 @@ public class SlidingWindowLimitInterceptor implements HandlerInterceptor {
             // 防止内存泄漏：即使没有新请求，key也会在窗口时长后自动过期
             // 过期时间 = 窗口大小 + 1000ms
             // 额外的1秒是为了确保所有窗口内的数据都被正确删除
-            long expireTime = convertToMillis(limit.timeout(), limit.timeUnit()) + 1000;
+            long expireTime = RedisCommonUtil.convertToMillis(limit.timeout(), limit.timeUnit()) + 1000;
             redisTemplate.expire(key, expireTime, TimeUnit.MILLISECONDS);
 
             // 请求成功通过限流检查，记录日志（包含详细的限流窗口信息用于监控）
@@ -191,22 +192,6 @@ public class SlidingWindowLimitInterceptor implements HandlerInterceptor {
             // 这样做的原因：优先保证业务的可用性，限流只是保护措施，不应因此影响业务
             return true;
         }
-    }
-
-    /**
-     * 将指定的时间单位转换为毫秒
-     *
-     * 例如：
-     * - convertToMillis(10, TimeUnit.SECONDS) 返回 10000
-     * - convertToMillis(1, TimeUnit.MINUTES) 返回 60000
-     * - convertToMillis(100, TimeUnit.MILLISECONDS) 返回 100
-     *
-     * @param time 时间数值
-     * @param timeUnit 时间单位（支持毫秒、秒、分钟、小时、天）
-     * @return 转换后的毫秒数
-     */
-    private long convertToMillis(long time, TimeUnit timeUnit) {
-        return timeUnit.toMillis(time);
     }
 
 }

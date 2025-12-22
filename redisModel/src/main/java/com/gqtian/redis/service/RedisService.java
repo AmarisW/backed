@@ -254,4 +254,5 @@ public class RedisService {
         Long rank = zSetOps.reverseRank(key, "文章1001");
         log.info("文章1001 排名：第{}名", (rank + 1));
     }
+
 }
