@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqtian.mybatis.mapper.SystemLogsMapper">
+
+    <resultMap id="BaseResultMap" type="com.gqtian.mybatis.entity.SystemLogs">
+            <id property="logId" column="log_id" />
+            <result property="userId" column="user_id" />
+            <result property="logType" column="log_type" />
+            <result property="operation" column="operation" />
+            <result property="ipAddress" column="ip_address" />
+            <result property="userAgent" column="user_agent" />
+            <result property="logTime" column="log_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        log_id,user_id,log_type,operation,ip_address,user_agent,
+        log_time
+    </sql>
+</mapper>
