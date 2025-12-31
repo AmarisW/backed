@@ -34,6 +34,7 @@
     <module>hbaseModel</module>
     <module>networkModel</module>
     <module>redisModel</module>
+    <module>mybatisModel</module>
   </modules>
 
 

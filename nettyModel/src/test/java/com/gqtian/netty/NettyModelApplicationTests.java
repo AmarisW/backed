@@ -2,7 +2,6 @@ package com.gqtian.netty;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
@@ -12,7 +11,7 @@ class NettyModelApplicationTests {
 
     public static void main(String[] args) throws Exception {
         Network network;
-        network = Network.builder().ip("47.110.88.53").port(6666).build();
+        network = Network.builder().ip("103.219.34.250").port(13001).build();
         // 读取本地文件
         ClassPathResource classPathResource = new ClassPathResource("file/报文.txt");
         InputStream inputStream = classPathResource.getInputStream();

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.gqtian.redis.constant.SystemConstant.REDIS_LUA_SCRIPT_KEY;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -60,42 +61,51 @@ public class LuaService {
         REDIS_LUA_SCRIPT.setResultType(Long.class);
     }
 
-    public String runLuaScript(String goodsId, String orderId, String userId) {
+    /**
+     * 初始化商品库存
+     */
+    @PostConstruct
+    public void initGoodsStock() {
+        // 添加苹果
+        stringRedisTemplate.opsForValue().set(REDIS_LUA_SCRIPT_KEY.GOODS_KEY + "苹果", "10");
+        stringRedisTemplate.opsForValue().set(REDIS_LUA_SCRIPT_KEY.GOODS_KEY + "香蕉", "10");
+        stringRedisTemplate.opsForValue().set(REDIS_LUA_SCRIPT_KEY.GOODS_KEY + "玉米", "10");
+    }
 
-        /**
-         * 执行 Lua 脚本实现秒杀业务的原子性操作
-         * 
-         * REDIS_LUA_SCRIPT 的作用：
-         * 通过 Redis Lua 脚本保证秒杀核心业务流程的原子性，避免并发竞态条件。
-         * 
-         * 执行流程（脚本内部顺序执行）：
-         * 1. 库存检查：获取当前商品库存，库存 <= 0 则返回错误码 1（库存不足）
-         * 2. 用户去重：检查用户是否已购买过该商品，已购买则返回错误码 2（禁止重复下单）
-         * 3. 扣库存：原子性将库存数量减 1（使用 incrby 命令）
-         * 4. 记录下单用户：将用户 ID 添加到订单集合中，标记该用户已购买
-         * 5. 发送订单消息：向 Redis Stream 异步发送订单消息，用于后续业务处理（如减库存、发货等）
-         * 6. 返回成功：所有操作原子完成后返回 0
-         * 
-         * 返回值说明：
-         *   0 = 秒杀成功，订单已创建
-         *   1 = 库存不足，秒杀失败
-         *   2 = 用户已购买，禁止重复下单
-         * 
-         * Redis Key 构成（拼接规则）：
-         *   库存 Key =  goodsKey + goodsId  (例如：lua:goods:1002)
-         *   订单 Key = orderKey + goodsId  (例如：lua:order:1002)
-         * 
-         * 传入参数说明（按 ARGV 在 Lua 脚本中的顺序）：
-         *   goodsKey：商品库存 key 前缀（"lua:goods:"）
-         *   orderKey：订单记录 key 前缀（"lua:order:"）
-         *   goodsId：商品 ID（唯一标识秒杀活动）
-         *   orderId：订单 ID（新生成的订单唯一标识）
-         *   userId：用户 ID（发起秒杀的用户，用于去重和消息记录）
-         */
+    /**
+     * 执行 Lua 脚本实现秒杀业务的原子性操作
+     *
+     * REDIS_LUA_SCRIPT 的作用：
+     * 通过 Redis Lua 脚本保证秒杀核心业务流程的原子性，避免并发竞态条件。
+     *
+     * 执行流程（脚本内部顺序执行）：
+     * 1. 库存检查：获取当前商品库存，库存 <= 0 则返回错误码 1（库存不足）
+     * 2. 用户去重：检查用户是否已购买过该商品，已购买则返回错误码 2（禁止重复下单）
+     * 3. 扣库存：原子性将库存数量减 1（使用 incrby 命令）
+     * 4. 记录下单用户：将用户 ID 添加到订单集合中，标记该用户已购买
+     * 5. 发送订单消息：向 Redis Stream 异步发送订单消息，用于后续业务处理（如减库存、发货等）
+     * 6. 返回成功：所有操作原子完成后返回 0
+     *
+     * 返回值说明：
+     *   0 = 秒杀成功，订单已创建
+     *   1 = 库存不足，秒杀失败
+     *   2 = 用户已购买，禁止重复下单
+     *
+     * Redis Key 构成（拼接规则）：
+     *   库存 Key =  goodsKey + goodsId  (例如：lua:goods:1002)
+     *   订单 Key = orderKey + goodsId  (例如：lua:order:1002)
+     *
+     * 传入参数说明（按 ARGV 在 Lua 脚本中的顺序）：
+     *   goodsKey：商品库存 key 前缀（"lua:goods:"）
+     *   orderKey：订单记录 key 前缀（"lua:order:"）
+     *   goodsId：商品 ID（唯一标识秒杀活动）
+     *   orderId：订单 ID（新生成的订单唯一标识）
+     *   userId：用户 ID（发起秒杀的用户，用于去重和消息记录）
+     */
+    public String runLuaScript(String goodsId, String orderId, String userId) {
         Long result = stringRedisTemplate.execute(REDIS_LUA_SCRIPT, Collections.emptyList(),
             REDIS_LUA_SCRIPT_KEY.GOODS_KEY, REDIS_LUA_SCRIPT_KEY.ORDER_KEY, goodsId, orderId, userId,
             REDIS_LUA_SCRIPT_KEY.ORDER_STREAM);
         return result.toString();
     }
-
 }
