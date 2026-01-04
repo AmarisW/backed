@@ -16,15 +16,35 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
 /**
- * 🔔 全局数据预处理
+ * 全局响应体处理切面
+ * <p>
+ * 使用@RestControllerAdvice和ResponseBodyAdvice实现全局响应数据预处理，
+ * 将所有Controller返回的数据统一封装为GlobalResult格式
+ * </p>
+ * <p>
+ * 主要功能：
+ * <ul>
+ *   <li>统一API返回格式</li>
+ *   <li>防止重复包装</li>
+ *   <li>处理String类型特殊情况</li>
+ * </ul>
+ * </p>
  * 
- * @author GQTIAN
+ * @author gqtian
  * @date 2025/7/24 17:27
- **/
+ */
 
 @RestControllerAdvice // @RestControllerAdvice是@RestController注解的增强，可以实现三个方面的功能：全局异常处理 全局数据绑定 全局数据预处理
 @RequiredArgsConstructor
 public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
+
+    /**
+     * 判断是否支持响应体处理
+     * 
+     * @param returnType 返回类型
+     * @param converterType 消息转换器类型
+     * @return 总是返回true，表示所有响应都需要处理
+     */
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
@@ -32,15 +52,23 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
     }
 
     /**
-     * 在返回之前进行处理
+     * 在响应体写入前进行处理
+     * <p>
+     * 处理逻辑：
+     * <ol>
+ *   <li>如果已经是GlobalResult类型，直接返回，防止重复包装</li>
+ *   <li>如果是String类型，转换为JSON字符串返回（避免ClassCastException）</li>
+ *   <li>其他类型统一封装为GlobalResult</li>
+ * </ol>
+     * </p>
      *
-     * @param body 返回的数据
-     * @param returnType 返回的类型
-     * @param selectedContentType 返回的类型
-     * @param selectedConverterType 返回的类型
-     * @param request 请求
-     * @param response 响应
-     * @return 返回的数据
+     * @param body 原始返回数据
+     * @param returnType 返回类型
+     * @param selectedContentType 选择的内容类型
+     * @param selectedConverterType 选择的消息转换器类型
+     * @param request HTTP请求
+     * @param response HTTP响应
+     * @return 处理后的响应数据
      */
     @SneakyThrows
     @Override

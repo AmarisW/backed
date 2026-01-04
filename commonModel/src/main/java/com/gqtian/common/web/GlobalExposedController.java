@@ -13,9 +13,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 👻 开放Api
+ * 全局对外暴露API控制器
+ * <p>
+ * 提供查询当前应用中所有被@GlobalApiOut注解标记的API接口列表。
+ * 常用于开发调试和接口文档查看
+ * </p>
  * 
- * @className TestWeb
  * @author gqtian
  * @date 2025/8/7 14:44
  */
@@ -26,7 +29,10 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExposedController {
 
     /**
-     * 全局开放Api列表
+     * 获取全局开放API列表
+     * <p>返回所有被@GlobalApiOut注解标记的接口信息</p>
+     * 
+     * @return API接口信息列表
      */
     @GetMapping("/list")
     public List<GlobalApiOutEntity> list() {

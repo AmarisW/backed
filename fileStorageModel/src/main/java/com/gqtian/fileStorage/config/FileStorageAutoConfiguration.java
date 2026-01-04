@@ -2,6 +2,7 @@
 package com.gqtian.fileStorage.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,7 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-@ConditionalOnMissingBean(FileStorageService.class)
+@EnableConfigurationProperties(FileStorageProperties.class) // 启用文件存储属性配置
+@ConditionalOnMissingBean(FileStorageService.class) // 当Spring上下文中没有FileStorageService bean时 才进行自动配置
 public class FileStorageAutoConfiguration {
 
     /**

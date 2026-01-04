@@ -58,7 +58,7 @@ public class GlobalDictInitRun implements CommandLineRunner {
             LocalDateTime startTime = LocalDateTime.now();
             // 清空字典缓存
             GLOBAL_DICT.clear();
-            // 获取字典SysDicDao实例
+            // 获取字典 SysDicDao 实例
             GlobalDicMapper sysDicMapper = SpringApplicationUtil.getBean(GlobalDicMapper.class);
             LambdaQueryWrapper<GlobalDict> queryWrapper = new LambdaQueryWrapper<>();
             queryWrapper.select(GlobalDict::getCode, GlobalDict::getValue, GlobalDict::getType);

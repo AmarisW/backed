@@ -15,43 +15,98 @@ import com.gqtian.common.model.GlobalApiOutEntity.ParamEntity;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 👻 启动工具
+ * 美化启动工具类
+ * <p>
+ * 提供美化的应用启动信息显示，包括：
+ * <ul>
+ *   <li>应用基本信息（名称、版本、端口等）</li>
+ *   <li>访问地址（本地和外部地址）</li>
+ *   <li>活跃配置文件</li>
+ *   <li>所有对外开放API接口列表</li>
+ *   <li>启动耗时统计</li>
+ * </ul>
+ * </p>
+ * <p>
+ * 使用彩色终端输出，提供更好的视觉效果
+ * </p>
  *
  * @author gqtian
- * @className LaunchUtil
  * @date 2024/4/8 13:53
  */
 @Slf4j
 public class GlobalBeautifyStart {
 
     /**
-     * 开放接口请求
+     * 全局API信息缓存队列
+     * <p>用于存储所有被@GlobalApiOut注解标记的接口信息</p>
      */
     public final static LinkedBlockingQueue<GlobalApiOutEntity> GLOBAL_API_CACHE = new LinkedBlockingQueue<>();
+
+    /** 服务端口配置键 */
     private static final String SERVER_PORT = "server.port";
+
+    /** Servlet上下文路径配置键 */
     private static final String SERVER_SERVLET_CONTEXT_PATH = "server.servlet.context-path";
+
+    /** 应用名称配置键 */
     private static final String SPRING_APPLICATION_NAME = "spring.application.name";
+
+    /** 应用版本配置键 */
     private static final String SPRING_APPLICATION_VERSION = "spring.application.version";
-    // 彩色输出常量
+
+    // ===== 以下为终端彩色输出相关常量 =====
+    /** ANSI颜色码前缀 */
     private static final String COLOR_PREFIX = "\u001B[";
+
+    /** 重置颜色 */
     private static final String COLOR_RESET = COLOR_PREFIX + "0m";
+
+    /** 品红色 */
     private static final String COLOR_MAGENTA = COLOR_PREFIX + "35m";
+
+    /** 青色 */
     private static final String COLOR_CYAN = COLOR_PREFIX + "36m";
+
+    /** 亮蓝色 */
     private static final String COLOR_BLUE = COLOR_PREFIX + "94m";
+
+    /** 亮绿色 */
     private static final String COLOR_GREEN = COLOR_PREFIX + "92m";
+
+    /** 亮黄色 */
     private static final String COLOR_YELLOW = COLOR_PREFIX + "93m";
+
+    /** 亮白色 */
     private static final String COLOR_WHITE = COLOR_PREFIX + "97m";
+
+    /** 粉红色 */
     private static final String COLOR_PINK = COLOR_PREFIX + "95m";
-    // 符号常量
-    private static final String TREE_LAST_NODE = COLOR_PINK + "└─ " + COLOR_RESET;
-    private static final String TREE_NODE = COLOR_PINK + "├─ " + COLOR_RESET;
-    private static final String TREE_BAR = COLOR_PINK + "│  " + COLOR_RESET;
+
+    /** 亮红色 */
     private static final String COLOR_RED = COLOR_PREFIX + "91m";
+
+    /** 橙色 */
     private static final String COLOR_ORANGE = COLOR_PREFIX + "33m";
+
+    /** 粗体 */
     private static final String COLOR_BOLD = COLOR_PREFIX + "1m";
 
+    // ===== 树形结构符号 =====
+    /** 最后一个节点 */
+    private static final String TREE_LAST_NODE = COLOR_PINK + "└─ " + COLOR_RESET;
+
+    /** 中间节点 */
+    private static final String TREE_NODE = COLOR_PINK + "├─ " + COLOR_RESET;
+
+    /** 树形竖线 */
+    private static final String TREE_BAR = COLOR_PINK + "│  " + COLOR_RESET;
+
     /**
-     * 启动
+     * 启动Spring Boot应用并输出美化的启动信息
+     *
+     * @param inClass Spring Boot启动类
+     * @param args 启动参数
+     * @param <T> 启动类类型
      */
     public static <T> void start(T inClass, String[] args) {
         // 将startTime移到方法开始处，确保计算完整的启动时间
@@ -64,9 +119,12 @@ public class GlobalBeautifyStart {
 
     /**
      * 输出启动信息
-     * 
-     * @param application 上下文
-     * @param startTime 上下文启动时间
+     * <p>
+     * 构建并输出包含应用配置、访问地址、API列表等信息的美化启动日志
+     * </p>
+     *
+     * @param application Spring应用上下文
+     * @param startTime 启动开始时间
      */
     private static void doOutLog(ConfigurableApplicationContext application, Instant startTime) {
         try {
@@ -109,6 +167,9 @@ public class GlobalBeautifyStart {
 
     /**
      * 添加启动横幅
+     * <p>在控制台输出一个ASCII艺术横幅</p>
+     *
+     * @param output 字符串构建器
      */
     private static void appendBanner(StringBuilder output) {
         output.append("\n").append(COLOR_MAGENTA).append("╭───────────────────────────────").append(COLOR_RED)
@@ -145,7 +206,11 @@ public class GlobalBeautifyStart {
     }
 
     /**
-     * 添加激活的配置信息
+     * 添加活跃配置信息
+     * <p>显示当前应用激活的配置文件（profiles）</p>
+     *
+     * @param output 字符串构建器
+     * @param environment Spring环境对象
      */
     private static void appendActiveProfiles(StringBuilder output, Environment environment) {
         String[] activeProfiles = environment.getActiveProfiles();
@@ -166,6 +231,13 @@ public class GlobalBeautifyStart {
 
     /**
      * 添加应用基本信息
+     * <p>显示应用名称、版本、端口、上下文路径等信息</p>
+     *
+     * @param output 字符串构建器
+     * @param appName 应用名称
+     * @param appVersion 应用版本
+     * @param port 端口号
+     * @param path 上下文路径
      */
     private static void appendApplicationInfo(StringBuilder output, String appName, String appVersion, String port,
         String path) {
@@ -181,6 +253,12 @@ public class GlobalBeautifyStart {
 
     /**
      * 添加访问URL信息
+     * <p>显示应用的本地和外部访问地址</p>
+     *
+     * @param output 字符串构建器
+     * @param port 端口号
+     * @param path 上下文路径
+     * @param ip 服务器IP地址
      */
     private static void appendAccessUrls(StringBuilder output, String port, String path, String ip) {
         String basePath = "http://localhost:" + port + path;
@@ -195,7 +273,10 @@ public class GlobalBeautifyStart {
     }
 
     /**
-     * 添加暴露的API信息
+     * 添加对外暴露的API信息
+     * <p>显示所有被@GlobalApiOut注解标记的API接口列表</p>
+     *
+     * @param output 字符串构建器
      */
     private static void appendExposedApis(StringBuilder output) {
         output.append(COLOR_BOLD).append(COLOR_BLUE).append("Exposed APIs:").append(COLOR_RESET).append("\n");
@@ -219,6 +300,12 @@ public class GlobalBeautifyStart {
 
     /**
      * 添加单个API信息
+     * <p>格式化输出单个API的详细信息，包括请求方法、路径和参数</p>
+     *
+     * @param output 字符串构建器
+     * @param api API信息实体
+     * @param prefix 树形结构前缀符号
+     * @param isLast 是否为最后一个API
      */
     private static void appendApiInfo(StringBuilder output, GlobalApiOutEntity api, String prefix, boolean isLast) {
         output.append(prefix);
@@ -256,6 +343,9 @@ public class GlobalBeautifyStart {
 
     /**
      * 检查API是否有描述信息
+     *
+     * @param api API信息实体
+     * @return 是否有描述
      */
     private static boolean hasComment(GlobalApiOutEntity api) {
         return api.getComment() != null && !api.getComment().trim().isEmpty();
@@ -263,6 +353,9 @@ public class GlobalBeautifyStart {
 
     /**
      * 检查API是否有参数信息
+     *
+     * @param api API信息实体
+     * @return 是否有参数
      */
     private static boolean hasParameters(GlobalApiOutEntity api) {
         return api.getParams() != null && !api.getParams().isEmpty();
@@ -270,6 +363,10 @@ public class GlobalBeautifyStart {
 
     /**
      * 添加启动时间信息
+     * <p>计算并显示应用的启动耗时</p>
+     *
+     * @param output 字符串构建器
+     * @param startTime 启动开始时间
      */
     private static void appendStartupTime(StringBuilder output, Instant startTime) {
         Duration duration = Duration.between(startTime, Instant.now());
