@@ -15,7 +15,6 @@ spring:
     import:
       - classpath:application-custom.yml   # 导入自定义配置
 
-
 #################################  日志配置  #################################
 logging:
   file:

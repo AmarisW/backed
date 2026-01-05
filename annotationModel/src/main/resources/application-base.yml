@@ -8,7 +8,6 @@ spring:
     password: REDACTED
     type: com.alibaba.druid.pool.DruidDataSource
 
-
 #################################  Mybatis-plus  #################################
 mybatis-plus:
   mapper-locations: classpath*:mapper/mysql/*.xml

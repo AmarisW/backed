@@ -41,6 +41,11 @@
   <!-- 版本控制 -->
   <properties>
 
+    <!-- Java 版本配置 -->
+    <java.version>21</java.version>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+
     <!-- 全局项目版本控制 Start -->
     <revision>1.0.0</revision>
     <!-- 全局项目版本控制 End -->

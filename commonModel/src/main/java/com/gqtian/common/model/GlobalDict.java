@@ -1,5 +1,7 @@
 package com.gqtian.common.model;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+
 import lombok.Data;
 
 /**
@@ -10,6 +12,12 @@ import lombok.Data;
  **/
 @Data
 public class GlobalDict {
+
+    /**
+     * 主键 ID
+     */
+    @TableId
+    private String id;
 
     /**
      * 编码

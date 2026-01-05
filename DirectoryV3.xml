@@ -14,4 +14,5 @@
   <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureSingleDemo.java" title="单任务异步"/>
   <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/FutureTimeoutDemo.java" title="任务超时"
       extension="" presentableText="" tooltipTitle="" icon="" textColor="" backgroundColor=""/>
+  <tree path="/contrastModel/src/main/java/com/gqtian/contrast/demo/多线程/VirtualThreadDemo.java" title="虚拟线程"/>
 </trees>
