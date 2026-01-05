@@ -3,9 +3,9 @@ package com.gqtian.mybatis.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.gqtian.mybatis.entity.BorrowRecords;
-import com.gqtian.mybatis.mapper.BorrowRecordsMapper;
-import com.gqtian.mybatis.service.BorrowRecordsService;
+import com.gqtian.mybatis.entity.BorrowRecord;
+import com.gqtian.mybatis.mapper.BorrowRecordMapper;
+import com.gqtian.mybatis.service.BorrowRecordService;
 
 /**
 * @author gqtia
@@ -13,8 +13,8 @@ import com.gqtian.mybatis.service.BorrowRecordsService;
 * @createDate 2025-12-23 15:47:20
 */
 @Service
-public class BorrowRecordsServiceImpl extends ServiceImpl<BorrowRecordsMapper, BorrowRecords>
-    implements BorrowRecordsService{
+public class BorrowRecordServiceImpl extends ServiceImpl<BorrowRecordMapper, BorrowRecord>
+    implements BorrowRecordService {
 
 }
 

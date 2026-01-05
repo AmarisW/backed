@@ -14,14 +14,14 @@ import lombok.Data;
  * 借阅记录表
  * @TableName borrow_records
  */
-@TableName(value ="borrow_records")
+@TableName(value = "borrow_record")
 @Data
-public class BorrowRecords {
+public class BorrowRecord {
     /**
      * 记录ID
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Long recordId;
+    private Long id;
 
     /**
      * 用户ID

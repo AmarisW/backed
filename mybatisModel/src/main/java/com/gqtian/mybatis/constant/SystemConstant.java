@@ -8,4 +8,20 @@ package com.gqtian.mybatis.constant;
  **/
 public class SystemConstant {
 
+    /**
+     * 多数据源类型
+     */
+    public interface DataSourceType {
+
+        /**
+         * 主库
+         */
+        String MASTER = "master";
+
+        /**
+         * 从库
+         */
+        String SLAVE = "slave";
+    }
+
 }

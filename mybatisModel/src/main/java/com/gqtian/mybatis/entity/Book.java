@@ -15,14 +15,14 @@ import lombok.Data;
  * 图书信息表
  * @TableName books
  */
-@TableName(value = "books")
+@TableName(value = "book")
 @Data
-public class Books {
+public class Book {
     /**
      * 图书ID
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Long bookId;
+    private Long id;
 
     /**
      * ISBN编号
@@ -35,9 +35,9 @@ public class Books {
     private String title;
 
     /**
-     * 作者
+     * 作者ID
      */
-    private String author;
+    private String authorId;
 
     /**
      * 出版社

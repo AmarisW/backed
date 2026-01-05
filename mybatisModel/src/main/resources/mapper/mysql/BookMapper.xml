@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gqtian.mybatis.mapper.BookMapper">
+
+  <select id="pageXml" resultType="com.gqtian.mybatis.entity.Book">
+    SELECT *
+    FROM book
+    <where>
+      <if test="param.title != null and param.title != ''">
+        AND title LIKE CONCAT('%', #{param.title}, '%')
+      </if>
+    </where>
+    ORDER BY create_time DESC
+  </select>
+
+  <!-- 结果映射配置：嵌套查询 -->
+  <resultMap id="BookVoMap" type="com.gqtian.mybatis.entity.vo.BookVo">
+    <!-- 图书基本信息 -->
+    <id property="id" column="id"/>
+    <result property="isbn" column="isbn"/>
+    <result property="title" column="title"/>
+    <result property="publisher" column="publisher"/>
+    <result property="publishDate" column="publish_date"/>
+    <result property="price" column="price"/>
+    <result property="totalCopies" column="total_copies"/>
+    <result property="availableCopies" column="available_copies"/>
+    <result property="location" column="location"/>
+    <result property="status" column="status"/>
+    <result property="coverImage" column="cover_image"/>
+    <result property="description" column="description"/>
+
+    <!-- 嵌套查询：作者信息，支持根据作者名称和作者IDs过滤 -->
+    <association property="authors" javaType="com.gqtian.mybatis.entity.vo.AuthorVo"
+        column="{author_id=author_id,authorName=authorName}"
+        select="selectAuthorById"/>
+
+    <!-- 嵌套查询：借阅记录列表，支持根据借阅时间范围过滤 -->
+    <collection property="borrowRecords" ofType="com.gqtian.mybatis.entity.vo.BorrowRecordVo"
+        column="{book_id=id,borrowTimeStart=borrowTimeStart,borrowTimeEnd=borrowTimeEnd}"
+        select="selectBorrowRecordsByBookId"/>
+  </resultMap>
+
+  <!-- 嵌套查询:根据作者ID查询作者信息,支持多条件过滤 -->
+  <select id="selectAuthorById" resultType="com.gqtian.mybatis.entity.vo.AuthorVo">
+    SELECT id,
+    author_name,
+    gender,
+    country,
+    birth_date,
+    death_date,
+    biography,
+    contact_info,
+    author_photo
+    FROM author
+    <where>
+      <if test="author_id != null">
+        AND id = #{author_id}
+      </if>
+      <if test="authorName != null and authorName != ''">
+        AND author_name LIKE CONCAT('%', #{authorName}, '%')
+      </if>
+    </where>
+  </select>
+
+  <!-- 嵌套查询：根据图书ID查询借阅记录，支持时间范围过滤 -->
+  <select id="selectBorrowRecordsByBookId" resultType="com.gqtian.mybatis.entity.vo.BorrowRecordVo">
+    SELECT id,
+    user_id,
+    book_id,
+    borrow_time,
+    expected_return_time,
+    actual_return_time,
+    renew_count
+    FROM borrow_record
+    <where>
+      <if test="book_id != null">
+        AND book_id = #{book_id}
+      </if>
+      <if test="borrowTimeStart != null and borrowTimeStart != ''">
+        AND borrow_time <![CDATA[ >= ]]> #{borrowTimeStart}
+      </if>
+      <if test="borrowTimeEnd != null and borrowTimeEnd != ''">
+        AND borrow_time <![CDATA[ <= ]]> #{borrowTimeEnd}
+      </if>
+    </where>
+  </select>
+
+  <!-- 主查询：查询图书信息（使用嵌套查询） -->
+  <select id="nestedQueryXml" resultMap="BookVoMap">
+    SELECT id,
+    isbn,
+    title,
+    author_id,
+    publisher,
+    publish_date,
+    price,
+    total_copies,
+    available_copies,
+    location,
+    status,
+    cover_image,
+    description,
+    #{param.authorName} as authorName,
+    #{param.borrowTimeStart} as borrowTimeStart,
+    #{param.borrowTimeEnd} as borrowTimeEnd
+    FROM book
+    <where>
+      <if test="param.title != null and param.title != ''">
+        AND title LIKE CONCAT('%', #{param.title}, '%')
+      </if>
+      <if test="param.bookIds != null and param.bookIds.size() > 0">
+        AND id IN
+        <foreach item="bookId" collection="param.bookIds" separator="," open="(" close=")">
+          #{bookId}
+        </foreach>
+      </if>
+    </where>
+  </select>
+
+  <!-- 结果映射配置：嵌套结果查询 -->
+  <resultMap id="BookVoNestedResultMap" type="com.gqtian.mybatis.entity.vo.BookVo">
+    <!-- 图书基本信息 -->
+    <id property="id" column="book_id"/>
+    <result property="isbn" column="isbn"/>
+    <result property="title" column="title"/>
+    <result property="publisher" column="publisher"/>
+    <result property="publishDate" column="publish_date"/>
+    <result property="price" column="price"/>
+    <result property="totalCopies" column="total_copies"/>
+    <result property="availableCopies" column="available_copies"/>
+    <result property="location" column="location"/>
+    <result property="status" column="status"/>
+    <result property="coverImage" column="cover_image"/>
+    <result property="description" column="description"/>
+
+    <!-- 嵌套结果：作者信息 -->
+    <association property="authors" javaType="com.gqtian.mybatis.entity.vo.AuthorVo">
+      <id property="id" column="author_id"/>
+      <result property="authorName" column="author_name"/>
+      <result property="gender" column="gender"/>
+      <result property="country" column="country"/>
+      <result property="birthDate" column="birth_date"/>
+      <result property="deathDate" column="death_date"/>
+      <result property="biography" column="biography"/>
+      <result property="authorPhoto" column="author_photo"/>
+    </association>
+
+    <!-- 嵌套结果：借阅记录列表 -->
+    <collection property="borrowRecords" ofType="com.gqtian.mybatis.entity.vo.BorrowRecordVo">
+      <id property="id" column="borrow_id"/>
+      <result property="userId" column="user_id"/>
+      <result property="bookId" column="book_id"/>
+      <result property="borrowTime" column="borrow_time"/>
+      <result property="expectedReturnTime" column="expected_return_time"/>
+      <result property="actualReturnTime" column="actual_return_time"/>
+      <result property="renewCount" column="renew_count"/>
+    </collection>
+  </resultMap>
+
+  <!-- 主查询：查询图书信息（使用嵌套结果查询） -->
+  <select id="nestedResultXml" resultMap="BookVoNestedResultMap">
+    SELECT
+    b.id as book_id,
+    b.isbn,
+    b.title,
+    b.publisher,
+    b.publish_date,
+    b.price,
+    b.total_copies,
+    b.available_copies,
+    b.location,
+    b.status,
+    b.cover_image,
+    b.description,
+    a.id as author_id,
+    a.author_name,
+    a.gender,
+    a.country,
+    a.birth_date,
+    a.death_date,
+    a.biography,
+    a.contact_info,
+    a.author_photo,
+    br.id as borrow_id,
+    br.user_id,
+    br.book_id,
+    br.borrow_time,
+    br.expected_return_time,
+    br.actual_return_time,
+    br.renew_count
+    FROM book b
+    LEFT JOIN author a ON b.author_id = a.id
+    LEFT JOIN borrow_record br ON b.id = br.book_id
+    <where>
+      <if test="param.title != null and param.title != ''">
+        AND b.title LIKE CONCAT('%', #{param.title}, '%')
+      </if>
+      <if test="param.bookIds != null and param.bookIds.size() > 0">
+        AND b.id IN
+        <foreach item="bookId" collection="param.bookIds" separator="," open="(" close=")">
+          #{bookId}
+        </foreach>
+      </if>
+      <if test="param.authorName != null and param.authorName != ''">
+        AND a.author_name LIKE CONCAT('%', #{param.authorName}, '%')
+      </if>
+      <if test="param.borrowTimeStart != null and param.borrowTimeStart != ''">
+        AND br.borrow_time <![CDATA[ >= ]]> #{param.borrowTimeStart}
+      </if>
+      <if test="param.borrowTimeEnd != null and param.borrowTimeEnd != ''">
+        AND br.borrow_time <![CDATA[ <= ]]> #{param.borrowTimeEnd}
+      </if>
+    </where>
+  </select>
+</mapper>

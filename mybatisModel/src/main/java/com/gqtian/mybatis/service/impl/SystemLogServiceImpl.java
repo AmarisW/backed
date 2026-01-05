@@ -3,9 +3,9 @@ package com.gqtian.mybatis.service.impl;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.gqtian.mybatis.entity.SystemLogs;
-import com.gqtian.mybatis.mapper.SystemLogsMapper;
-import com.gqtian.mybatis.service.SystemLogsService;
+import com.gqtian.mybatis.entity.SystemLog;
+import com.gqtian.mybatis.mapper.SystemLogMapper;
+import com.gqtian.mybatis.service.SystemLogService;
 
 /**
 * @author gqtia
@@ -13,8 +13,8 @@ import com.gqtian.mybatis.service.SystemLogsService;
 * @createDate 2025-12-23 15:47:20
 */
 @Service
-public class SystemLogsServiceImpl extends ServiceImpl<SystemLogsMapper, SystemLogs>
-    implements SystemLogsService{
+public class SystemLogServiceImpl extends ServiceImpl<SystemLogMapper, SystemLog>
+    implements SystemLogService {
 
 }
 

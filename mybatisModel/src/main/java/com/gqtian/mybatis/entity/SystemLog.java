@@ -12,14 +12,14 @@ import lombok.Data;
  * 系统操作日志表
  * @TableName system_logs
  */
-@TableName(value = "system_logs")
+@TableName(value = "system_log")
 @Data
-public class SystemLogs {
+public class SystemLog {
     /**
      * 日志ID
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Long logId;
+    private Long id;
 
     /**
      * 操作用户ID
