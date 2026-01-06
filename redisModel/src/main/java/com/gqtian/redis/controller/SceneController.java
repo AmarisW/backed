@@ -1,4 +1,4 @@
-package com.gqtian.redis.web;
+package com.gqtian.redis.controller;
 
 import java.util.concurrent.TimeUnit;
 

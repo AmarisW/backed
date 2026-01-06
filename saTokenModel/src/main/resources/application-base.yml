@@ -1,0 +1,46 @@
+#################################  Spring  #################################
+spring:
+  datasource:
+    #----------------------- Mysql -----------------------#
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
+    username: root
+    password: REDACTED
+    type: com.alibaba.druid.pool.DruidDataSource
+  data:
+    redis:
+      database: 1                        # Redis数据库索引（默认为0）
+      host: 118.196.17.107               # Redis服务器地址
+      port: 6379                         # Redis服务器连接端口
+      password: REDACTED            # Redis服务器连接密码（默认为空）
+      timeout: 10s                       # 连接超时时间
+      lettuce:
+        pool:
+          max-active: 200                # 连接池最大连接数
+          max-wait: -1ms                 # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-idle: 10                   # 连接池中的最大空闲连接
+          min-idle: 0                    # 连接池中的最小空闲连接
+
+#################################  Mybatis-plus  #################################
+mybatis-plus:
+  mapper-locations: classpath*:mapper/mysql/*.xml
+  configuration:
+    # SQL 打印到工作台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+############## Sa-Token 配置 (官方文档: https://sa-token.cc) ##############
+sa-token:
+  token-name: sa-token               # Token 名称（同时作为 Cookie 名称）
+  token-prefix: Bearer               # Token 前缀 （Token前缀 与 Token值 之间必须有一个空格）
+  timeout: 2592000                   # Token 有效期（单位：秒，默认 30 天，-1 表示永久有效）
+  active-timeout: -1                 # Token 最低活跃频率（单位：秒，超过此时间未访问系统将被冻结，-1 表示不限制）
+  is-concurrent: true                # 是否允许同一账号并发登录（true: 允许多端同时登录，false: 新登录挤掉旧登录）
+  is-share: false                    # 多端登录时是否共用同一 Token（true: 共用一个 Token，false: 每次登录生成新 Token）
+  token-style: uuid                  # Token 生成策略（可选值: uuid、simple-uuid、random-32、random-64、random-128、tik）
+  is-log: true                       # 是否输出操作日志
+
+
+
+
+
+

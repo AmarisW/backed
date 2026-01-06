@@ -1,4 +1,4 @@
-package com.gqtian.common.web;
+package com.gqtian.common.controller;
 
 import java.util.List;
 

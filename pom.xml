@@ -35,6 +35,7 @@
     <module>networkModel</module>
     <module>redisModel</module>
     <module>mybatisModel</module>
+    <module>saTokenModel</module>
   </modules>
 
 
@@ -65,6 +66,9 @@
     <dynamic-datasource.version>4.3.0</dynamic-datasource.version>
     <mysql.version>8.2.0</mysql.version>
     <netty.version>4.1.94.Final</netty.version>
+    <sa-token.version>1.44.0</sa-token.version>
+    <sa-token-redis.version>1.44.0</sa-token-redis.version>
+    <sa-token-fastjson2.version>1.44.0</sa-token-fastjson2.version>
     <obs-aliyun.version>3.15.1</obs-aliyun.version>
     <obs-hw.version>3.22.12</obs-hw.version>
     <obs-minio.version>8.2.1</obs-minio.version>
@@ -103,6 +107,28 @@
         <groupId>io.netty</groupId>
         <version>${netty.version}</version>
       </dependency>
+
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-spring-boot3-starter</artifactId>
+        <version>${sa-token.version}</version>
+      </dependency>
+
+
+      <!-- Sa-Token 整合 RedisTemplate -->
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-redis-template</artifactId>
+        <version>${sa-token-redis.version}</version>
+      </dependency>
+
+      <!-- Sa-Token 整合 Fastjson2 -->
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-fastjson2</artifactId>
+        <version>${sa-token-fastjson2.version}</version>
+      </dependency>
+
 
       <!--============================ 数据源 ============================-->
       <!-- Mybatis-Plus -->

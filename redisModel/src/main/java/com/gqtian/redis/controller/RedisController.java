@@ -1,4 +1,4 @@
-package com.gqtian.redis.web;
+package com.gqtian.redis.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

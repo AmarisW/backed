@@ -1,12 +1,13 @@
 package com.gqtian.common.config;
 
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.context.annotation.Import;
+
+import com.gqtian.common.controller.GlobalExposedController;
 import com.gqtian.common.globalProcess.GlobalExceptionAdvice;
 import com.gqtian.common.globalProcess.GlobalResponseBodyAdvice;
 import com.gqtian.common.initialization.GlobalDictInitRun;
 import com.gqtian.common.utils.SpringApplicationUtil;
-import com.gqtian.common.web.GlobalExposedController;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.context.annotation.Import;
 
 /**
  * 全局Bean自动配置类

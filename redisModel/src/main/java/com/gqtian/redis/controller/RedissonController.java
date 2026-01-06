@@ -1,5 +1,5 @@
 
-package com.gqtian.redis.web;
+package com.gqtian.redis.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

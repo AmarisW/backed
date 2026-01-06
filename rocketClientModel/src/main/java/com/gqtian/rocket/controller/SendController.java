@@ -1,4 +1,4 @@
-package com.gqtian.rocket.web;
+package com.gqtian.rocket.controller;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

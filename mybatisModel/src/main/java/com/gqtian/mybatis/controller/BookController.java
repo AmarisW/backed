@@ -1,4 +1,4 @@
-package com.gqtian.mybatis.web;
+package com.gqtian.mybatis.controller;
 
 import java.util.List;
 

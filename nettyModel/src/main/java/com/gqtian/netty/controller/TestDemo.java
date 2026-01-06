@@ -1,4 +1,4 @@
-package com.gqtian.netty.web;
+package com.gqtian.netty.controller;
 
 import lombok.Data;
 
