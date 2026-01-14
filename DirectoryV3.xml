@@ -3,7 +3,7 @@
   <tree extension="" icon="ActionsShowReadAccess" path="/annotationModel" presentableText=""
       title="模板项目"
       tooltipTitle=""/>
-  <tree extension="" icon="ObjectBrowserShowMembers" path="/commonModel" presentableText=""
+  <tree extension="" icon="DebuggerWatch" path="/commonModel" presentableText=""
       title="公用模块"
       tooltipTitle=""/>
   <tree extension="" icon="ToolwindowsDependencies" path="/contrastModel" presentableText=""
