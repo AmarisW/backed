@@ -344,7 +344,10 @@
       <plugin>
         <artifactId>flatten-maven-plugin</artifactId>
         <configuration>
-          <flattenMode>resolveCiFriendliesOnly</flattenMode>
+          <!-- 将 resolveCiFriendliesOnly 改为 bom -->
+          <!-- bom 模式会解析所有的变量和 dependencyManagement，生成一个自包含版本信息的 POM -->
+          <!-- <flattenMode>resolveCiFriendliesOnly</flattenMode>-->
+          <flattenMode>bom</flattenMode>
           <updatePomFile>true</updatePomFile>
         </configuration>
         <executions>
