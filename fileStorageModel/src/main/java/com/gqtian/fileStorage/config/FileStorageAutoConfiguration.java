@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @RequiredArgsConstructor
 @EnableConfigurationProperties(FileStorageProperties.class) // 启用文件存储属性配置
-@ConditionalOnMissingBean(FileStorageService.class) // 当Spring上下文中没有FileStorageService bean时 才进行自动配置
 public class FileStorageAutoConfiguration {
 
     /**
@@ -31,6 +30,8 @@ public class FileStorageAutoConfiguration {
      * @return FileStorageService 文件存储服务实例
      */
     @Bean(destroyMethod = "destroy")
+    @ConditionalOnMissingBean(FileStorageService.class) // 当Spring上下文中没有FileStorageService bean时 才进行自动配置
+                                                        // 确保只有一个
     public FileStorageService fileStorageServiceBuilder() {
         // 根据文件存储属性创建文件存储服务构建器
         FileStorageServiceBuilder fileStorageServiceBuilder = FileStorageServiceBuilder.create(properties);

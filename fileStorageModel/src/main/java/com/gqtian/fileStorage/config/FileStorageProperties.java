@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import cn.hutool.extra.ftp.Ftp;
 import lombok.Data;
@@ -23,6 +24,7 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(chain = true)
+@Component
 @ConfigurationProperties(prefix = "file-storage")
 public class FileStorageProperties {
 
