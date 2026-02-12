@@ -1,12 +1,12 @@
-package com.gqtian.contrast.demo.事件监听.util;
+package com.gqtian.contrast.demo.事件监听.eventListener.util;
 
 import java.util.List;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import com.gqtian.contrast.demo.事件监听.event.AbstractMessage;
-import com.gqtian.contrast.demo.事件监听.event.MessageThree;
+import com.gqtian.contrast.demo.事件监听.eventListener.event.AbstractMessage;
+import com.gqtian.contrast.demo.事件监听.eventListener.event.MessageThree;
 
 @Component
 public class ContextUtil {

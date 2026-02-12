@@ -23,6 +23,12 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * 🔔 字典数据初始化到系统中
+ * <p>
+ * 该组件由 GlobalDatabaseAutoConfiguration 管理，会自动根据数据库配置启用
+ * </p>
+ * <p>
+ * 可通过配置项 spring.isEnable=false 禁用字典初始化（默认启用）
+ * </p>
  *
  * @author GQTIAN
  * @date 2025/7/24 17:28

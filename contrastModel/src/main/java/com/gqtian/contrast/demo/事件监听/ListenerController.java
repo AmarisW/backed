@@ -1,15 +1,17 @@
-package com.gqtian.contrast.demo.事件监听.controller;
+package com.gqtian.contrast.demo.事件监听;
 
 import java.util.Collections;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.gqtian.contrast.demo.事件监听.event.MessageObjectList;
-import com.gqtian.contrast.demo.事件监听.event.MessageOne;
-import com.gqtian.contrast.demo.事件监听.event.MessageThree;
-import com.gqtian.contrast.demo.事件监听.event.MessageTwo;
-import com.gqtian.contrast.demo.事件监听.util.ContextUtil;
+import com.gqtian.contrast.demo.事件监听.disruptor.DisruptorPublisher;
+import com.gqtian.contrast.demo.事件监听.eventListener.event.MessageObjectList;
+import com.gqtian.contrast.demo.事件监听.eventListener.event.MessageOne;
+import com.gqtian.contrast.demo.事件监听.eventListener.event.MessageThree;
+import com.gqtian.contrast.demo.事件监听.eventListener.event.MessageTwo;
+import com.gqtian.contrast.demo.事件监听.eventListener.util.ContextUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,8 +26,12 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/listener")
 @RequiredArgsConstructor
 public class ListenerController {
+
+    @Autowired
+    private DisruptorPublisher disruptorPublisher;
+
     /**
-     * 测试
+     * 测试 - Spring 原生事件监听方式
      */
     @RequestMapping("/doSome")
     public void doSome(int i) {
@@ -48,4 +54,5 @@ public class ListenerController {
                 .messageList(Collections.singletonList(messageThree)).build());
         }
     }
+
 }

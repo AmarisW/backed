@@ -1,4 +1,4 @@
-package com.gqtian.contrast.demo.事件监听.event;
+package com.gqtian.contrast.demo.事件监听.eventListener.event;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 /**
  * 👻 消息集合
  * 
- * @className MessageObjectList
+ * @className DisruptorMessageObjectList
  * @author gqtian
  * @date 2025/3/13 15:54
  */

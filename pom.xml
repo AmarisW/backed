@@ -82,6 +82,7 @@
     <spring-data-redisson.version>3.52.0</spring-data-redisson.version>
     <redisson.version>3.52.0</redisson.version>
     <jackson-datatype-jsr310.version>2.13.0</jackson-datatype-jsr310.version>
+    <disruptor.version>3.4.4</disruptor.version>
   </properties>
 
   <!-- 项目依赖统一管理 -->
@@ -332,6 +333,12 @@
         <artifactId>ffmpeg</artifactId>
         <version>${ffmpeg-linux.version}</version>
         <classifier>linux-x86_64</classifier>
+      </dependency>
+
+      <dependency>
+        <groupId>com.lmax</groupId>
+        <artifactId>disruptor</artifactId>
+        <version>${disruptor.version}</version>
       </dependency>
 
 

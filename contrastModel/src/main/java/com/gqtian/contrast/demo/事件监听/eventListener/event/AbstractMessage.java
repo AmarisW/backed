@@ -1,11 +1,11 @@
-package com.gqtian.contrast.demo.事件监听.event;
+package com.gqtian.contrast.demo.事件监听.eventListener.event;
 
 import lombok.Data;
 
 /**
  * 👻 最高级对象
  * 
- * @className AbstractMessage
+ * @className DisruptorAbstractMessage
  * @author gqtian
  * @date 2025/2/27 16:07
  */

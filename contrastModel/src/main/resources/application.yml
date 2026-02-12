@@ -3,6 +3,8 @@ server:
   port: 2000                              # 服务端口
   servlet:
     context-path: /contrastModel          # 项目访问路径
+  tomcat:
+    max-part-count: 100                   # 最大请求部分数量（影响表单提交的最大项）
 
 #################################  配置启动环境 #################################
 spring:

@@ -1,15 +1,15 @@
-package com.gqtian.contrast.demo.事件监听.listeners;
+package com.gqtian.contrast.demo.事件监听.eventListener.listeners;
 
 import org.springframework.stereotype.Service;
 
-import com.gqtian.contrast.demo.事件监听.event.MessageTwo;
+import com.gqtian.contrast.demo.事件监听.eventListener.event.MessageTwo;
 
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * 👻 消息一
  * 
- * @className MessageOne
+ * @className DisruptorMessageOne
  * @author gqtian
  * @date 2025/2/27 16:08
  */

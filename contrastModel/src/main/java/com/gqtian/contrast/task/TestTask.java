@@ -2,7 +2,6 @@ package com.gqtian.contrast.task;
 
 import java.util.concurrent.TimeUnit;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import cn.hutool.cache.impl.TimedCache;
@@ -36,7 +35,7 @@ public class TestTask {
     /**
      * 测试方法
      */
-    @Scheduled(fixedRate = 5000)
+    // @Scheduled(fixedRate = 5000)
     public void test() {
         Integer value = TIME_DATA_CACHE.get(1, false);
         if (value == null) {

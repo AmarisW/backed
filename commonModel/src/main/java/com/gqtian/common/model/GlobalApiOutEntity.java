@@ -33,6 +33,7 @@ public class GlobalApiOutEntity {
 
     /**
      * 请求参数列表
+    
      */
     private List<ParamEntity> params;
 

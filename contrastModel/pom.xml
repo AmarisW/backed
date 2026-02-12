@@ -70,6 +70,12 @@
       <version>3.5.15</version>
       <scope>compile</scope>
     </dependency>
+
+    <!-- Disruptor 高性能事件处理框架 -->
+    <dependency>
+      <groupId>com.lmax</groupId>
+      <artifactId>disruptor</artifactId>
+    </dependency>
   </dependencies>
 
   <!-- 构建信息 -->

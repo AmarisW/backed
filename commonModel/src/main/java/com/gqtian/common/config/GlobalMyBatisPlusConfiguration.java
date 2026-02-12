@@ -11,6 +11,9 @@ import lombok.extern.slf4j.Slf4j;
  * 配置 MyBatis-Plus 相关功能，并扫描 commonModel 包下的 Mapper 接口
  * 使其能够被 Spring 容器管理和注入
  * </p>
+ * <p>
+ * 该配置类由 GlobalDatabaseAutoConfiguration 管理，会自动根据条件启用
+ * </p>
  *
  * @author gqtian
  * @date 2025-06-02 14:39:44

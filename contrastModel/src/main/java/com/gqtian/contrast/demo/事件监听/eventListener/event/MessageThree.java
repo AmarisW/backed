@@ -1,18 +1,17 @@
-package com.gqtian.contrast.demo.事件监听.event;
+package com.gqtian.contrast.demo.事件监听.eventListener.event;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 /**
- * 👻 消息一
+ * 👻 消息三
  * 
- * @className MessageOne
+ * @className DisruptorMessageThree
  * @author gqtian
  * @date 2025/2/27 16:08
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class MessageOne extends AbstractMessage {
+public class MessageThree extends AbstractMessage {
     private String message;
-
 }

@@ -1,2 +1,4 @@
 # 全局bean配置
 com.gqtian.common.config.GlobalBeanAutoConfiguration
+# 数据库相关配置（可选）
+com.gqtian.common.config.GlobalDatabaseAutoConfiguration
