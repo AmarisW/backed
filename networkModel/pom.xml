@@ -28,6 +28,22 @@
       <artifactId>commonModel</artifactId>
       <groupId>com.gqtian</groupId>
     </dependency>
+    
+    <!--===============================数据库连接===========================-->
+    <!-- Druid连接池 -->
+    <dependency>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <groupId>com.alibaba</groupId>
+      <optional>true</optional>
+    </dependency>
+
+    <!-- 数据库驱动 -->
+    <dependency>
+      <artifactId>mysql-connector-j</artifactId>
+      <groupId>com.mysql</groupId>
+      <optional>true</optional>
+    </dependency>
+
   </dependencies>
 
   <!-- 构建信息-->

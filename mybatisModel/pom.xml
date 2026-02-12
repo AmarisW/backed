@@ -31,14 +31,18 @@
       <groupId>com.gqtian</groupId>
     </dependency>
 
+
+    <!--===============================数据库连接===========================-->
+    <!-- Druid连接池 -->
     <dependency>
-      <groupId>com.baomidou</groupId>
-      <artifactId>mybatis-plus-jsqlparser</artifactId>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <groupId>com.alibaba</groupId>
     </dependency>
 
+    <!-- 数据库驱动 -->
     <dependency>
-      <groupId>com.baomidou</groupId>
-      <artifactId>dynamic-datasource-spring-boot3-starter</artifactId>
+      <artifactId>mysql-connector-j</artifactId>
+      <groupId>com.mysql</groupId>
     </dependency>
   </dependencies>
 

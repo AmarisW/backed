@@ -16,7 +16,7 @@ mybatis-plus:
     # SQL打印到工作台
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-  
+
 
 
 
