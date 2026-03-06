@@ -1,13 +1,16 @@
 #################################  Spring  #################################
 spring:
   datasource:
-    #----------------------- Mysql -----------------------#
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
-    username: root
-    password: REDACTED
-    type: com.alibaba.druid.pool.DruidDataSource
-
+    dynamic:
+      primary: master
+      datasource:
+        master:
+          #----------------------- Mysql -----------------------#
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
+          username: root
+          password: REDACTED
+          type: com.alibaba.druid.pool.DruidDataSource
 
 #################################  Mybatis-plus  #################################
 mybatis-plus:

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 import com.alibaba.fastjson2.JSON;
+import com.gqtian.common.annotation.NoGlobalWrap;
 import com.gqtian.common.enums.GlobalResultCodeEnum;
 
 import lombok.RequiredArgsConstructor;
@@ -43,12 +44,13 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
      * 
      * @param returnType 返回类型
      * @param converterType 消息转换器类型
-     * @return 总是返回true，表示所有响应都需要处理
+     * @return 如果方法上有 @NoGlobalWrap 注解则返回 false，否则返回 true
      */
 
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        return true;
+        // 如果方法上有 @NoGlobalWrap 注解，则不处理，保持原始返回格式
+        return !returnType.hasMethodAnnotation(NoGlobalWrap.class);
     }
 
     /**
