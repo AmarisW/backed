@@ -28,10 +28,6 @@ public class FileStorageService {
 
     private CopyOnWriteArrayList<FileStorageInterface> fileStorageInterfaceList;
 
-    public static void main(String[] args) {
-
-    }
-
     /**
      * 获取对应的存储平台
      *

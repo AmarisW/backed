@@ -18,6 +18,11 @@ import lombok.NoArgsConstructor;
 public class SystemUser {
 
     /**
+     * 主键
+     */
+    private Long id;
+
+    /**
      * 名称
      */
     private String username;

@@ -19,7 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/server")
 @RequiredArgsConstructor
-public class NettyServerWeb {
+public class
+
+NettyServerWeb {
 
     private final NettyServer nettyServer;
 

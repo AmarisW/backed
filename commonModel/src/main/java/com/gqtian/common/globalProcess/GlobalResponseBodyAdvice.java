@@ -13,6 +13,7 @@ import com.alibaba.fastjson2.JSON;
 import com.gqtian.common.annotation.NoGlobalWrap;
 import com.gqtian.common.enums.GlobalResultCodeEnum;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
@@ -48,7 +49,8 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
      */
 
     @Override
-    public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
+    public boolean supports(MethodParameter returnType,
+        @NonNull Class<? extends HttpMessageConverter<?>> converterType) {
         // 如果方法上有 @NoGlobalWrap 注解，则不处理，保持原始返回格式
         return !returnType.hasMethodAnnotation(NoGlobalWrap.class);
     }
@@ -58,10 +60,10 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
      * <p>
      * 处理逻辑：
      * <ol>
- *   <li>如果已经是GlobalResult类型，直接返回，防止重复包装</li>
- *   <li>如果是String类型，转换为JSON字符串返回（避免ClassCastException）</li>
- *   <li>其他类型统一封装为GlobalResult</li>
- * </ol>
+    *   <li>如果已经是GlobalResult类型，直接返回，防止重复包装</li>
+    *   <li>如果是String类型，转换为JSON字符串返回（避免ClassCastException）</li>
+    *   <li>其他类型统一封装为GlobalResult</li>
+    * </ol>
      * </p>
      *
      * @param body 原始返回数据
@@ -74,9 +76,10 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
      */
     @SneakyThrows
     @Override
-    public Object beforeBodyWrite(Object body, MethodParameter returnType, MediaType selectedContentType,
-        Class<? extends HttpMessageConverter<?>> selectedConverterType, ServerHttpRequest request,
-        ServerHttpResponse response) {
+    public Object beforeBodyWrite(Object body, @NonNull MethodParameter returnType,
+        @NonNull MediaType selectedContentType,
+        @NonNull Class<? extends HttpMessageConverter<?>> selectedConverterType,
+        @NonNull ServerHttpRequest request, @NonNull ServerHttpResponse response) {
 
         // 防止重复包裹的问题出现 防止全局异常处理后返回的结果（Result）再次被包装
         if (body instanceof GlobalResult) {
@@ -85,7 +88,8 @@ public class GlobalResponseBodyAdvice implements ResponseBodyAdvice<Object> {
 
         // 如果Controller返回的是String，且使用StringHttpMessageConverter，则直接返回
         // 避免StringHttpMessageConverter尝试将GlobalResult对象转换为String时出现ClassCastException
-        if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class) || body instanceof String) {
+        if (selectedConverterType.isAssignableFrom(StringHttpMessageConverter.class)
+            || body instanceof String) {
             return JSON.toJSONString(GlobalResult.success(GlobalResultCodeEnum.RC100.getMessage(), body));
         }
 

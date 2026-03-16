@@ -10,7 +10,7 @@ spring:
           url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
           username: root
           password: REDACTED
-          type: com.alibaba.druid.pool.DruidDataSource
+          
 
 #################################  Mybatis-plus  #################################
 mybatis-plus:

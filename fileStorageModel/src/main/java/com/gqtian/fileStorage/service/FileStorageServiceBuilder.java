@@ -80,7 +80,8 @@ public class FileStorageServiceBuilder {
      * @return FileStorageClientFactory 实例
      */
     public static <Client> FileStorageClientFactory<Client> getFactory(String platform,
-        List<FileStorageClientFactory<?>> factoryList, Supplier<FileStorageClientFactory<Client>> defaultSupplier) {
+        List<FileStorageClientFactory<?>> factoryList,
+        Supplier<FileStorageClientFactory<Client>> defaultSupplier) {
 
         // TODO 可扩展
         if (factoryList != null) {
@@ -89,7 +90,8 @@ public class FileStorageServiceBuilder {
                     try {
                         return Tools.cast(factory);
                     } catch (Exception e) {
-                        throw new GlobalException("【文件服务】获取 FileStorageClientFactory 失败，类型不匹配，platform：" + platform, e);
+                        throw new GlobalException(
+                            "【文件服务】获取 FileStorageClientFactory 失败，类型不匹配，platform：" + platform, e);
                     }
                 }
             }
@@ -146,9 +148,10 @@ public class FileStorageServiceBuilder {
             return null;
         }
         // buildFileStorageDetect(aliYunOssConfig, PlatformEnum.ALIYUN_OSS);
-        log.info("【文件服务】加载阿里云 OSS 存储平台：{}，平台地址：{}", aliYunOssConfig.getPlatform(), aliYunOssConfig.getEndPoint());
-        FileStorageClientFactory<OSS> clientFactory = getFactory(aliYunOssConfig.getPlatform(), clientFactoryList,
-            () -> new AliYunOssClientFactory(aliYunOssConfig));
+        log.info("【文件服务】加载阿里云 OSS 存储平台：{}，平台地址：{}", aliYunOssConfig.getPlatform(),
+            aliYunOssConfig.getEndPoint());
+        FileStorageClientFactory<OSS> clientFactory = getFactory(aliYunOssConfig.getPlatform(),
+            clientFactoryList, () -> new AliYunOssClientFactory(aliYunOssConfig));
         return new AliyunOssPlatFrom(aliYunOssConfig, clientFactory);
     }
 
@@ -232,8 +235,8 @@ public class FileStorageServiceBuilder {
         // buildFileStorageDetect(huaweiObs, PlatformEnum.HUAWEI_OBS);
         log.info("【文件服务】加载华为 OBS 存储平台：{}，平台地址：{}", huaweiObs.getPlatform(), huaweiObs.getEndPoint());
         // 根据平台类型获取或创建对应的客户端工厂
-        FileStorageClientFactory<ObsClient> clientFactory =
-            getFactory(huaweiObs.getPlatform(), clientFactoryList, () -> new HuaweiObsClientFactory(huaweiObs));
+        FileStorageClientFactory<ObsClient> clientFactory = getFactory(huaweiObs.getPlatform(),
+            clientFactoryList, () -> new HuaweiObsClientFactory(huaweiObs));
         // 使用配置信息和客户端工厂创建并返回华为 OBS 文件存储实例
         return new HuaweiObsPlatFrom(huaweiObs, clientFactory);
     }

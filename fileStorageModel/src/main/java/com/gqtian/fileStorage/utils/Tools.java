@@ -6,13 +6,17 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import cn.hutool.core.map.CaseInsensitiveMap;
-import cn.hutool.core.util.EnumUtil;
+import com.gqtian.common.globalProcess.GlobalException;
+
 import cn.hutool.core.util.StrUtil;
 
 public class Tools {
 
-    /** 获取父路径 */
+    /**
+     * 获取父目录
+     * @param path 路径
+     * @return String
+     */
     public static String getParent(String path) {
         if (path.endsWith("/") || path.endsWith("\\")) {
             path = path.substring(0, path.length() - 1);
@@ -21,6 +25,11 @@ public class Tools {
         return endIndex > -1 ? path.substring(0, endIndex) : null;
     }
 
+    /**
+     * 合并路径
+     * @param paths 路径
+     * @return String
+     */
     /** 合并路径 */
     public static String join(String... paths) {
         StringBuilder sb = new StringBuilder();
@@ -40,12 +49,6 @@ public class Tools {
         return sb.toString();
     }
 
-    /** 类型转换 */
-    @SuppressWarnings("unchecked")
-    public static <T> T cast(Object object) {
-        return (T)object;
-    }
-
     /** 获取流的大小（长度） */
     public static long getSize(InputStream in) throws IOException {
         long size = 0;
@@ -63,7 +66,7 @@ public class Tools {
                 return t;
             }
         }
-        throw new NullPointerException();
+        throw new GlobalException("【工具类】获取参数错误");
     }
 
     /** 将 Map 的 key 和 value 转换成 String 类型 */
@@ -71,18 +74,8 @@ public class Tools {
         if (map == null) {
             return null;
         }
-        return map.entrySet().stream().collect(
-            Collectors.toMap(e -> StrUtil.toStringOrNull(e.getKey()), e -> StrUtil.toStringOrNull(e.getValue())));
+        return map.entrySet().stream().collect(Collectors.toMap(e -> StrUtil.toStringOrNull(e.getKey()),
+            e -> StrUtil.toStringOrNull(e.getValue())));
     }
 
-    /** 获取枚举类型（忽略大小写） */
-    public static <E extends Enum<E>> E getEnum(Class<E> enumClass, Object value) {
-        if (value == null) {
-            return null;
-        }
-        if (enumClass.isInstance(value)) {
-            return Tools.cast(value);
-        }
-        return new CaseInsensitiveMap<>(EnumUtil.getEnumMap(enumClass)).get(value.toString());
-    }
 }

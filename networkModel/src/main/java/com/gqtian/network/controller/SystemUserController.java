@@ -28,7 +28,6 @@ public class SystemUserController {
 
     private final SystemUserService systemUserService;
 
-
     /**
      * 查询用户信息（个体）
      */
@@ -38,23 +37,39 @@ public class SystemUserController {
         SystemUser systemUser = systemUserService.queryUserInfoObject();
         CollectResult<SystemUser> result = new CollectResult<>();
         result.setStatus(200);
-        result.setErrorCode("RC100");
-        result.setErrorMsg("错误信息");
+        result.setErrorCode("");
+        result.setErrorMsg("");
         result.setData(systemUser);
         return result;
     }
 
     /**
-     * 查询用户信息集合
+     * 查询用户信息分页
      */
     @NoGlobalWrap
     @RequestMapping("queryUserInfoPage")
-    public CollectResult<List<SystemUser>> queryUserInfoPage(Page<SystemUser> page) {
-        List<SystemUser> systemUsers = systemUserService.queryUserInfoPage(page);
+    public CollectResult<List<SystemUser>> queryUserInfoPage(String page, String pageSize) {
+        Page<SystemUser> userPage = new Page<>(Long.parseLong(page), Long.parseLong(pageSize));
+        List<SystemUser> systemUsers = systemUserService.queryUserInfoPage(userPage);
         CollectResult<List<SystemUser>> result = new CollectResult<>();
         result.setStatus(200);
-        result.setErrorCode("RC100");
-        result.setErrorMsg("错误信息");
+        result.setErrorCode("");
+        result.setErrorMsg("");
+        result.setData(systemUsers);
+        return result;
+    }
+
+    /**
+     * 生成集合方法
+     */
+    @NoGlobalWrap
+    @RequestMapping("queryUserInfoList")
+    public CollectResult<List<SystemUser>> queryUserInfoList() {
+        List<SystemUser> systemUsers = systemUserService.list();
+        CollectResult<List<SystemUser>> result = new CollectResult<>();
+        result.setStatus(200);
+        result.setErrorCode("");
+        result.setErrorMsg("");
         result.setData(systemUsers);
         return result;
     }

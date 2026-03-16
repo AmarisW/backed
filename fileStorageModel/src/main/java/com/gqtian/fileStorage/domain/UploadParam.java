@@ -14,8 +14,14 @@ import lombok.Data;
 @Data
 public class UploadParam {
 
+    /**
+     * 平台
+     */
     private String platform;
 
+    /**
+     * 文件
+     */
     private MultipartFile file;
 
 }
