@@ -14,7 +14,7 @@ class NettyModelApplicationTests {
         Network network;
         network = Network.builder().ip("192.168.5.22").port(2906).build();
         // 读取本地文件
-        ClassPathResource classPathResource = new ClassPathResource("file/报文.txt");
+        ClassPathResource classPathResource = new ClassPathResource("file/2011/1001P11.txt");
         InputStream inputStream = classPathResource.getInputStream();
         String msg = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         NettyClientTest nettyClient = new NettyClientTest();
