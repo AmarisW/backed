@@ -196,26 +196,22 @@ public class GlobalSqlPrintInterceptor implements Interceptor {
     private void printSqlLog(String sqlId, String sql, long costTime) {
         boolean isSlowSql = costTime > slowSqlThreshold;
 
-        // ─────────────── 构建日志内容 ───────────────
-        StringBuilder logBuilder = new StringBuilder();
-        logBuilder.append("\n╔══════════════════════════════════════════════════════════════════════════");
-        logBuilder.append("\n║ 【SQL执行日志】").append(isSlowSql ? " ⚠️ 慢SQL警告" : "");
-        logBuilder.append("\n╠══════════════════════════════════════════════════════════════════════════");
-        logBuilder.append("\n║ SqlId    : ").append(sqlId);
-        logBuilder.append("\n║ CostTime : ").append(costTime).append(" ms");
-        if (isSlowSql) {
-            logBuilder.append(" (超过阈值: ").append(slowSqlThreshold).append("ms)");
-        }
-        logBuilder.append("\n╠──────────────────────────────────────────────────────────────────────────");
-        logBuilder.append("\n║ SQL >>");
-        logBuilder.append("\n║ ").append(sql);
-        logBuilder.append("\n╚══════════════════════════════════════════════════════════════════════════");
+        String logContent = String.format("""
 
-        // ─────────────── 根据耗时选择日志级别 ───────────────
+            ══════════════════════════════  SQL执行日志  ══════════════════════════════
+            ║ SqlId  : %s
+            ║ Status : %s
+            ║ Cost   : %d ms%s
+            ║ SQL    : %s
+
+            ═══════════════════════════════════════════════════════════════════════════
+            """, sqlId, isSlowSql ? "[慢]" : "[正常]", costTime,
+            isSlowSql ? " (阈值:" + slowSqlThreshold + "ms)" : "", sql);
+
         if (isSlowSql) {
-            log.warn(logBuilder.toString());
+            log.warn(logContent);
         } else {
-            log.info(logBuilder.toString());
+            log.info(logContent);
         }
     }
 }
