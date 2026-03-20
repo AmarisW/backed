@@ -3,9 +3,9 @@ package com.gqtian.common.utils;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Component;
 
 import lombok.Getter;
+import lombok.NonNull;
 
 /**
  * 🔔 SpringUtil:用于加载Spring容器；静态方法中 调用Spring的Bean的方法 以静态变量保存Spring ApplicationContext,
@@ -14,7 +14,6 @@ import lombok.Getter;
  * @author GQTIAN
  * @date 2025/7/24 17:29
  **/
-@Component
 public class SpringApplicationUtil implements ApplicationContextAware {
 
     /**
@@ -60,7 +59,7 @@ public class SpringApplicationUtil implements ApplicationContextAware {
     }
 
     @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+    public void setApplicationContext(@NonNull ApplicationContext applicationContext) throws BeansException {
         if (SpringApplicationUtil.applicationContext == null) {
             SpringApplicationUtil.applicationContext = applicationContext;
         }

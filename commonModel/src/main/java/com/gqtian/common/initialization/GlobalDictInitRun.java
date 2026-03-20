@@ -33,9 +33,9 @@ import lombok.extern.slf4j.Slf4j;
  * @author GQTIAN
  * @date 2025/7/24 17:28
  **/
-@Component
 @Slf4j
 @Order(2)
+@Component
 @ConditionalOnExpression("${spring.isEnable:true}")
 // @ConditionalOnExpression("T(org.apache.commons.lang3.StringUtils).isNotEmpty('${spring
 // .isEnable}')")
