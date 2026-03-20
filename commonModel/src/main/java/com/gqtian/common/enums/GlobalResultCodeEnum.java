@@ -1,5 +1,10 @@
 package com.gqtian.common.enums;
 
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import lombok.Getter;
 
 /**
@@ -105,6 +110,12 @@ public enum GlobalResultCodeEnum {
     private final String message;
 
     /**
+     * 状态码缓存Map（提升查询效率）
+     */
+    private static final Map<String, GlobalResultCodeEnum> CODE_MAP = 
+            Stream.of(values()).collect(Collectors.toMap(GlobalResultCodeEnum::getCode, Function.identity(), (a, b) -> a));
+
+    /**
      * 构造方法
      * 
      * @param code 状态码
@@ -122,11 +133,17 @@ public enum GlobalResultCodeEnum {
      * @return 对应的枚举对象，找不到返回null
      */
     public static GlobalResultCodeEnum getResultCodeEnum(String code) {
-        for (GlobalResultCodeEnum globalResultCodeEnum : GlobalResultCodeEnum.values()) {
-            if (globalResultCodeEnum.getCode().equals(code)) {
-                return globalResultCodeEnum;
-            }
-        }
-        return null;
+        return CODE_MAP.get(code);
+    }
+
+    /**
+     * 根据状态码获取对应的枚举对象，找不到则返回默认值
+     *
+     * @param code         状态码
+     * @param defaultValue 默认值
+     * @return 对应的枚举对象
+     */
+    public static GlobalResultCodeEnum getResultCodeEnum(String code, GlobalResultCodeEnum defaultValue) {
+        return CODE_MAP.getOrDefault(code, defaultValue);
     }
 }

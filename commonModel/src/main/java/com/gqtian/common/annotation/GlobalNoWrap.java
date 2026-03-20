@@ -30,5 +30,5 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface NoGlobalWrap {
+public @interface GlobalNoWrap {
 }

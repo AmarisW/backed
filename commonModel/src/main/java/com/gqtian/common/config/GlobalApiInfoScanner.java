@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -140,8 +141,8 @@ public class GlobalApiInfoScanner implements ImportAware {
      * @param classRequestMapping 类上的RequestMapping路径
      */
     private void printMethodApiInfo(Method method, String classRequestMapping) {
-        String httpMethod = "";
-        String methodRequestMapping = "";
+        String httpMethod = StringUtils.EMPTY;
+        String methodRequestMapping = StringUtils.EMPTY;
 
         // 统一处理各种Mapping注解
         for (int i = 0; i < MAPPING_ANNOTATIONS.length; i++) {

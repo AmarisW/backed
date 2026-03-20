@@ -2,6 +2,8 @@ package com.gqtian.common.globalProcess;
 
 import com.gqtian.common.enums.GlobalResultCodeEnum;
 
+import lombok.Getter;
+
 /**
  * 全局自定义业务异常
  * <p>
@@ -19,13 +21,20 @@ import com.gqtian.common.enums.GlobalResultCodeEnum;
  * @author gqtian
  * @date 2023/04/26 10:52
  */
+@Getter
 public class GlobalException extends RuntimeException {
+
+    /**
+     * 错误码
+     */
+    private final String code;
 
     /**
      * 无参构造方法
      */
     public GlobalException() {
         super();
+        this.code = GlobalResultCodeEnum.RC999.getCode();
     }
 
     /**
@@ -35,6 +44,7 @@ public class GlobalException extends RuntimeException {
      */
     public GlobalException(int messageCode) {
         super(String.valueOf(messageCode));
+        this.code = String.valueOf(messageCode);
     }
 
     /**
@@ -44,6 +54,18 @@ public class GlobalException extends RuntimeException {
      */
     public GlobalException(String message) {
         super(message);
+        this.code = GlobalResultCodeEnum.RC999.getCode();
+    }
+
+    /**
+     * 通过错误码和错误信息构造异常
+     *
+     * @param code    错误码
+     * @param message 错误信息
+     */
+    public GlobalException(String code, String message) {
+        super(message);
+        this.code = code;
     }
 
     /**
@@ -54,6 +76,7 @@ public class GlobalException extends RuntimeException {
      */
     public GlobalException(String message, Throwable cause) {
         super(message, cause);
+        this.code = GlobalResultCodeEnum.RC999.getCode();
     }
 
     /**
@@ -63,6 +86,7 @@ public class GlobalException extends RuntimeException {
      */
     public GlobalException(Throwable cause) {
         super(cause);
+        this.code = GlobalResultCodeEnum.RC999.getCode();
     }
 
     /**
@@ -71,6 +95,7 @@ public class GlobalException extends RuntimeException {
      * @param globalResultCodeEnum 状态码枚举
      */
     public GlobalException(GlobalResultCodeEnum globalResultCodeEnum) {
-        super(globalResultCodeEnum.getCode());
+        super(globalResultCodeEnum.getMessage());
+        this.code = globalResultCodeEnum.getCode();
     }
 }

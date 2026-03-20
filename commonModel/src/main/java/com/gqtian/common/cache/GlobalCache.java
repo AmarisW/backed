@@ -1,8 +1,9 @@
 package com.gqtian.common.cache;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.gqtian.common.model.GlobalDict;
 
@@ -22,13 +23,17 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalCache {
 
     /**
-     * 字典缓存容器
+     * 字典缓存容器（线程安全）
      * <p>
      * Key: 字典类型（type），例如："gender"、"status"
      * Value: 该类型下的所有字典项列表
      * </p>
      */
-    public static final Map<String, List<GlobalDict>> GLOBAL_DICT = new HashMap<>();
+    public static final ConcurrentHashMap<String, List<GlobalDict>> GLOBAL_DICT = new ConcurrentHashMap<>();
+
+    private GlobalCache() {
+        // 私有构造函数，防止实例化
+    }
 
     /**
      * 添加字典缓存
@@ -37,15 +42,46 @@ public class GlobalCache {
      * 如果不存在，则创建新的字典类型并添加字典项列表
      * </p>
      *
-     * @param type 字典类型
+     * @param type           字典类型
      * @param globalDictList 字典项列表
      */
     public static void addDicCache(String type, List<GlobalDict> globalDictList) {
-        if (GLOBAL_DICT.containsKey(type)) {
-            GLOBAL_DICT.get(type).addAll(globalDictList);
-        } else {
-            GLOBAL_DICT.put(type, globalDictList);
-        }
+        GLOBAL_DICT.computeIfAbsent(type, k -> new ArrayList<>()).addAll(globalDictList);
     }
 
+    /**
+     * 获取指定类型的字典列表
+     *
+     * @param type 字典类型
+     * @return 字典列表，不存在则返回空列表
+     */
+    public static List<GlobalDict> getDictList(String type) {
+        List<GlobalDict> list = GLOBAL_DICT.get(type);
+        return list == null ? Collections.emptyList() : new ArrayList<>(list);
+    }
+
+    /**
+     * 移除指定类型的字典缓存
+     *
+     * @param type 字典类型
+     */
+    public static void removeDicCache(String type) {
+        GLOBAL_DICT.remove(type);
+    }
+
+    /**
+     * 清空所有字典缓存
+     */
+    public static void clearAll() {
+        GLOBAL_DICT.clear();
+    }
+
+    /**
+     * 获取缓存的字典类型数量
+     *
+     * @return 字典类型数量
+     */
+    public static int size() {
+        return GLOBAL_DICT.size();
+    }
 }

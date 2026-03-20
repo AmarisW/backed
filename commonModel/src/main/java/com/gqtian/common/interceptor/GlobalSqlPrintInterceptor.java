@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Properties;
 import java.util.regex.Matcher;
 
 import org.apache.ibatis.cache.CacheKey;
@@ -22,16 +21,24 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.type.TypeHandlerRegistry;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * MyBatis 完整SQL打印拦截器  
+ * MyBatis 完整SQL打印拦截器
+ * <p>
+ * 支持配置项：
+ * <ul>
+ *   <li>slowSqlThreshold - 慢SQL阈值（毫秒），默认1000ms</li>
+ *   <li>enableSqlLog - 是否启用SQL日志，默认true</li>
+ * </ul>
+ * </p>
+ *
  * @author gqtian
  * @date 2025/8/15
  */
 @Slf4j
-@RequiredArgsConstructor
+@Setter
 @Intercepts({
     @Signature(type = Executor.class, method = "update", args = {MappedStatement.class, Object.class}),
     @Signature(type = Executor.class, method = "query",
@@ -39,6 +46,16 @@ import lombok.extern.slf4j.Slf4j;
     @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class,
         RowBounds.class, ResultHandler.class, CacheKey.class, BoundSql.class})})
 public class GlobalSqlPrintInterceptor implements Interceptor {
+
+    /**
+     * 慢SQL阈值（毫秒），默认1000ms
+     */
+    private long slowSqlThreshold = 1000L;
+
+    /**
+     * 是否启用SQL日志
+     */
+    private boolean enableSqlLog = true;
 
     /*
      * ┌─────────────────────────────────────────────────────────────────────────┐
@@ -48,6 +65,9 @@ public class GlobalSqlPrintInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
+        if (!enableSqlLog) {
+            return invocation.proceed();
+        }
 
         // ═══════════════════════ 1. 提取SQL相关信息 ═══════════════════════
         MappedStatement mappedStatement = (MappedStatement)invocation.getArgs()[0];
@@ -174,7 +194,7 @@ public class GlobalSqlPrintInterceptor implements Interceptor {
      * 格式化打印SQL日志
      */
     private void printSqlLog(String sqlId, String sql, long costTime) {
-        boolean isSlowSql = costTime > 1000;
+        boolean isSlowSql = costTime > slowSqlThreshold;
 
         // ─────────────── 构建日志内容 ───────────────
         StringBuilder logBuilder = new StringBuilder();
@@ -184,7 +204,7 @@ public class GlobalSqlPrintInterceptor implements Interceptor {
         logBuilder.append("\n║ SqlId    : ").append(sqlId);
         logBuilder.append("\n║ CostTime : ").append(costTime).append(" ms");
         if (isSlowSql) {
-            logBuilder.append(" (超过阈值: ").append(1000).append("ms)");
+            logBuilder.append(" (超过阈值: ").append(slowSqlThreshold).append("ms)");
         }
         logBuilder.append("\n╠──────────────────────────────────────────────────────────────────────────");
         logBuilder.append("\n║ SQL >>");
@@ -197,10 +217,5 @@ public class GlobalSqlPrintInterceptor implements Interceptor {
         } else {
             log.info(logBuilder.toString());
         }
-    }
-
-    @Override
-    public void setProperties(Properties properties) {
-        // 可通过配置文件传入自定义属性
     }
 }

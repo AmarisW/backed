@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.gqtian.common.annotation.NoGlobalWrap;
+import com.gqtian.common.annotation.GlobalNoWrap;
 import com.gqtian.network.entity.CollectResult;
 import com.gqtian.network.entity.SystemUser;
 import com.gqtian.network.service.SystemUserService;
@@ -31,7 +31,7 @@ public class SystemUserController {
     /**
      * 查询用户信息（个体）
      */
-    @NoGlobalWrap
+    @GlobalNoWrap
     @RequestMapping("queryUserInfoObject")
     public CollectResult<SystemUser> queryUserInfoObject() {
         SystemUser systemUser = systemUserService.queryUserInfoObject();
@@ -46,7 +46,7 @@ public class SystemUserController {
     /**
      * 查询用户信息分页
      */
-    @NoGlobalWrap
+    @GlobalNoWrap
     @RequestMapping("queryUserInfoPage")
     public CollectResult<List<SystemUser>> queryUserInfoPage(String page, String pageSize) {
         Page<SystemUser> userPage = new Page<>(Long.parseLong(page), Long.parseLong(pageSize));
@@ -62,7 +62,7 @@ public class SystemUserController {
     /**
      * 生成集合方法
      */
-    @NoGlobalWrap
+    @GlobalNoWrap
     @RequestMapping("queryUserInfoList")
     public CollectResult<List<SystemUser>> queryUserInfoList() {
         List<SystemUser> systemUsers = systemUserService.list();

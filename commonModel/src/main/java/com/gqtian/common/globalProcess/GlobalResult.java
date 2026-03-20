@@ -99,7 +99,7 @@ public class GlobalResult<T> implements Serializable {
      * 失败操作，默认数据
      */
     public static <T> GlobalResult<T> failure() {
-        return failure(GlobalResultCodeEnum.RC100.getMessage());
+        return failure(GlobalResultCodeEnum.RC999.getMessage());
     }
 
     /**
