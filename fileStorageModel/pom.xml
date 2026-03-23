@@ -2,111 +2,117 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  
+
+  <!-- parent指明继承关系，给出被继承的父项目的具体信息 -->
   <parent>
     <artifactId>IndividualProject</artifactId>
     <groupId>com.gqtian</groupId>
     <version>${revision}</version>
   </parent>
 
-  <!-- 模块信息 -->
+  <!-- 项目信息 -->
   <artifactId>fileStorageModel</artifactId>
   <name>fileStorageModel</name>
   <version>${revision}</version>
   <description>文件模块</description>
 
-  <!-- 打包方式 -->
+  <!-- 打包类型声明 -->
   <packaging>jar</packaging>
 
-  <!-- 依赖控制 -->
+  <!-- 属性定义 -->
   <properties>
   </properties>
 
-  <!-- 依赖版本控制 -->
+  <!-- 项目依赖 -->
   <dependencies>
+
+    <!--============================ 子包依赖 ============================-->
+
+    <!-- 公共基础模块 -->
     <dependency>
-      <artifactId>commonModel</artifactId>
       <groupId>com.gqtian</groupId>
+      <artifactId>commonModel</artifactId>
     </dependency>
 
+    <!--============================ Spring Boot ============================-->
+    <!-- Spring Boot 配置处理器，生成配置元数据 -->
     <dependency>
-      <artifactId>commons-pool2</artifactId>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <!--============================ 常用工具 ============================-->
+
+    <!-- Apache Commons 对象池 -->
+    <dependency>
       <groupId>org.apache.commons</groupId>
+      <artifactId>commons-pool2</artifactId>
     </dependency>
 
-    <!--华为Obs云储存-->
+    <!-- JSch SFTP客户端 -->
     <dependency>
-      <artifactId>esdk-obs-java</artifactId>
-      <groupId>com.huaweicloud</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>aliyun-sdk-oss</artifactId>
-      <groupId>com.aliyun.oss</groupId>
-    </dependency>
-
-    <dependency>
-      <artifactId>minio</artifactId>
-      <groupId>io.minio</groupId>
-    </dependency>
-
-    <!-- SFTP -->
-    <dependency>
-      <artifactId>jsch</artifactId>
       <groupId>com.jcraft</groupId>
+      <artifactId>jsch</artifactId>
       <optional>true</optional>
       <scope>provided</scope>
     </dependency>
 
-    <!-- FTP -->
+    <!-- Apache Commons Net 网络工具（FTP等） -->
     <dependency>
-      <artifactId>commons-net</artifactId>
       <groupId>commons-net</groupId>
+      <artifactId>commons-net</artifactId>
     </dependency>
+
+    <!--============================ 其他依赖 ============================-->
+
+    <!-- 华为云OBS对象存储 -->
+    <dependency>
+      <groupId>com.huaweicloud</groupId>
+      <artifactId>esdk-obs-java</artifactId>
+    </dependency>
+
+    <!-- 阿里云OSS对象存储 -->
+    <dependency>
+      <groupId>com.aliyun.oss</groupId>
+      <artifactId>aliyun-sdk-oss</artifactId>
+    </dependency>
+
+    <!-- MinIO对象存储 -->
+    <dependency>
+      <groupId>io.minio</groupId>
+      <artifactId>minio</artifactId>
+    </dependency>
+
   </dependencies>
 
-  <!-- 父类信息 -->
+  <!-- 构建配置 -->
   <build>
-    <!-- 移除 spring-boot-maven-plugin 插件，这样就不会生成可执行jar包，只生成普通的jar包 -->
-    <!--
     <plugins>
       <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <configuration>
-          <excludes>
-            <exclude>
-              <groupId>org.springframework.boot</groupId>
-              <artifactId>spring-boot-configuration-processor</artifactId>
-            </exclude>
-          </excludes>
-        </configuration>
-      </plugin>
-    </plugins>
-    -->
-    <plugins>
-      <plugin>
-        <artifactId>git-commit-id-maven-plugin</artifactId>
         <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
+            <id>prepare</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
             <configuration>
               <target>
                 <unzip dest="target/jar" src="${project.basedir}/../abientLib/jar-integrate.zip"/>
               </target>
             </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-            <id>prepare</id>
-            <phase>validate</phase>
           </execution>
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
@@ -115,11 +121,11 @@
         </configuration>
         <executions>
           <execution>
+            <id>make-assembly</id>
+            <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
-            <id>make-assembly</id>
-            <phase>package</phase>
           </execution>
         </executions>
       </plugin>

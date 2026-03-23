@@ -24,6 +24,7 @@
     <dependency>
       <artifactId>spring-boot-starter-web</artifactId>
       <groupId>org.springframework.boot</groupId>
+      <optional>true</optional>
     </dependency>
 
     <!-- 测试模块 -->
