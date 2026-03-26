@@ -77,8 +77,7 @@
       <artifactId>disruptor</artifactId>
     </dependency>
   </dependencies>
-
-  <!-- 构建信息 -->
+  <!-- 构建信息-->
   <build>
     <plugins>
       <plugin>
@@ -104,23 +103,27 @@
         <artifactId>git-commit-id-maven-plugin</artifactId>
         <groupId>io.github.git-commit-id</groupId>
       </plugin>
+
+      <!-- 解压插件：将本地脚本包解压到 target 目录 -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <configuration>
-              <target>
-                <unzip dest="target/jar" src="${project.basedir}/../abientLib/jar-integrate.zip"/>
-              </target>
-            </configuration>
+            <id>unzip-script-jar</id>
+            <phase>package</phase>
             <goals>
               <goal>run</goal>
             </goals>
-            <id>prepare</id>
-            <phase>validate</phase>
+            <configuration>
+              <target>
+                <unzip dest="target" src="${project.basedir}/../abientLib/script-jar-main.zip"/>
+              </target>
+            </configuration>
           </execution>
         </executions>
       </plugin>
+
+      <!-- Assembly插件：自定义打包格式，生成发布包 -->
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
@@ -130,21 +133,13 @@
         </configuration>
         <executions>
           <execution>
+            <id>make-assembly</id>
             <goals>
               <goal>single</goal>
             </goals>
-            <id>make-assembly</id>
             <phase>package</phase>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>21</source>
-          <target>21</target>
-        </configuration>
       </plugin>
     </plugins>
   </build>
