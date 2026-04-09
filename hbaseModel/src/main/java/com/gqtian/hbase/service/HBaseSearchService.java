@@ -107,8 +107,6 @@ public class HBaseSearchService {
                         // 日志记录查询到的GPS数据数量
                         log.info("{}日车辆{}查询到Gps数量：【{}】", terminalTime, key, gapDateList.size());
                         producerService.sendAsyncMsg(gapDateList);
-                        // 保存修正后的GPS数据
-                        // this.save(terminalTime, correctionRules(gapDateList), table, key);
                     }
                 } catch (Exception e) {
                     log.error("{}修正失败", key, e);
@@ -220,8 +218,8 @@ public class HBaseSearchService {
      * @param endDate 查询结束时间。
      * @return GPS数据列表。
      */
-    private List<GpsData> getUsbGpsData(String plateNumber, Integer plateColor, Table table, DateTime startDate,
-        DateTime endDate) {
+    private List<GpsData> getUsbGpsData(String plateNumber, Integer plateColor, Table table,
+        DateTime startDate, DateTime endDate) {
         try {
             Scan scan = new Scan();
             scan.setStartRow(GpsHBaseTableConverter.getRowKey(plateNumber, plateColor, startDate));
