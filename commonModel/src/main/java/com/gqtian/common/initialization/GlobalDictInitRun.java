@@ -35,7 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Order(2)
 @Component
-@ConditionalOnExpression("${spring.isEnable:true}")
+@ConditionalOnExpression("${spring.isEnable:false}") // 启用字典初始化 默认为不启用
+// @ConditionalOnProperty(name = "spring.isEnable", havingValue = "true") // 其实推荐使用这个
 public class GlobalDictInitRun implements CommandLineRunner {
 
     /**
@@ -67,15 +68,14 @@ public class GlobalDictInitRun implements CommandLineRunner {
             List<GlobalDict> globalDictList = sysDicMapper.selectList(queryWrapper);
 
             // 按类型分组并添加到缓存
-            Map<String, List<GlobalDict>> groupedDict = globalDictList.stream()
-                    .collect(Collectors.groupingBy(GlobalDict::getType));
+            Map<String, List<GlobalDict>> groupedDict =
+                globalDictList.stream().collect(Collectors.groupingBy(GlobalDict::getType));
 
-            groupedDict.forEach((type, dictList) -> 
-                    GlobalCache.GLOBAL_DICT.put(type, new ArrayList<>(dictList)));
+            groupedDict
+                .forEach((type, dictList) -> GlobalCache.GLOBAL_DICT.put(type, new ArrayList<>(dictList)));
 
-            log.info("【字典缓存】字典缓存初始化完成！类型数：{}，总条数：{}，用时：{} ms",
-                    GlobalCache.size(), globalDictList.size(),
-                    Duration.between(startTime, LocalDateTime.now()).toMillis());
+            log.info("【字典缓存】字典缓存初始化完成！类型数：{}，总条数：{}，用时：{} ms", GlobalCache.size(), globalDictList.size(),
+                Duration.between(startTime, LocalDateTime.now()).toMillis());
         } catch (Exception e) {
             log.error("【字典缓存】字典缓存初始化异常！请检查字典表是否存在，或者修改配置文件启用字典配置", e);
         }

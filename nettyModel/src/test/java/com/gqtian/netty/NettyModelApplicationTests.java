@@ -12,9 +12,9 @@ class NettyModelApplicationTests {
 
     public static void main(String[] args) throws Exception {
         Network network;
-        network = Network.builder().ip("192.168.2.206").port(2019).build();
+        network = Network.builder().ip("192.168.2.206").port(7019).build();
         // 读取本地文件
-        ClassPathResource classPathResource = new ClassPathResource("file/2019/1412P19Jtb.txt");
+        ClassPathResource classPathResource = new ClassPathResource("file/2019/9401P19Jtb.txt");
         InputStream inputStream = classPathResource.getInputStream();
         String msg = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         NettyClientTest nettyClient = new NettyClientTest();
