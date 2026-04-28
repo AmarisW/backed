@@ -81,10 +81,4 @@ public class GlobalDictInitRun implements CommandLineRunner {
         }
     }
 
-    /**
-     * 更新缓存
-     */
-    public static void refreshCache() {
-        initializeDictionary();
-    }
 }
