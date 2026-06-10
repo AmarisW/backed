@@ -23,6 +23,7 @@ CREATE TABLE sys_user
     gender    VARCHAR(8)   NOT NULL COMMENT '性别字典码 0-男 1-女',
     status    TINYINT      NOT NULL COMMENT '状态 1-正常 2-禁用',
     create_by BIGINT                COMMENT '创建人ID',
+    teacher_id BIGINT               COMMENT '讲师ID（AUTO翻译示例）',
     deleted   TINYINT      NOT NULL DEFAULT 0 COMMENT '逻辑删除 0-未删 1-已删',
     PRIMARY KEY (id)
 ) COMMENT '用户表';
@@ -48,8 +49,8 @@ INSERT INTO sys_dict (id, dict_type, dict_code, dict_label, deleted) VALUES
 (1, 'gender', '0', '男', 0),
 (2, 'gender', '1', '女', 0);
 
-INSERT INTO sys_user (id, username, real_name, dept_id, gender, status, create_by, deleted) VALUES
-(1, 'admin', '管理员', 1, '0', 1, NULL, 0),
-(2, 'zhangsan', '张三', 1, '0', 1, 1, 0),
-(3, 'lisi', '李四', 2, '1', 1, 1, 0),
-(4, 'wangwu', '王五', 3, '0', 2, 2, 0);
+INSERT INTO sys_user (id, username, real_name, dept_id, gender, status, create_by, teacher_id, deleted) VALUES
+(1, 'admin', '管理员', 1, '0', 1, NULL, 101, 0),
+(2, 'zhangsan', '张三', 1, '0', 1, 1, 101, 0),
+(3, 'lisi', '李四', 2, '1', 1, 1, 102, 0),
+(4, 'wangwu', '王五', 3, '0', 2, 2, 103, 0);

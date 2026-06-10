@@ -28,11 +28,17 @@ public class SysUserController {
 
     private final SysUserTransService sysUserTransService;
 
+    /**
+     * 获取用户列表
+     */
     @GetMapping
     public List<SysUserVo> listUsers() {
         return sysUserTransService.listUsers();
     }
 
+    /**
+     * 获取单个用户
+     */
     @GetMapping("/{id}")
     public SysUserVo getUser(@PathVariable Long id) {
         return sysUserTransService.getUserById(id);

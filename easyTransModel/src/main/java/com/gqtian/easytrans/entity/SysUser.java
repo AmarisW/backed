@@ -33,6 +33,9 @@ public class SysUser implements VO {
     /** 创建人用户ID */
     private Long createBy;
 
+    /** 讲师 ID（AUTO 翻译示例） */
+    private Long teacherId;
+
     @TableLogic
     private Integer deleted;
 }

@@ -11,9 +11,15 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
  * MyBatis-Plus 配置
  */
 @Configuration
-@MapperScan("com.gqtian.easytrans.mapper")
+@MapperScan("com.gqtian.**.mapper")
 public class EasyTransMybatisPlusConfig {
 
+
+    /**
+     * 分页插件
+     *
+     * @return 分页插件
+     */
     @Bean
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();

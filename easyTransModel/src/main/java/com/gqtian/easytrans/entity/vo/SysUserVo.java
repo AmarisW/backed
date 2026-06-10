@@ -11,13 +11,9 @@ import com.gqtian.easytrans.enums.UserStatusEnum;
 import lombok.Data;
 
 /**
- * 用户展示对象，演示 Easy-Trans 三种翻译方式
+ * 用户展示对象，综合演示 DICTIONARY / SIMPLE / ENUM / AUTO_TRANS 四种翻译
  *
- * <ul>
- *   <li>DICTIONARY：gender -> genderName</li>
- *   <li>SIMPLE：deptId -> deptName，createBy -> createByName</li>
- *   <li>ENUM：status -> statusName</li>
- * </ul>
+ * <p>按类型拆分的独立示例见 {@link com.gqtian.easytrans.example.controller.TransExampleController}</p>
  */
 @Data
 public class SysUserVo implements TransPojo {
@@ -28,27 +24,45 @@ public class SysUserVo implements TransPojo {
 
     private String realName;
 
-    /** 字典翻译：gender 字典码 -> genderName */
+    /**
+     * 字典翻译：gender 字典码 -> genderName
+     */
     @Trans(type = TransType.DICTIONARY, key = EasyTransConstant.DICT_GENDER, ref = "genderName")
     private String gender;
 
     private String genderName;
 
-    /** 简单翻译：部门 ID -> 部门名称 */
+    /**
+     * 简单翻译：部门 ID -> 部门名称
+     */
     @Trans(type = TransType.SIMPLE, target = SysDept.class, fields = "deptName", ref = "deptName")
     private Long deptId;
 
     private String deptName;
 
-    /** 简单翻译：创建人 ID -> 真实姓名 */
+    /**
+     * 简单翻译：创建人 ID -> 真实姓名
+     */
     @Trans(type = TransType.SIMPLE, target = SysUser.class, fields = "realName", ref = "createByName")
     private Long createBy;
 
     private String createByName;
 
-    /** 枚举翻译：状态枚举 -> 中文标签 */
+    /**
+     * 枚举翻译：状态枚举 -> 中文标签
+     */
     @Trans(type = TransType.ENUM, key = "label", ref = "statusName")
     private UserStatusEnum status;
 
     private String statusName;
+
+    /**
+     * AUTO 翻译：讲师 ID -> 姓名、职称（内存数据源，无需数据库）
+     */
+    @Trans(type = TransType.AUTO_TRANS, key = EasyTransConstant.AUTO_TEACHER, refs = {"teacherName", "teacherTitle"})
+    private Long teacherId;
+
+    private String teacherName;
+
+    private String teacherTitle;
 }

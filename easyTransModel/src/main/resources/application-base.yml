@@ -15,13 +15,6 @@ spring:
 #################################  Mybatis-plus  #################################
 mybatis-plus:
   mapper-locations: classpath*:mapper/**/*.xml
-  type-aliases-package: com.gqtian.easytrans.entity
-  global-config:
-    db-config:
-      id-type: INPUT                      # 主键类型
-      logic-delete-field: deleted         # 逻辑删除字段
-      logic-delete-value: 1
-      logic-not-delete-value: 0
   configuration:
     # SQL 打印到工作台
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
