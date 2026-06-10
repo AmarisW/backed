@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>IndividualProject</artifactId>
+    <groupId>com.gqtian</groupId>
+    <version>${revision}</version>
+  </parent>
+
+  <artifactId>easyTransModel</artifactId>
+  <name>easyTransModel</name>
+  <version>${revision}</version>
+  <description>Easy-Trans 数据翻译框架学习模块</description>
+  <packaging>jar</packaging>
+
+  <dependencies>
+    <dependency>
+      <artifactId>commonModel</artifactId>
+      <groupId>com.gqtian</groupId>
+    </dependency>
+
+    <dependency>
+      <artifactId>lombok</artifactId>
+      <groupId>org.projectlombok</groupId>
+    </dependency>
+
+    <!-- Easy-Trans 主 Starter -->
+    <dependency>
+      <groupId>org.dromara</groupId>
+      <artifactId>easy-trans-spring-boot-starter</artifactId>
+    </dependency>
+
+    <!-- Easy-Trans MyBatis-Plus 扩展 -->
+    <dependency>
+      <groupId>org.dromara</groupId>
+      <artifactId>easy-trans-mybatis-plus-extend</artifactId>
+    </dependency>
+
+    <!-- Druid 连接池 -->
+    <dependency>
+      <artifactId>druid-spring-boot-starter</artifactId>
+      <groupId>com.alibaba</groupId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <annotationProcessorPaths>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+              <version>${lombok.version}</version>
+            </path>
+          </annotationProcessorPaths>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>
+              <artifactId>spring-boot-configuration-processor</artifactId>
+              <groupId>org.springframework.boot</groupId>
+            </exclude>
+          </excludes>
+        </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+        <groupId>org.springframework.boot</groupId>
+      </plugin>
+      <plugin>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
+        <groupId>io.github.git-commit-id</groupId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>unzip-script-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <unzip dest="target" src="${project.basedir}/../abientLib/script-jar-main.zip"/>
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>${project.basedir}/../abientLib/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+        <executions>
+          <execution>
+            <id>make-assembly</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

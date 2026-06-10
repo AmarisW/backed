@@ -1,0 +1,36 @@
+#################################  Spring  #################################
+spring:
+  datasource:
+    dynamic:
+      primary: master                     # 默认数据源
+      strict: false                       # 不存在时使用默认数据源
+      datasource:
+        #----------------------- Mysql -----------------------#
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://localhost:3306/easy_trans?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          username: root
+          password: REDACTED
+
+#################################  Mybatis-plus  #################################
+mybatis-plus:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.gqtian.easytrans.entity
+  global-config:
+    db-config:
+      id-type: INPUT                      # 主键类型
+      logic-delete-field: deleted         # 逻辑删除字段
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+  configuration:
+    # SQL 打印到工作台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+#################################  自定义配置  #################################
+easy-trans:
+  is-enable-redis: false                  # 入门默认关闭 Redis，无需额外安装
+  is-enable-global: true                  # 全局拦截 ResponseBody 自动翻译
+  is-enable-tile: true                    # 平铺模式，翻译字段直接出现在 JSON 中
+  is-enable-map-result: true              # 兼容 GlobalResult 统一响应包装
+  mp-new: true                            # MyBatis-Plus 3.5.3+ 需开启
+  db-type: mysql                          # 数据库类型

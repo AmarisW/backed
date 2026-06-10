@@ -1,0 +1,29 @@
+#################################  项目基础配置  #################################
+server:
+  port: 2000                              # 服务端口
+  servlet:
+    context-path: /easyTransModel         # 项目访问路径
+
+#################################  配置启动环境  #################################
+spring:
+  application:
+    name: easyTransModel                  # 项目名称
+  profiles:
+    active: base                          # 启用基础配置
+  isEnable: false                         # 关闭 commonModel 字典初始化
+  config:
+    import:
+      - classpath:application-custom.yml  # 导入自定义配置
+
+#################################  日志配置  #################################
+logging:
+  file:
+    name: ./adventLogs/${logging.level.root}.log
+  level:
+    root: info
+    com.gqtian.easytrans: debug
+    com.fhs.trans: debug
+  logback:
+    rolling-policy:
+      max-history: 20
+      max-file-size: 200MB
