@@ -2,6 +2,8 @@ package com.gqtian.easytrans.controller;
 
 import java.util.List;
 
+import com.gqtian.easytrans.utils.TransUtil;
+import org.dromara.trans.service.impl.TransService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,7 +35,7 @@ public class SysUserController {
      */
     @GetMapping
     public List<SysUserVo> listUsers() {
-        return sysUserTransService.listUsers();
+        return TransUtil.translate(sysUserTransService.listUsers());
     }
 
     /**

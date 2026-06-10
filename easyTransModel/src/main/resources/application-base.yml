@@ -8,7 +8,7 @@ spring:
         #----------------------- Mysql -----------------------#
         master:
           driver-class-name: com.mysql.cj.jdbc.Driver
-          url: jdbc:mysql://localhost:3306/easy_trans?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
+          url: jdbc:mysql://101.43.87.108:3306/easy_trans?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
           password: REDACTED
 
@@ -22,8 +22,5 @@ mybatis-plus:
 #################################  自定义配置  #################################
 easy-trans:
   is-enable-redis: false                  # 入门默认关闭 Redis，无需额外安装
-  is-enable-global: true                  # 全局拦截 ResponseBody 自动翻译
+  is-enable-global: false                 # 全局拦截 ResponseBody 自动翻译
   is-enable-tile: true                    # 平铺模式，翻译字段直接出现在 JSON 中
-  is-enable-map-result: true              # 兼容 GlobalResult 统一响应包装
-  mp-new: true                            # MyBatis-Plus 3.5.3+ 需开启
-  db-type: mysql                          # 数据库类型

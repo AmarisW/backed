@@ -1,5 +1,6 @@
 package com.gqtian.easytrans;
 
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.gqtian.common.config.GlobalBeautifyStart;

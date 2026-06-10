@@ -30,12 +30,15 @@ public class EasyTransDictInitRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
+
         int dbDictCount = 0;
+
+        // 从数据库查询字典数据
         try {
             List<SysDict> dictList = sysDictMapper.selectList(null);
             Map<String, Map<String, String>> grouped = dictList.stream()
-                .collect(Collectors.groupingBy(SysDict::getDictType,
-                    Collectors.toMap(SysDict::getDictCode, SysDict::getDictLabel, (left, right) -> left)));
+                    .collect(Collectors.groupingBy(SysDict::getDictType,
+                            Collectors.toMap(SysDict::getDictCode, SysDict::getDictLabel, (left, right) -> left)));
             grouped.forEach(dictionaryTransService::refreshCache);
             dbDictCount = dictList.size();
         } catch (Exception ex) {
@@ -43,8 +46,9 @@ public class EasyTransDictInitRunner implements CommandLineRunner {
             dictionaryTransService.refreshCache(EasyTransConstant.DICT_GENDER, Map.of("0", "男", "1", "女"));
         }
 
+        // 自定义字典
         dictionaryTransService.refreshCache(EasyTransConstant.DICT_ORDER_STATUS,
-            Map.of("1", "待支付", "2", "已完成", "3", "已取消"));
+                Map.of("1", "待支付", "2", "已完成", "3", "已取消"));
 
         log.info("【Easy-Trans】字典缓存加载完成，数据库字典条数：{}，内存字典：order_status", dbDictCount);
     }

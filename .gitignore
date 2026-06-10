@@ -4,3 +4,6 @@
 /adventLogs/*
 
 /**/adventLogs/info.log
+
+# Maven flatten plugin generated files
+**/.flattened-pom.xml
