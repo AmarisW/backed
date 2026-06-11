@@ -3,6 +3,7 @@ package com.gqtian.easytrans.controller;
 import java.util.List;
 
 import com.gqtian.easytrans.utils.TransUtil;
+import org.dromara.core.trans.anno.TransMethodResult;
 import org.dromara.trans.service.impl.TransService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -42,6 +43,7 @@ public class SysUserController {
      * 获取单个用户
      */
     @GetMapping("/{id}")
+    @TransMethodResult // 关闭全局翻译时，需要添加此注解
     public SysUserVo getUser(@PathVariable Long id) {
         return sysUserTransService.getUserById(id);
     }

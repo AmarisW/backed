@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @AutoConfiguration
-@MapperScan(basePackages = "com.gqtian.common.mapper") // 扫描commonModel包下的Mapper接口
+@MapperScan(basePackages = "com.gqtian.**.mapper") // 扫描commonModel包下的Mapper接口
 public class GlobalMyBatisPlusConfiguration {
 
     /**

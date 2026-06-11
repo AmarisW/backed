@@ -37,6 +37,7 @@
     <module>mybatisModel</module>
     <module>saTokenModel</module>
     <module>easyTransModel</module>
+    <module>rabbitMqModel</module>
   </modules>
 
   <!-- 属性定义 -->
