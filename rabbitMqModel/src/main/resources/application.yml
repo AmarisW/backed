@@ -1,0 +1,32 @@
+server:
+  port: 18086
+
+spring:
+  application:
+    name: rabbitMqModel
+  main:
+    banner-mode: log
+
+# ============================ RabbitMQ ============================
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: REDACTED
+    virtual-host: /              # 虚拟主机
+    connection-timeout: 30000   # 连接超时（毫秒）
+    publisher-confirm-type: correlated # 发布确认类型
+    publisher-returns: true     # 发布返回开关
+    listener:
+      simple:
+        acknowledge-mode: manual  # 确认模式（手动 ACK）
+        prefetch: 10             # 预取数量
+        concurrency: 1          # 最小并发消费者数
+        max-concurrency: 10      # 最大并发消费者数
+        retry:
+          enabled: false        # 重试开关（禁用，使用 RabbitMQ 的 requeue 机制）
+
+logging:
+  level:
+    com.gqtian.rabbit: debug
+    org.springframework.amqp: info
