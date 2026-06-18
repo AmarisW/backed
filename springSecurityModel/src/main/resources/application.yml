@@ -1,0 +1,27 @@
+#################################  项目基础配置 #################################
+server:
+  port: 2000                           # 服务端口
+  servlet:
+    context-path: /springSecurityModel # 项目访问路径，所有接口均以此为前缀
+
+#################################  配置启动环境 #################################
+spring:
+  application:
+    name: springSecurityModel          # 项目名称
+  profiles:
+    active: base                         # 启用 application-base.yml
+  isEnable: false                        # 是否启用 commonModel 字典初始化
+  config:
+    import:
+      - classpath:application-custom.yml # 导入自定义配置（可覆盖 JWT 等参数）
+
+#################################  日志配置  #################################
+logging:
+  file:
+    name: ./adventLogs/${logging.level.root}.log
+  level:
+    root: info
+  logback:
+    rolling-policy:
+      max-history: 20
+      max-file-size: 200MB

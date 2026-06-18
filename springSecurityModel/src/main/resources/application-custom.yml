@@ -1,0 +1,6 @@
+#################################  自定义配置 #################################
+# 可在此覆盖 application-base.yml 中的 JWT 参数，例如：
+# security:
+#   jwt:
+#     secret: your-production-secret-key
+#     expiration: 3600000  # 1 小时
