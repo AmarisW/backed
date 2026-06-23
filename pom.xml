@@ -193,6 +193,13 @@
         <version>${easy-trans.version}</version>
       </dependency>
 
+      <!-- Easy-Trans Redis 数据源支持 -->
+      <dependency>
+        <groupId>org.dromara</groupId>
+        <artifactId>easy-trans-starter-redis</artifactId>
+        <version>${easy-trans.version}</version>
+      </dependency>
+
       <!--============================ 数据源 ============================-->
 
       <!-- MyBatis-Plus增强框架 -->
