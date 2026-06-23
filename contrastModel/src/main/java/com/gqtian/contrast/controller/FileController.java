@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.util.StreamUtils;
@@ -12,7 +13,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.gqtian.common.globalProcess.GlobalException;
 import com.gqtian.contrast.demo.ffmpeg.FfmpegService;
@@ -153,6 +156,145 @@ public class FileController {
         } catch (Exception e) {
             log.error("视频帧数抓取失败：{}", e.getMessage(), e);
             throw new GlobalException("视频帧数抓取失败!");
+        }
+    }
+
+    /**
+     * 👻 同时上传JSON参数和多附件
+     * <p>
+     * 使用 @RequestPart 同时接收 JSON 参数和多个文件
+     * </p>
+     *
+     * @param uploadParam 上传参数（JSON格式）
+     * @param files       多个附件文件（多文件上传）
+     * @return 上传结果
+     */
+    @RequestMapping("/uploadWithJsonAndFiles")
+    public String uploadWithJsonAndFiles(@RequestPart("uploadParam") UploadParam uploadParam,
+        @RequestPart("files") List<MultipartFile> files) {
+        try {
+            log.info("上传请求 - 平台：{}，文件数量：{}", uploadParam.getPlatform(), files.size());
+
+            StringBuilder resultMsg = new StringBuilder();
+            for (int i = 0; i < files.size(); i++) {
+                MultipartFile file = files.get(i);
+                log.info("文件{}-文件名：{}，大小：{}字节，类型：{}",
+                    i + 1, file.getOriginalFilename(), file.getSize(), file.getContentType());
+
+                FileStorageInfo fileInfo = FileStorageInfo.builder()
+                    .content(file.getBytes())
+                    .filename(file.getOriginalFilename())
+                    .originalFilename(file.getOriginalFilename())
+                    .size(file.getSize())
+                    .fileType(file.getContentType())
+                    .platform(uploadParam.getPlatform())
+                    .build();
+
+                boolean success = fileStorageService.upload(fileInfo);
+                resultMsg.append("文件").append(i + 1).append("(").append(file.getOriginalFilename()).append(")：")
+                    .append(success ? "上传成功" : "上传失败").append("；");
+            }
+
+            return resultMsg.toString();
+        } catch (Exception e) {
+            log.error("多文件上传失败：{}", e.getMessage(), e);
+            throw new GlobalException("多文件上传失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 👻 同时上传头像、个人证件照（多个）和个人信息
+     * <p>
+     * 使用 @RequestPart 分别接收不同类型的参数和文件
+     * </p>
+     *
+     * @param personalInfo 个人信息的JSON参数
+     * @param avatar      头像文件（单张）
+     * @param idPhotos    个人证件照（多张）
+     * @return 上传结果
+     */
+    @RequestMapping("/uploadPersonalInfo")
+    public String uploadPersonalInfo(@RequestPart("personalInfo") UploadParam personalInfo,
+        @RequestPart("avatar") MultipartFile avatar,
+        @RequestPart("idPhotos") List<MultipartFile> idPhotos) {
+        try {
+            log.info("个人信息上传请求 - 平台：{}", personalInfo.getPlatform());
+            log.info("头像信息 - 文件名：{}，大小：{}字节，类型：{}",
+                avatar.getOriginalFilename(), avatar.getSize(), avatar.getContentType());
+            log.info("证件照数量：{}", idPhotos.size());
+
+            StringBuilder resultMsg = new StringBuilder();
+
+            // 1. 上传头像
+            FileStorageInfo avatarInfo = FileStorageInfo.builder()
+                .content(avatar.getBytes())
+                .filename("avatar_" + avatar.getOriginalFilename())
+                .originalFilename(avatar.getOriginalFilename())
+                .size(avatar.getSize())
+                .fileType(avatar.getContentType())
+                .platform(personalInfo.getPlatform())
+                .path("personal/avatar/")
+                .build();
+            boolean avatarSuccess = fileStorageService.upload(avatarInfo);
+            resultMsg.append("头像：").append(avatarSuccess ? "上传成功" : "上传失败").append("；");
+
+            // 2. 上传证件照（多张）
+            for (int i = 0; i < idPhotos.size(); i++) {
+                MultipartFile idPhoto = idPhotos.get(i);
+                log.info("证件照{}-文件名：{}，大小：{}字节，类型：{}",
+                    i + 1, idPhoto.getOriginalFilename(), idPhoto.getSize(), idPhoto.getContentType());
+
+                FileStorageInfo idPhotoInfo = FileStorageInfo.builder()
+                    .content(idPhoto.getBytes())
+                    .filename("idphoto_" + i + 1 + "_" + idPhoto.getOriginalFilename())
+                    .originalFilename(idPhoto.getOriginalFilename())
+                    .size(idPhoto.getSize())
+                    .fileType(idPhoto.getContentType())
+                    .platform(personalInfo.getPlatform())
+                    .path("personal/idphoto/")
+                    .build();
+
+                boolean photoSuccess = fileStorageService.upload(idPhotoInfo);
+                resultMsg.append("证件照").append(i + 1).append("：")
+                    .append(photoSuccess ? "上传成功" : "上传失败").append("；");
+            }
+
+            log.info("个人信息上传完成：{}", resultMsg);
+            return resultMsg.toString();
+        } catch (Exception e) {
+            log.error("个人信息上传失败：{}", e.getMessage(), e);
+            throw new GlobalException("个人信息上传失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 👻 同时上传JSON参数和单个附件（简化版）
+     *
+     * @param uploadParam 上传参数（JSON格式）
+     * @param file        单个附件文件
+     * @return 上传结果
+     */
+    @RequestMapping("/uploadWithJsonAndFile")
+    public String uploadWithJsonAndFile(@RequestPart("uploadParam") UploadParam uploadParam,
+        @RequestPart("file") MultipartFile file) {
+        try {
+            log.info("上传请求 - 平台：{}，文件名：{}，大小：{}字节",
+                uploadParam.getPlatform(), file.getOriginalFilename(), file.getSize());
+
+            FileStorageInfo fileInfo = FileStorageInfo.builder()
+                .content(file.getBytes())
+                .filename(file.getOriginalFilename())
+                .originalFilename(file.getOriginalFilename())
+                .size(file.getSize())
+                .fileType(file.getContentType())
+                .platform(uploadParam.getPlatform())
+                .build();
+
+            boolean success = fileStorageService.upload(fileInfo);
+            return success ? "上传成功" : "上传失败";
+        } catch (Exception e) {
+            log.error("文件上传失败：{}", e.getMessage(), e);
+            throw new GlobalException("文件上传失败：" + e.getMessage());
         }
     }
 
