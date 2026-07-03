@@ -1,0 +1,51 @@
+{
+
+  "properties": [
+    {
+      "defaultValue": false,
+      "name": "easy-trans.is-enable-redis",
+      "description": "是否使用redis",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "defaultValue": false,
+      "name": "easy-trans.is-enable-global",
+      "description": "是否开启全局翻译，开启后所有的application/json的返回都是尝试翻译",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "defaultValue": false,
+      "name": "easy-trans.is-enable-tile",
+      "description": "是否开启平铺，并发量大的系统不推荐开启",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "defaultValue": false,
+      "name": "easy-trans.dict-use-redis",
+      "description": "字典是否放到redis中，微服务模式推荐开启",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "defaultValue": false,
+      "name": "easy-trans.is-enable-map-result",
+      "description": "如果方法返回值是map，是否还要遍历map进行翻译，ruoyi相关的框架需要打开",
+      "type": "java.lang.Boolean"
+    },
+    {
+      "defaultValue": "mysql",
+      "name": "easy-trans.db-type",
+      "description": "数据库类型",
+      "type": "java.lang.String"
+    },{
+      "defaultValue": false,
+      "name": "easy-trans.mp-new",
+      "description": "是否是新版本的mybatis plus，MP为 3.5.3.2版本以上的3.x 版本请设置为true",
+      "type": "java.lang.Boolean"
+    },{
+      "defaultValue": false,
+      "name": "easy-trans.is-enable-custom-rpc",
+      "description": "是否控制rpc翻译的权限，标记了 @RpcTrans注解的才能被RPC翻译",
+      "type": "java.lang.Boolean"
+    }
+  ]
+}

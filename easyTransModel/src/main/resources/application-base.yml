@@ -17,7 +17,7 @@ spring:
     redis:
       host: 127.0.0.1                     # Redis 地址
       port: 6379                          # Redis 端口
-      password:                           # Redis 密码（无密码留空）
+      password: REDACTED             # Redis 密码（无密码留空）
       database: 0                         # Redis 数据库
       timeout: 5000ms                     # 连接超时时间
       lettuce:
@@ -34,12 +34,10 @@ mybatis-plus:
     # SQL 打印到工作台
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
-#################################  自定义配置  #################################
-dromara:
-  easy-trans:
-    is-enable-redis: true                 # ✅ 开启 Redis 数据源
-    is-enable-global: false               # 全局拦截 ResponseBody 自动翻译
-    is-enable-tile: true                 # 平铺模式
-    redis:
-      bucket: trans                       # Redis key 前缀
-      expire-seconds: -1                  # 缓存过期时间（-1表示永不过期）
+#################################  Easy-Trans  #################################
+easy-trans:
+  is-enable-redis: true                   # 启用 Redis 支持（RPC 缓存清理、字典广播等）
+  dict-use-redis: true                    # 字典写入 Redis 二级缓存（框架自动维护 key 格式）
+  is-enable-global: false                 # 全局拦截 ResponseBody 自动翻译
+#  is-enable-tile: true                    # 平铺模式
+#  mp-new: true                            # MyBatis-Plus 3.5.3.2+ 需开启

@@ -13,7 +13,6 @@
   <!-- 项目基本信息 -->
   <artifactId>commonModel</artifactId>
   <name>commonModel</name>
-  <version>${revision}</version>
   <description>初始化模板信息</description>
 
   <!-- 打包方式 -->
