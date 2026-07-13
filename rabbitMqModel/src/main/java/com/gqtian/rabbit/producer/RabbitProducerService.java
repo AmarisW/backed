@@ -33,7 +33,7 @@ public class RabbitProducerService {
      */
     public void sendDirectMessage(String msg) {
         log.info("发送直连消息: {}", msg);
-        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT, msg);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT_STRING, msg);
     }
 
     /**
@@ -41,7 +41,7 @@ public class RabbitProducerService {
      */
     public void sendOrderMessage(OrderMessage order) {
         log.info("发送订单消息: {}", order);
-        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT, order);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT_OBJECT, order);
     }
 
     /**
@@ -74,6 +74,10 @@ public class RabbitProducerService {
 
     /**
      * 示例 6：发送持久化消息（重启不丢失）
+     * <p>
+     * 持久化分两层：① 队列设置 durable=true（{@link RabbitMqConfig} 中已配置），② 消息设置 delivery mode=PERSISTENT（本方法）。
+     * 两者缺一不可 —— 仅队列持久化而消息不持久化，重启后消息会丢。
+     * </p>
      */
     public void sendPersistentMessage(String msg) {
         log.info("发送持久化消息: {}", msg);
@@ -81,21 +85,21 @@ public class RabbitProducerService {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
         };
-        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT, msg, processor);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT_STRING, msg, processor);
     }
 
     /**
      * 示例 7：发送带 TTL 的消息（延迟消费）
      *
-     * @param expiration 单位毫秒，例如 5000 表示 5 秒后过期
+     * @param expirationMs 单位毫秒，例如 5000 表示 5 秒后过期
      */
-    public void sendDelayMessage(String msg, String expiration) {
-        log.info("发送延迟消息, expiration={}ms, msg={}", expiration, msg);
+    public void sendDelayMessage(String msg, long expirationMs) {
+        log.info("发送延迟消息, expiration={}ms, msg={}", expirationMs, msg);
         MessagePostProcessor processor = (Message message) -> {
-            message.getMessageProperties().setExpiration(expiration);
+            message.getMessageProperties().setExpiration(String.valueOf(expirationMs));
             return message;
         };
-        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT, msg, processor);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT_STRING, msg, processor);
     }
 
     /**

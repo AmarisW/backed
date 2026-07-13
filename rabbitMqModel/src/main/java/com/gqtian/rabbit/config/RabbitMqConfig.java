@@ -1,6 +1,5 @@
 package com.gqtian.rabbit.config;
 
-import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.Binding;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
@@ -12,6 +11,7 @@ import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
+import org.springframework.boot.autoconfigure.amqp.RabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,8 +45,11 @@ public class RabbitMqConfig {
     /** 扇出交换机 */
     public static final String FANOUT_EXCHANGE = "rabbit.fanout.exchange";
 
-    /** 直连队列 */
-    public static final String DIRECT_QUEUE = "rabbit.direct.queue";
+    /** 直连队列（字符串消息，演示用） */
+    public static final String DIRECT_QUEUE_STRING = "rabbit.direct.queue.string";
+
+    /** 直连队列（对象消息，演示死信路由） */
+    public static final String DIRECT_QUEUE_OBJECT = "rabbit.direct.queue.object";
 
     /** 主题队列（匹配 order.#） */
     public static final String TOPIC_QUEUE = "rabbit.topic.queue";
@@ -63,8 +66,11 @@ public class RabbitMqConfig {
     /** 死信队列 */
     public static final String DLX_QUEUE = "rabbit.dlx.queue";
 
-    /** 路由键 */
-    public static final String ROUTING_KEY_DIRECT = "direct.routing.key";
+    /** 直连路由键（字符串消息） */
+    public static final String ROUTING_KEY_DIRECT_STRING = "direct.routing.key.string";
+
+    /** 直连路由键（对象消息） */
+    public static final String ROUTING_KEY_DIRECT_OBJECT = "direct.routing.key.object";
 
     public static final String ROUTING_KEY_TOPIC = "order.#";
 
@@ -101,16 +107,22 @@ public class RabbitMqConfig {
 
     // ============================ 监听器容器工厂 ============================
 
+    /**
+     * 自定义监听器容器工厂
+     * <p>
+     * 通过 Spring Boot 的 {@link RabbitListenerContainerFactoryConfigurer} 自动应用 application.yml 中
+     * spring.rabbitmq.listener.simple.* 的全部配置（acknowledge-mode、prefetch、concurrency、retry 等），
+     * 此处仅需额外设置消息转换器即可。
+     * </p>
+     */
     @Bean
-    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory,
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
+        RabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory,
         MessageConverter messageConverter) {
         SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        factory.setConnectionFactory(connectionFactory);
+        configurer.configure(factory, connectionFactory);
+        // 覆盖 configurer 默认的 SimpleMessageConverter，让监听器支持 JSON 反序列化
         factory.setMessageConverter(messageConverter);
-        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-        factory.setPrefetchCount(10);
-        factory.setConcurrentConsumers(1);
-        factory.setMaxConcurrentConsumers(10);
         return factory;
     }
 
@@ -138,10 +150,23 @@ public class RabbitMqConfig {
 
     // ============================ 队列 ============================
 
+    /**
+     * 直连-字符串队列：演示基础直连模式，不配置死信。
+     */
     @Bean
-    public Queue directQueue() {
-        // 配置死信参数
-        return new Queue(DIRECT_QUEUE, true, false, false,
+    public Queue directQueueString() {
+        return new Queue(DIRECT_QUEUE_STRING, true);
+    }
+
+    /**
+     * 直连-对象队列：演示 nack(requeue=false) 时的死信路由。
+     * <p>
+     * 通过 x-dead-letter-exchange / x-dead-letter-routing-key 将被拒绝、过期、溢出的消息转发到 DLX。
+     * </p>
+     */
+    @Bean
+    public Queue directQueueObject() {
+        return new Queue(DIRECT_QUEUE_OBJECT, true, false, false,
             java.util.Map.of("x-dead-letter-exchange", DLX_EXCHANGE, "x-dead-letter-routing-key", ROUTING_KEY_DLX));
     }
 
@@ -168,8 +193,13 @@ public class RabbitMqConfig {
     // ============================ 绑定 ============================
 
     @Bean
-    public Binding directBinding(Queue directQueue, DirectExchange directExchange) {
-        return BindingBuilder.bind(directQueue).to(directExchange).with(ROUTING_KEY_DIRECT);
+    public Binding directBindingString(Queue directQueueString, DirectExchange directExchange) {
+        return BindingBuilder.bind(directQueueString).to(directExchange).with(ROUTING_KEY_DIRECT_STRING);
+    }
+
+    @Bean
+    public Binding directBindingObject(Queue directQueueObject, DirectExchange directExchange) {
+        return BindingBuilder.bind(directQueueObject).to(directExchange).with(ROUTING_KEY_DIRECT_OBJECT);
     }
 
     @Bean

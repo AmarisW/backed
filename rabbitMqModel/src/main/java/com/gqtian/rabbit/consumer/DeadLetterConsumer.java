@@ -15,7 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 死信队列消费者
  * <p>
- * 当 DIRECT_QUEUE 消息被 nack（requeue=false）、消息过期、队列满时，会被路由到死信交换机，最终进入死信队列
+ * 当 {@link RabbitMqConfig#DIRECT_QUEUE_OBJECT} 消息被 nack（requeue=false）、消息过期、队列满时，
+ * 会被路由到死信交换机，最终进入死信队列
  * </p>
  *
  * @author gqtian

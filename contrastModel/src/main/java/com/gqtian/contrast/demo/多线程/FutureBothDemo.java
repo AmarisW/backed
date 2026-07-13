@@ -24,7 +24,6 @@ import jakarta.annotation.Resource;
 public class FutureBothDemo {
 
     @Resource
-    @Qualifier("queryThread")
     private ThreadPoolTaskExecutor threadPool;
 
     /**

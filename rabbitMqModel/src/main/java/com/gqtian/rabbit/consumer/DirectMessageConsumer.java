@@ -25,7 +25,7 @@ public class DirectMessageConsumer {
     /**
      * 消费字符串消息
      */
-    @RabbitListener(queues = RabbitMqConfig.DIRECT_QUEUE, containerFactory = "rabbitListenerContainerFactory")
+    @RabbitListener(queues = RabbitMqConfig.DIRECT_QUEUE_STRING, containerFactory = "rabbitListenerContainerFactory")
     public void onStringMessage(@Payload String body, Message message, Channel channel,
         @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws Exception {
         try {
@@ -43,7 +43,7 @@ public class DirectMessageConsumer {
     /**
      * 消费对象消息（JSON 反序列化）
      */
-    @RabbitListener(queues = RabbitMqConfig.DIRECT_QUEUE, containerFactory = "rabbitListenerContainerFactory")
+    @RabbitListener(queues = RabbitMqConfig.DIRECT_QUEUE_OBJECT, containerFactory = "rabbitListenerContainerFactory")
     public void onOrderMessage(@Payload OrderMessage order, Message message, Channel channel,
         @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws Exception {
         try {

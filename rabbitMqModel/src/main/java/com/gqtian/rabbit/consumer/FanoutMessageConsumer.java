@@ -27,23 +27,29 @@ public class FanoutMessageConsumer {
     @RabbitListener(queues = RabbitMqConfig.FANOUT_QUEUE_A, containerFactory = "rabbitListenerContainerFactory")
     public void onFanoutA(@Payload String body, Message message, Channel channel,
         @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws Exception {
-        try {
-            log.info("[扇出-A] 消费消息: {}", body);
-            channel.basicAck(deliveryTag, false);
-        } catch (Exception e) {
-            log.error("[扇出-A] 消费失败", e);
-            channel.basicNack(deliveryTag, false, false);
-        }
+        handle("A", body, channel, deliveryTag);
     }
 
     @RabbitListener(queues = RabbitMqConfig.FANOUT_QUEUE_B, containerFactory = "rabbitListenerContainerFactory")
     public void onFanoutB(@Payload String body, Message message, Channel channel,
         @Header(AmqpHeaders.DELIVERY_TAG) long deliveryTag) throws Exception {
+        handle("B", body, channel, deliveryTag);
+    }
+
+    /**
+     * 扇出消息通用处理：A、B 两个队列共用同一份逻辑，便于维护。
+     *
+     * @param tag        队列标识（A / B），用于日志区分
+     * @param body       消息体
+     * @param channel    RabbitMQ 通道（手动 ACK）
+     * @param deliveryTag 投递标签
+     */
+    private void handle(String tag, String body, Channel channel, long deliveryTag) throws Exception {
         try {
-            log.info("[扇出-B] 消费消息: {}", body);
+            log.info("[扇出-{}] 消费消息: {}", tag, body);
             channel.basicAck(deliveryTag, false);
         } catch (Exception e) {
-            log.error("[扇出-B] 消费失败", e);
+            log.error("[扇出-{}] 消费失败", tag, e);
             channel.basicNack(deliveryTag, false, false);
         }
     }

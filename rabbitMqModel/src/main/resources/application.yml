@@ -1,32 +1,27 @@
+#################################  项目基础配置 #################################
 server:
-  port: 18086
+  port: 2000                              # 服务端口
+  servlet:
+    context-path: /rabbitMqModel          # 项目访问路径
 
+#################################  配置启动环境 #################################
 spring:
   application:
-    name: rabbitMqModel
-  main:
-    banner-mode: log
+    name: rabbitMqModel                    #  项目名称
+  profiles:
+    active: base                           # 启用配置文件版本
+  isEnable: true                           # 是否启用初始化字典
+  config:
+    import:
+      - classpath:application-custom.yml   # 导入自定义配置
 
-# ============================ RabbitMQ ============================
-  rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: admin
-    password: REDACTED
-    virtual-host: /              # 虚拟主机
-    connection-timeout: 30000   # 连接超时（毫秒）
-    publisher-confirm-type: correlated # 发布确认类型
-    publisher-returns: true     # 发布返回开关
-    listener:
-      simple:
-        acknowledge-mode: manual  # 确认模式（手动 ACK）
-        prefetch: 10             # 预取数量
-        concurrency: 1          # 最小并发消费者数
-        max-concurrency: 10      # 最大并发消费者数
-        retry:
-          enabled: false        # 重试开关（禁用，使用 RabbitMQ 的 requeue 机制）
-
+#################################  日志配置  #################################
 logging:
+  file:
+    name: ./adventLogs/${logging.level.root}.log
   level:
-    com.gqtian.rabbit: debug
-    org.springframework.amqp: info
+    root: info
+  logback:
+    rolling-policy:
+      max-history: 20
+      max-file-size: 200MB

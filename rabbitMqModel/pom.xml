@@ -13,7 +13,6 @@
   <!-- 模块信息 -->
   <artifactId>rabbitMqModel</artifactId>
   <name>rabbitMqModel</name>
-  <version>${revision}</version>
   <description>RabbitMQ 学习模块</description>
 
   <!-- 打包方式 -->
@@ -26,17 +25,19 @@
       <groupId>com.gqtian</groupId>
     </dependency>
 
+    <!-- 业务模块按需补齐（commonModel 已标 optional） -->
+    <dependency>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>org.springframework.boot</groupId>
+    </dependency>
+
     <!-- Spring Boot AMQP 启动器（RabbitMQ） -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-amqp</artifactId>
     </dependency>
 
-    <!-- 业务模块按需补齐（commonModel 已标 optional） -->
-    <dependency>
-      <artifactId>spring-boot-starter-web</artifactId>
-      <groupId>org.springframework.boot</groupId>
-    </dependency>
+
   </dependencies>
 
 
