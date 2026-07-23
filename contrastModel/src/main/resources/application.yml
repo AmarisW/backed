@@ -13,6 +13,7 @@ spring:
   profiles:
     active: base                           # 启用配置文件版本
   isEnable: true                           # 是否启用初始化字典
+  waitSqlPrint: true                       # 是否等待SQL打印
   config:
     import:
       - classpath:application-custom.yml   # 导入自定义配置

@@ -27,12 +27,18 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * MyBatis 完整SQL打印拦截器
  * <p>
- * 支持配置项：
+ * 通过 application.yml 中 {@code spring.waitSqlPrint} 控制是否启用（与 spring.isEnable 同级）：
  * <ul>
- *   <li>slowSqlThreshold - 慢SQL阈值（毫秒），默认1000ms</li>
- *   <li>enableSqlLog - 是否启用SQL日志，默认true</li>
+ *   <li>{@code spring.waitSqlPrint: true}  - 启用 SQL 完整打印</li>
+ *   <li>{@code spring.waitSqlPrint: false} 或不配置 - 不注册本拦截器（默认关闭）</li>
  * </ul>
+ * 内部字段 slowSqlThreshold 为慢 SQL 阈值（毫秒），默认 1000
  * </p>
+ *
+ * <pre>
+ * spring:
+ *   waitSqlPrint: true   # 是否启用 SQL 打印，默认 false
+ * </pre>
  *
  * @author gqtian
  * @date 2025/8/15
