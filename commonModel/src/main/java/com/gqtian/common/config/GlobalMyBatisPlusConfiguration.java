@@ -1,5 +1,6 @@
 package com.gqtian.common.config;
 
+import com.baomidou.mybatisplus.autoconfigure.MybatisPlusAutoConfiguration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -25,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
  * @date 2025-06-02 14:39:44
  */
 @Slf4j
-@AutoConfiguration
+@AutoConfiguration(before = MybatisPlusAutoConfiguration.class)
 @MapperScan(basePackages = "com.gqtian.**.mapper") // 扫描commonModel包下的Mapper接口
 public class GlobalMyBatisPlusConfiguration {
 
