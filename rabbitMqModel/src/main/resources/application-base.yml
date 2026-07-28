@@ -2,7 +2,7 @@
 spring:
   # ============================ RabbitMQ ============================
   rabbitmq:
-    host: 127.0.0.1
+    host: 101.43.87.108
     port: 5672
     username: admin
     password: REDACTED

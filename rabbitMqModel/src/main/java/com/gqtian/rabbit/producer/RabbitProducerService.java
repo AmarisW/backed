@@ -1,5 +1,8 @@
 package com.gqtian.rabbit.producer;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessagePostProcessor;
@@ -14,9 +17,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * RabbitMQ 生产者示例
+ * RabbitMQ 生产者示例服务。
  * <p>
- * 演示场景：直连、主题、扇出、延迟、批量、TTL、消息确认
+ * 覆盖直连、主题、扇出、发布确认、持久化、延迟（TTL + 死信转发）与批量发送。
  * </p>
  *
  * @author gqtian
@@ -29,7 +32,9 @@ public class RabbitProducerService {
     private final RabbitTemplate rabbitTemplate;
 
     /**
-     * 示例 1：发送简单字符串消息（直连）
+     * 直连发送字符串消息。
+     *
+     * @param msg 消息内容
      */
     public void sendDirectMessage(String msg) {
         log.info("发送直连消息: {}", msg);
@@ -37,7 +42,9 @@ public class RabbitProducerService {
     }
 
     /**
-     * 示例 2：发送对象消息（直连） — JSON 序列化
+     * 直连发送订单对象（经 JSON 序列化）。
+     *
+     * @param order 订单消息体
      */
     public void sendOrderMessage(OrderMessage order) {
         log.info("发送订单消息: {}", order);
@@ -45,9 +52,10 @@ public class RabbitProducerService {
     }
 
     /**
-     * 示例 3：发送主题消息（通配符路由）
+     * 主题发送：由 routingKey 决定匹配哪些绑定队列。
      *
-     * @param routingKey 例如：order.created、order.paid、order.shipped
+     * @param routingKey 如 order.created、order.paid、order.shipped
+     * @param msg        消息内容
      */
     public void sendTopicMessage(String routingKey, String msg) {
         log.info("发送主题消息, routingKey={}, msg={}", routingKey, msg);
@@ -55,29 +63,42 @@ public class RabbitProducerService {
     }
 
     /**
-     * 示例 4：发送扇出消息（广播到所有绑定队列）
+     * 扇出广播：所有绑定队列都会收到同一份消息。
+     * <p>Fanout 下 routingKey 会被 Broker 忽略，传空串即可。</p>
+     *
+     * @param msg 消息内容
      */
     public void sendFanoutMessage(String msg) {
         log.info("发送扇出消息: {}", msg);
-        // fanout 模式 routingKey 会被忽略
         rabbitTemplate.convertAndSend(RabbitMqConfig.FANOUT_EXCHANGE, "", msg);
     }
 
     /**
-     * 示例 5：发送带 CorrelationData 的消息（用于确认回调）
+     * 带 {@link CorrelationData} 发送，便于与 ConfirmCallback 中的 correlationId 对应。
+     * <p>
+     * routingKey 必须与消息体类型一致：字符串用
+     * {@link RabbitMqConfig#ROUTING_KEY_DIRECT_STRING}，对象消息用 object 路由键，
+     * 否则消费者反序列化会失败。
+     * </p>
+     *
+     * @param routingKey    直连路由键
+     * @param msg           字符串消息体
+     * @param correlationId 业务侧关联 ID
      */
     public void sendWithConfirm(String routingKey, String msg, String correlationId) {
-        log.info("发送确认消息, correlationId={}, msg={}", correlationId, msg);
+        log.info("发送确认消息, correlationId={}, routingKey={}, msg={}", correlationId, routingKey, msg);
         CorrelationData correlationData = new CorrelationData(correlationId);
         rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, routingKey, msg, correlationData);
     }
 
     /**
-     * 示例 6：发送持久化消息（重启不丢失）
+     * 显式声明消息为 PERSISTENT（教学对比用）。
      * <p>
-     * 持久化分两层：① 队列设置 durable=true（{@link RabbitMqConfig} 中已配置），② 消息设置 delivery mode=PERSISTENT（本方法）。
-     * 两者缺一不可 —— 仅队列持久化而消息不持久化，重启后消息会丢。
+     * 可靠落盘需同时满足：队列 durable=true，且消息 delivery mode=PERSISTENT。
+     * Spring {@link RabbitTemplate#convertAndSend} 默认已是 PERSISTENT，本方法仅演示显式设置。
      * </p>
+     *
+     * @param msg 消息内容
      */
     public void sendPersistentMessage(String msg) {
         log.info("发送持久化消息: {}", msg);
@@ -85,34 +106,43 @@ public class RabbitProducerService {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
         };
-        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT_STRING, msg, processor);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT_STRING, msg,
+            processor);
     }
 
     /**
-     * 示例 7：发送带 TTL 的消息（延迟消费）
+     * 延迟投递：TTL + 无消费者延迟队列 + 死信转发到业务队列。
+     * <p>
+     * 链路：延迟交换机 → 延迟队列（等待 expirationMs）→ TTL 到期死信转发 →
+     * 直连字符串路由 → {@link RabbitMqConfig#DIRECT_QUEUE_STRING}。
+     * </p>
      *
-     * @param expirationMs 单位毫秒，例如 5000 表示 5 秒后过期
+     * @param msg          消息内容
+     * @param expirationMs 延迟毫秒数，如 5000 表示约 5 秒后进入业务队列
      */
     public void sendDelayMessage(String msg, long expirationMs) {
-        log.info("发送延迟消息, expiration={}ms, msg={}", expirationMs, msg);
+        log.info("发送延迟消息, delay={}ms, msg={}", expirationMs, msg);
         MessagePostProcessor processor = (Message message) -> {
+            // 在延迟队列中等待，到期触发死信转发（非“业务队列上的延迟消费”）
             message.getMessageProperties().setExpiration(String.valueOf(expirationMs));
             return message;
         };
-        rabbitTemplate.convertAndSend(RabbitMqConfig.DIRECT_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DIRECT_STRING, msg, processor);
+        rabbitTemplate.convertAndSend(RabbitMqConfig.DELAY_EXCHANGE, RabbitMqConfig.ROUTING_KEY_DELAY, msg, processor);
     }
 
     /**
-     * 示例 8：批量发送消息
+     * 批量构造并发送订单消息（压测/演示）。
+     *
+     * @param count 发送条数
      */
     public void batchSend(int count) {
         for (int i = 0; i < count; i++) {
             OrderMessage order = OrderMessage.builder()
                 .orderId("ORDER_" + System.currentTimeMillis() + "_" + i)
                 .userId(1000L + i)
-                .amount(new java.math.BigDecimal("99.99"))
+                .amount(new BigDecimal("99.99"))
                 .status("CREATED")
-                .createTime(java.time.LocalDateTime.now())
+                .createTime(LocalDateTime.now())
                 .build();
             sendOrderMessage(order);
         }
