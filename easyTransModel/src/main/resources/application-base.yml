@@ -15,7 +15,7 @@ spring:
   #----------------------- Redis -----------------------#
   data:
     redis:
-      host: 127.0.0.1                     # Redis 地址
+      host: 101.43.87.108                     # Redis 地址
       port: 6379                          # Redis 端口
       password: REDACTED             # Redis 密码（无密码留空）
       database: 0                         # Redis 数据库
@@ -39,5 +39,5 @@ easy-trans:
   is-enable-redis: true                   # 启用 Redis 支持（RPC 缓存清理、字典广播等）
   dict-use-redis: true                    # 字典写入 Redis 二级缓存（框架自动维护 key 格式）
   is-enable-global: false                 # 全局拦截 ResponseBody 自动翻译
-#  is-enable-tile: true                    # 平铺模式
-#  mp-new: true                            # MyBatis-Plus 3.5.3.2+ 需开启
+#  is-enable-tile: true                   # 平铺模式
+#  mp-new: true                           # MyBatis-Plus 3.5.3.2+ 需开启
