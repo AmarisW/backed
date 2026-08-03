@@ -14,7 +14,6 @@
   <!-- 模块信息 -->
   <artifactId>saTokenModel</artifactId>
   <name>saTokenModel</name>
-  <version>${revision}</version>
   <description>SaToken 模板信息</description>
 
   <!-- 打包方式 -->

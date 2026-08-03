@@ -12,7 +12,6 @@
 
   <artifactId>logViewModel</artifactId>
   <name>logViewModel</name>
-  <version>${revision}</version>
   <description>日志检索模板信息</description>
 
   <!-- 打包方式 -->

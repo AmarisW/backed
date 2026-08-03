@@ -36,7 +36,8 @@
     <module>redisModel</module>
     <module>mybatisModel</module>
     <module>saTokenModel</module>
-    <module>mangoDbModel</module>
+    <module>mongodbModel</module>
+    <module>flywayModel</module>
     <module>easyTransModel</module>
     <module>rabbitMqModel</module>
     <module>springSecurityModel</module>

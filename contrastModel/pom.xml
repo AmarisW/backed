@@ -13,7 +13,6 @@
   <!-- 模块信息 -->
   <artifactId>contrastModel</artifactId>
   <name>contrastModel</name>
-  <version>${revision}</version>
   <description>初始化模板信息</description>
 
   <!-- 打包方式 -->

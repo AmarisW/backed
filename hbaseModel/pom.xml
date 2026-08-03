@@ -13,7 +13,6 @@
   <!-- 模块信息 -->
   <artifactId>hbaseModel</artifactId>
   <name>hbaseModel</name>
-  <version>${revision}</version>
   <description>Hbase示例</description>
 
   <!-- 打包方式 -->

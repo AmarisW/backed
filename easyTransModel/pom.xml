@@ -11,7 +11,6 @@
 
   <artifactId>easyTransModel</artifactId>
   <name>easyTransModel</name>
-  <version>${revision}</version>
   <description>Easy-Trans 数据翻译框架学习模块</description>
   <packaging>jar</packaging>
 

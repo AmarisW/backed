@@ -1,0 +1,33 @@
+#################################  Spring  #################################
+# 使用独立库 flyway_dev，避免污染 mybatis_dev；URL 带 createDatabaseIfNotExist 自动建库
+spring:
+  #----------------------- Mysql -----------------------#
+  datasource:
+    dynamic:
+      primary: master                     # 默认数据源
+      strict: false                       # 不严格匹配时回退默认数据源
+      datasource:
+        master:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          url: jdbc:mysql://118.196.17.107:3306/flyway_dev?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8&createDatabaseIfNotExist=true
+          username: root
+          password: REDACTED
+
+  #----------------------- Flyway -----------------------#
+  flyway:
+    enabled: true                         # 是否启用 Flyway
+    locations: classpath:db/migration     # 迁移脚本目录
+    baseline-on-migrate: true             # 已有库首次接入时自动 baseline
+    baseline-version: 0                   # baseline 版本号
+    validate-on-migrate: true             # 迁移前校验已执行脚本是否被篡改
+    encoding: UTF-8                       # 脚本编码
+    table: flyway_schema_history          # 迁移历史表名
+
+#################################  Mybatis-plus  #################################
+mybatis-plus:
+  configuration:
+    # SQL 打印到工作台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      id-type: auto                       # 主键策略（与演示表自增一致）

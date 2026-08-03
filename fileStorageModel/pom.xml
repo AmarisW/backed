@@ -13,7 +13,6 @@
   <!-- 项目信息 -->
   <artifactId>fileStorageModel</artifactId>
   <name>fileStorageModel</name>
-  <version>${revision}</version>
   <description>文件模块</description>
 
   <!-- 打包类型声明 -->

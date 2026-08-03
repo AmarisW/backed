@@ -13,7 +13,6 @@
   <!-- 模块信息 -->
   <artifactId>rocketSpringModel</artifactId>
   <name>rocketSpringModel</name>
-  <version>${revision}</version>
   <description>Rocket Spring Model</description>
 
   <!-- 打包方式 -->

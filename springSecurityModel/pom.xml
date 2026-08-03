@@ -14,7 +14,6 @@
   <!-- 模块信息 -->
   <artifactId>springSecurityModel</artifactId>
   <name>springSecurityModel</name>
-  <version>${revision}</version>
   <description>Spring Security 认证授权模板</description>
 
   <!-- 打包方式 -->

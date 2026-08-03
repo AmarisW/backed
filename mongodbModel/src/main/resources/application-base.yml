@@ -1,0 +1,13 @@
+#################################  MongoDB  #################################
+spring:
+  data:
+    mongodb:
+      # 推荐使用 URI 方式（含认证时示例见下方注释）
+      uri: mongodb://localhost:27017/mongodbModel
+      # host: localhost
+      # port: 27017
+      # database: mongodbModel
+      # username: admin
+      # password: password
+      # authentication-database: admin
+      auto-index-creation: true
