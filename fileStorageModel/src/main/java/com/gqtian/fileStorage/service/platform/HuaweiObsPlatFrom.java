@@ -58,8 +58,8 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
         this.clientFactory = clientFactory;
         if (S3ProtocolSupport.shouldEnable(huaweiObsConfig)) {
             this.s3ProtocolSupport = S3ProtocolSupport.create(platform, huaweiObsConfig,
-                huaweiObsConfig.getMultipartPartSize());
-            log.info("【文件服务】华为 OBS 已启用 S3 协议分片降级 | platform={}", platform);
+                huaweiObsConfig.getMultipartPartSize(), huaweiObsConfig.getMultipartThreshold());
+            log.info("【文件服务】[S3降级] 平台已挂载分片降级通道 | platform=huaweiObs | code={}", platform);
         }
     }
 

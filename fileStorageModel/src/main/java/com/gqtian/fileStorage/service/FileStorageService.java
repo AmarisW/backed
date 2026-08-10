@@ -63,7 +63,10 @@ public class FileStorageService {
     }
 
     /**
-     * 上传文件到存储平台（优化资源关闭）
+     * 上传文件到存储平台（优化资源关闭）。
+     * <p>
+     * 若平台启用了 S3 分片降级（{@code s3ProtocolSupport != null}），则本次上传走 S3 协议分片，
+     * 并在执行过程中打印 {@code [S3降级]} 日志；否则走各平台自有直传。
      *
      * @param fileStorageInfo 文件信息对象
      * @return 上传成功返回true，否则false
@@ -76,29 +79,73 @@ public class FileStorageService {
 
         long startTime = System.currentTimeMillis();
         try {
-            // 1. 将内容转换为流（自动处理资源）
+            // 1. 将内容转换为流，并尽量回填 size 便于日志与分片
             contentToStream(fileStorageInfo);
+            fillSizeIfAbsent(fileStorageInfo);
 
-            // 2. 获取存储平台接口
-            FileStorageInterface fileStorageInterface = getFileStorage(fileStorageInfo.getPlatform());
+            // 2. 获取存储平台
+            FileStorageInterface storage = getFileStorage(fileStorageInfo.getPlatform());
+            String platform = storage.getPlatform();
+            Long size = fileStorageInfo.getSize();
 
-            // 3. 执行上传
-            if (fileStorageInterface.upload(fileStorageInfo)) {
-                log.info("【文件服务】文件 {} 上传成功 | 耗时: {}ms", fileStorageInfo.getFilename(),
+            // 3. 已挂载 S3 降级：upload 执行时直接走 S3 分片，并打执行日志
+            if (storage.s3ProtocolSupport() != null) {
+                log.info(
+                    "【文件服务】[S3降级] 执行上传 | platform={} | file={} | path={} | size={}B | partSize={}B",
+                    platform, fileStorageInfo.getFilename(), fileStorageInfo.getPath(), size,
+                    storage.s3ProtocolSupport().getMultipartPartSize());
+                boolean success = uploadByMultipart(fileStorageInfo, 0);
+                log.info("【文件服务】[S3降级] 上传{} | platform={} | file={} | size={}B | 耗时: {}ms",
+                    success ? "成功" : "失败", platform, fileStorageInfo.getFilename(), size,
                     System.currentTimeMillis() - startTime);
-                return true;
-            } else {
-                log.error("【文件服务】文件 {} 上传失败 | 耗时: {}ms", fileStorageInfo.getFilename(),
-                    System.currentTimeMillis() - startTime);
-                return false;
+                return success;
             }
 
+            // 4. 平台自有直传
+            log.info("【文件服务】执行上传 | 方式=平台直传 | platform={} | file={} | path={} | size={}B", platform,
+                fileStorageInfo.getFilename(), fileStorageInfo.getPath(), size);
+            if (storage.upload(fileStorageInfo)) {
+                log.info("【文件服务】上传成功 | 方式=平台直传 | platform={} | file={} | 耗时: {}ms", platform,
+                    fileStorageInfo.getFilename(), System.currentTimeMillis() - startTime);
+                return true;
+            }
+            log.error("【文件服务】上传失败 | 方式=平台直传 | platform={} | file={} | 耗时: {}ms", platform,
+                fileStorageInfo.getFilename(), System.currentTimeMillis() - startTime);
+            return false;
+
         } catch (Exception e) {
-            log.error("【文件服务】文件 {} 上传失败 | 耗时: {}ms | 错误: {}", fileStorageInfo.getFilename(),
-                System.currentTimeMillis() - startTime, e.getMessage());
+            log.error("【文件服务】上传失败 | file={} | 耗时: {}ms | 错误: {}", fileStorageInfo.getFilename(),
+                System.currentTimeMillis() - startTime, e.getMessage(), e);
             throw new GlobalException("【文件服务】文件上传失败", e);
         }
+    }
 
+    /**
+     * 根据 content / inputStream 尽量填充 size（不影响业务字段已有值）。
+     */
+    private void fillSizeIfAbsent(FileStorageInfo fileStorageInfo) {
+        if (fileStorageInfo.getSize() != null && fileStorageInfo.getSize() >= 0) {
+            return;
+        }
+        Object content = fileStorageInfo.getContent();
+        if (content instanceof byte[] bytes) {
+            fileStorageInfo.setSize((long)bytes.length);
+            return;
+        }
+        if (content instanceof MultipartFile file) {
+            fileStorageInfo.setSize(file.getSize());
+            return;
+        }
+        try {
+            if (fileStorageInfo.getInputStream() != null) {
+                int available = fileStorageInfo.getInputStream().available();
+                if (available > 0) {
+                    fileStorageInfo.setSize((long)available);
+                }
+            }
+        } catch (Exception ignored) {
+            // size 仅用于日志与策略，解析失败不阻断上传
+        }
     }
 
     /**
@@ -167,12 +214,17 @@ public class FileStorageService {
         if (!storage.supportMultipartUpload()) {
             throw storage.unsupportedMultipart();
         }
+        String mode = resolveMultipartMode(storage);
+        log.info("【文件服务】分片初始化 | platform={} | mode={} | file={} | path={}", storage.getPlatform(), mode,
+            fileStorageInfo.getFilename(), fileStorageInfo.getPath());
         // 将 init 解析出的文件名回写，便于后续 part/complete 使用同一 key
         MultipartInitResult result = storage.initiateMultipartUpload(fileStorageInfo);
         if (StringUtils.isNotBlank(result.getFilename())
             && StringUtils.isBlank(fileStorageInfo.getFilename())) {
             fileStorageInfo.setFilename(result.getFilename());
         }
+        log.info("【文件服务】分片初始化完成 | platform={} | mode={} | uploadId={} | objectKey={}", storage.getPlatform(),
+            mode, result.getUploadId(), result.getObjectKey());
         return result;
     }
 
@@ -194,17 +246,24 @@ public class FileStorageService {
         if (!storage.supportMultipartUpload()) {
             throw storage.unsupportedMultipart();
         }
+        String mode = resolveMultipartMode(storage);
+        log.info("【文件服务】分片上传 | platform={} | mode={} | partNumber={} | partSize={}B | uploadId={}",
+            storage.getPlatform(), mode, partNumber, partSize, uploadId);
         try {
             InputStream dataStream = partData;
             if (dataStream == null) {
                 contentToStream(fileStorageInfo);
                 dataStream = fileStorageInfo.getInputStream();
             }
-            return storage.uploadPart(fileStorageInfo, uploadId, partNumber, dataStream, partSize);
+            MultipartPartETag partETag =
+                storage.uploadPart(fileStorageInfo, uploadId, partNumber, dataStream, partSize);
+            log.info("【文件服务】分片上传完成 | platform={} | mode={} | partNumber={} | etag={}", storage.getPlatform(),
+                mode, partNumber, partETag.getEtag());
+            return partETag;
         } catch (GlobalException e) {
             throw e;
         } catch (Exception e) {
-            log.error("【文件服务】分片上传失败 | partNumber={} | uploadId={}", partNumber, uploadId, e);
+            log.error("【文件服务】分片上传失败 | mode={} | partNumber={} | uploadId={}", mode, partNumber, uploadId, e);
             throw new GlobalException("【文件服务】分片上传失败", e);
         }
     }
@@ -223,7 +282,14 @@ public class FileStorageService {
         if (!storage.supportMultipartUpload()) {
             throw storage.unsupportedMultipart();
         }
-        return storage.completeMultipartUpload(fileStorageInfo, uploadId, parts);
+        String mode = resolveMultipartMode(storage);
+        int partCount = parts == null ? 0 : parts.size();
+        log.info("【文件服务】分片合并 | platform={} | mode={} | uploadId={} | parts={}", storage.getPlatform(), mode,
+            uploadId, partCount);
+        boolean success = storage.completeMultipartUpload(fileStorageInfo, uploadId, parts);
+        log.info("【文件服务】分片合并完成 | platform={} | mode={} | uploadId={} | success={}", storage.getPlatform(),
+            mode, uploadId, success);
+        return success;
     }
 
     /**
@@ -238,7 +304,12 @@ public class FileStorageService {
         if (!storage.supportMultipartUpload()) {
             throw storage.unsupportedMultipart();
         }
-        return storage.abortMultipartUpload(fileStorageInfo, uploadId);
+        String mode = resolveMultipartMode(storage);
+        log.info("【文件服务】分片取消 | platform={} | mode={} | uploadId={}", storage.getPlatform(), mode, uploadId);
+        boolean success = storage.abortMultipartUpload(fileStorageInfo, uploadId);
+        log.info("【文件服务】分片取消完成 | platform={} | mode={} | uploadId={} | success={}", storage.getPlatform(),
+            mode, uploadId, success);
+        return success;
     }
 
     /**
@@ -265,9 +336,12 @@ public class FileStorageService {
             throw new GlobalException("【文件服务】分片大小无效，请指定 partSize 或配置 multipartPartSize");
         }
 
+        String mode = resolveMultipartMode(storage);
         MultipartInitResult initResult = null;
         List<MultipartPartETag> uploadedParts = new ArrayList<>();
         long startTime = System.currentTimeMillis();
+        log.info("【文件服务】自动分片上传开始 | platform={} | mode={} | file={} | partSize={}B", storage.getPlatform(),
+            mode, fileStorageInfo.getFilename(), resolvedPartSize);
         try {
             contentToStream(fileStorageInfo);
             initResult = initiateMultipartUpload(fileStorageInfo);
@@ -293,8 +367,9 @@ public class FileStorageService {
 
             boolean success =
                 completeMultipartUpload(fileStorageInfo, initResult.getUploadId(), uploadedParts);
-            log.info("【文件服务】自动分片上传{} | file={} | parts={} | 耗时: {}ms", success ? "成功" : "失败",
-                fileStorageInfo.getFilename(), uploadedParts.size(), System.currentTimeMillis() - startTime);
+            log.info("【文件服务】自动分片上传{} | platform={} | mode={} | file={} | parts={} | 耗时: {}ms",
+                success ? "成功" : "失败", storage.getPlatform(), mode, fileStorageInfo.getFilename(),
+                uploadedParts.size(), System.currentTimeMillis() - startTime);
             return success;
         } catch (Exception e) {
             log.error("【文件服务】自动分片上传失败 | file={}", fileStorageInfo.getFilename(), e);
@@ -337,6 +412,17 @@ public class FileStorageService {
             return storage.s3ProtocolSupport().getMultipartPartSize();
         }
         return 0;
+    }
+
+    /**
+     * 解析分片实现方式，便于日志区分。
+     * <ul>
+     *   <li>S3降级：平台未自有分片，走 {@code s3ProtocolSupport}</li>
+     *   <li>平台自有：如 MinIO 自有 multipart 实现</li>
+     * </ul>
+     */
+    private String resolveMultipartMode(FileStorageInterface storage) {
+        return storage.s3ProtocolSupport() != null ? "S3降级" : "平台自有";
     }
 
     /** 销毁所有存储平台的连接 */

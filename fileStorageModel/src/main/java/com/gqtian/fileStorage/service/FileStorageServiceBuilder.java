@@ -181,6 +181,17 @@ public class FileStorageServiceBuilder {
         // 去除所有 null 对象
         fileStorageList.removeIf(Objects::isNull);
         fileStorageService.setFileStorageInterfaceList(new CopyOnWriteArrayList<>(fileStorageList));
+        // 启动摘要：哪些平台挂了 S3 分片降级，便于日志检索
+        for (FileStorageInterface storage : fileStorageList) {
+            if (storage.s3ProtocolSupport() != null) {
+                log.info("【文件服务】[S3降级] 已激活 | platform={} | multipartSupport={}", storage.getPlatform(),
+                    storage.supportMultipartUpload());
+            } else if (storage.supportMultipartUpload()) {
+                log.info("【文件服务】分片能力 | platform={} | mode=平台自有", storage.getPlatform());
+            } else {
+                log.info("【文件服务】分片能力 | platform={} | mode=不支持", storage.getPlatform());
+            }
+        }
         return fileStorageService;
     }
 

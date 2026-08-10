@@ -81,8 +81,8 @@ yml:
 # 2. default-platform：业务未指定 platform 时使用的默认平台
 # 3. 各平台 enable=true 才会加载；可同时启用多个，上传时通过 FileStorageInfo.platform 选择
 # 4. 分片能力：
-#    - minio：已实现厂商自有分片（MinIO SDK）
-#    - aliYunOss / huaweiObs：暂无自有分片，可开 s3-multipart-fallback 降级为 S3 协议分片（endpoint 须支持 S3 API）
+#    - minio：默认 MinIO 自有分片；s3-multipart-fallback=true 时强制 AWS S3 SDK 分片
+#    - aliYunOss / huaweiObs：暂无自有分片，开 s3-multipart-fallback 走 S3 协议分片
 #    - local / ftp：不支持分片
 # 5. 业务调用：upload / initiateMultipartUpload / uploadPart / completeMultipartUpload / abortMultipartUpload
 #    或 uploadByMultipart(info, partSize)（partSize<=0 时用 multipart-part-size）
@@ -101,7 +101,7 @@ file-storage:
     multipart-part-size: 33554432                                     # 32MB（local 未使用，字段对齐）
 
   #----------------------- MinIO -----------------------#
-  # 自有分片：CreateMultipartUpload / UploadPart / Complete；一般无需 S3 降级
+  # false=MinIO SDK 自有分片；true=强制 AWS S3 SDK 分片（日志 mode=S3降级 / [S3降级]）
   minio:
     platform: minio                                                   # 平台编码
     enable: true                                                      # 是否启用
@@ -113,9 +113,9 @@ file-storage:
     domain:                                                           # 访问域名（可选）
     multipart-threshold: 134217728                                    # 自动分片阈值 128MB（预留）
     multipart-part-size: 33554432                                     # 默认分片大小 32MB（建议 5MB~100MB）
-    s3-multipart-fallback: false                                      # 已有自有分片，保持 false
-    region: us-east-1                                                 # 仅 S3 降级时使用
-    path-style-access: true                                           # 仅 S3 降级时使用；MinIO 兼容端点用 true
+    s3-multipart-fallback: true                                       # true=走 S3 协议分片降级
+    region: us-east-1                                                 # S3 降级必填占位（MinIO 一般 us-east-1）
+    path-style-access: true                                           # S3 降级时 MinIO 必须 true
 
   #----------------------- 阿里云 OSS -----------------------#
   # 暂无自有分片；endpoint 支持 S3 API 时可开 s3-multipart-fallback

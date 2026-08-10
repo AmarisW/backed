@@ -60,8 +60,8 @@ public class AliyunOssPlatFrom implements FileStorageInterface {
         // 无自有分片封装时，按配置降级到 S3 协议分片
         if (S3ProtocolSupport.shouldEnable(aliYunOssConfig)) {
             this.s3ProtocolSupport = S3ProtocolSupport.create(platform, aliYunOssConfig,
-                aliYunOssConfig.getMultipartPartSize());
-            log.info("【文件服务】阿里云 OSS 已启用 S3 协议分片降级 | platform={}", platform);
+                aliYunOssConfig.getMultipartPartSize(), aliYunOssConfig.getMultipartThreshold());
+            log.info("【文件服务】[S3降级] 平台已挂载分片降级通道 | platform=aliYunOss | code={}", platform);
         }
     }
 

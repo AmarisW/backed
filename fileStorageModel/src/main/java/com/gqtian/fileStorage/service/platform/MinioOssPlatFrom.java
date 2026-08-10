@@ -16,6 +16,7 @@ import com.gqtian.fileStorage.domain.MultipartInitResult;
 import com.gqtian.fileStorage.domain.MultipartPartETag;
 import com.gqtian.fileStorage.service.FileStorageClientFactory;
 import com.gqtian.fileStorage.service.FileStorageInterface;
+import com.gqtian.fileStorage.service.s3.S3ProtocolSupport;
 
 import io.minio.BucketExistsArgs;
 import io.minio.CreateMultipartUploadResponse;
@@ -35,8 +36,8 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * MinIO 对象存储平台实现。
  * <p>
- * 分片能力通过 {@link FileStorageInterface} 对外暴露；Client 由 {@link FileStorageClientFactory} 提供。
- * MinIO 8.x 分片相关方法为 protected，故在本类内用私有子类调用，不额外增加公共 Client 类型。
+ * 默认使用 MinIO SDK 自有分片；配置 {@code s3-multipart-fallback: true} 时改走 AWS S3 SDK 协议分片（降级），
+ * 日志中会出现 {@code [S3降级]} / {@code mode=S3降级}。
  */
 @Slf4j
 @Getter
@@ -65,6 +66,11 @@ public class MinioOssPlatFrom implements FileStorageInterface {
     /** Client 工厂 */
     private FileStorageClientFactory<MinioClient> clientFactory;
 
+    /**
+     * S3 协议分片降级；{@code s3-multipart-fallback=true} 时非空，分片优先走该通道
+     */
+    private S3ProtocolSupport s3ProtocolSupport;
+
     public MinioOssPlatFrom(MinioConfig config, FileStorageClientFactory<MinioClient> clientFactory) {
         platform = config.getPlatform();
         bucketName = config.getBucketName();
@@ -73,6 +79,12 @@ public class MinioOssPlatFrom implements FileStorageInterface {
         multipartThreshold = config.getMultipartThreshold();
         multipartPartSize = config.getMultipartPartSize();
         this.clientFactory = clientFactory;
+        // true：强制用 AWS S3 SDK 分片；false：MinIO 自有分片
+        if (S3ProtocolSupport.shouldEnable(config)) {
+            this.s3ProtocolSupport = S3ProtocolSupport.create(platform, config, config.getMultipartPartSize(),
+                config.getMultipartThreshold());
+            log.info("【文件服务】[S3降级] 平台已挂载分片降级通道 | platform=minio | code={}", platform);
+        }
     }
 
     public MinioClient getClient() {
@@ -123,18 +135,27 @@ public class MinioOssPlatFrom implements FileStorageInterface {
     }
 
     @Override
+    public S3ProtocolSupport s3ProtocolSupport() {
+        return s3ProtocolSupport;
+    }
+
+    @Override
     public boolean supportMultipartUpload() {
         return true;
     }
 
     @Override
     public MultipartInitResult initiateMultipartUpload(FileStorageInfo fileStorageInfo) {
+        // 开启 s3-multipart-fallback 时优先 AWS S3 SDK
+        if (s3ProtocolSupport != null) {
+            return s3ProtocolSupport.initiateMultipartUpload(fileStorageInfo);
+        }
         String filename = resolveFilename(fileStorageInfo);
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), filename);
         try {
             MinioClient client = getClient();
             ensureBucket(client);
-            // 通过平台私有子类调用 SDK protected 分片 API
+            // MinIO 自有分片（SDK protected API）
             String uploadId = new MinioSdkAccess(client).initiateMultipartUpload(bucketName, fileKey);
             log.info("【文件服务】minio 初始化分片成功 | objectKey={} | uploadId={}", fileKey, uploadId);
             return MultipartInitResult.builder().platform(platform).uploadId(uploadId).objectKey(fileKey)
@@ -148,6 +169,9 @@ public class MinioOssPlatFrom implements FileStorageInterface {
     @Override
     public MultipartPartETag uploadPart(FileStorageInfo fileStorageInfo, String uploadId, int partNumber,
         InputStream partData, long partSize) {
+        if (s3ProtocolSupport != null) {
+            return s3ProtocolSupport.uploadPart(fileStorageInfo, uploadId, partNumber, partData, partSize);
+        }
         validatePartArgs(uploadId, partNumber, partSize);
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
         try {
@@ -165,6 +189,9 @@ public class MinioOssPlatFrom implements FileStorageInterface {
     @Override
     public boolean completeMultipartUpload(FileStorageInfo fileStorageInfo, String uploadId,
         List<MultipartPartETag> parts) {
+        if (s3ProtocolSupport != null) {
+            return s3ProtocolSupport.completeMultipartUpload(fileStorageInfo, uploadId, parts);
+        }
         if (StringUtils.isBlank(uploadId)) {
             throw new GlobalException("【文件服务】uploadId 不能为空");
         }
@@ -187,6 +214,9 @@ public class MinioOssPlatFrom implements FileStorageInterface {
 
     @Override
     public boolean abortMultipartUpload(FileStorageInfo fileStorageInfo, String uploadId) {
+        if (s3ProtocolSupport != null) {
+            return s3ProtocolSupport.abortMultipartUpload(fileStorageInfo, uploadId);
+        }
         if (StringUtils.isBlank(uploadId)) {
             throw new GlobalException("【文件服务】uploadId 不能为空");
         }
@@ -203,6 +233,10 @@ public class MinioOssPlatFrom implements FileStorageInterface {
 
     @Override
     public void close() {
+        if (s3ProtocolSupport != null) {
+            s3ProtocolSupport.close();
+            s3ProtocolSupport = null;
+        }
         clientFactory.close();
     }
 
