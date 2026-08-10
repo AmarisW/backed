@@ -82,6 +82,7 @@
     <obs-hw.version>3.22.12</obs-hw.version>
     <obs-minio.version>8.2.1</obs-minio.version>
     <obs-aliyun.version>3.15.1</obs-aliyun.version>
+    <aws-s3.version>2.25.60</aws-s3.version>
     <jsch.version>0.1.55</jsch.version>
 
     <!-- 消息队列版本 -->
@@ -289,6 +290,13 @@
         <groupId>com.aliyun.oss</groupId>
         <artifactId>aliyun-sdk-oss</artifactId>
         <version>${obs-aliyun.version}</version>
+      </dependency>
+
+      <!-- AWS S3 原生 SDK（兼容 S3 协议的对象存储） -->
+      <dependency>
+        <groupId>software.amazon.awssdk</groupId>
+        <artifactId>s3</artifactId>
+        <version>${aws-s3.version}</version>
       </dependency>
 
       <!-- JSch SFTP客户端 -->

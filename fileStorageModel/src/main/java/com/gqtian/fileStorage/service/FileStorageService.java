@@ -4,6 +4,8 @@ package com.gqtian.fileStorage.service;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +15,8 @@ import org.springframework.web.multipart.MultipartFile;
 import com.gqtian.common.globalProcess.GlobalException;
 import com.gqtian.fileStorage.config.FileStorageProperties;
 import com.gqtian.fileStorage.domain.FileStorageInfo;
+import com.gqtian.fileStorage.domain.MultipartInitResult;
+import com.gqtian.fileStorage.domain.MultipartPartETag;
 import com.gqtian.fileStorage.utils.Tools;
 
 import cn.hutool.core.io.IoUtil;
@@ -148,6 +152,191 @@ public class FileStorageService {
             log.error("【文件服务】文件删除失败", e);
             throw new GlobalException("【文件服务】文件删除失败");
         }
+    }
+
+    // ========================= 分片上传 =========================
+
+    /**
+     * 初始化分片上传。
+     *
+     * @param fileStorageInfo 文件信息（platform / path / filename 或 fileType）
+     * @return 分片会话信息（含 uploadId）
+     */
+    public MultipartInitResult initiateMultipartUpload(FileStorageInfo fileStorageInfo) {
+        FileStorageInterface storage = getFileStorage(fileStorageInfo.getPlatform());
+        if (!storage.supportMultipartUpload()) {
+            throw storage.unsupportedMultipart();
+        }
+        // 将 init 解析出的文件名回写，便于后续 part/complete 使用同一 key
+        MultipartInitResult result = storage.initiateMultipartUpload(fileStorageInfo);
+        if (StringUtils.isNotBlank(result.getFilename())
+            && StringUtils.isBlank(fileStorageInfo.getFilename())) {
+            fileStorageInfo.setFilename(result.getFilename());
+        }
+        return result;
+    }
+
+    /**
+     * 上传单个分片。
+     * <p>
+     * 分片数据优先取 {@code partData}；若为空则从 fileStorageInfo.content / inputStream 转换。
+     *
+     * @param fileStorageInfo 文件定位信息（需与 init 的 path、filename 一致）
+     * @param uploadId 分片会话 ID
+     * @param partNumber 分片序号，从 1 开始
+     * @param partData 分片流（可空，空则走 contentToStream）
+     * @param partSize 分片字节数
+     * @return 分片 ETag
+     */
+    public MultipartPartETag uploadPart(FileStorageInfo fileStorageInfo, String uploadId, int partNumber,
+        InputStream partData, long partSize) {
+        FileStorageInterface storage = getFileStorage(fileStorageInfo.getPlatform());
+        if (!storage.supportMultipartUpload()) {
+            throw storage.unsupportedMultipart();
+        }
+        try {
+            InputStream dataStream = partData;
+            if (dataStream == null) {
+                contentToStream(fileStorageInfo);
+                dataStream = fileStorageInfo.getInputStream();
+            }
+            return storage.uploadPart(fileStorageInfo, uploadId, partNumber, dataStream, partSize);
+        } catch (GlobalException e) {
+            throw e;
+        } catch (Exception e) {
+            log.error("【文件服务】分片上传失败 | partNumber={} | uploadId={}", partNumber, uploadId, e);
+            throw new GlobalException("【文件服务】分片上传失败", e);
+        }
+    }
+
+    /**
+     * 合并分片完成上传。
+     *
+     * @param fileStorageInfo 文件定位信息
+     * @param uploadId 分片会话 ID
+     * @param parts 已上传分片 ETag 列表
+     * @return 是否成功
+     */
+    public boolean completeMultipartUpload(FileStorageInfo fileStorageInfo, String uploadId,
+        List<MultipartPartETag> parts) {
+        FileStorageInterface storage = getFileStorage(fileStorageInfo.getPlatform());
+        if (!storage.supportMultipartUpload()) {
+            throw storage.unsupportedMultipart();
+        }
+        return storage.completeMultipartUpload(fileStorageInfo, uploadId, parts);
+    }
+
+    /**
+     * 取消分片上传。
+     *
+     * @param fileStorageInfo 文件定位信息
+     * @param uploadId 分片会话 ID
+     * @return 是否成功
+     */
+    public boolean abortMultipartUpload(FileStorageInfo fileStorageInfo, String uploadId) {
+        FileStorageInterface storage = getFileStorage(fileStorageInfo.getPlatform());
+        if (!storage.supportMultipartUpload()) {
+            throw storage.unsupportedMultipart();
+        }
+        return storage.abortMultipartUpload(fileStorageInfo, uploadId);
+    }
+
+    /**
+     * 服务端将整文件按固定分片大小自动分片上传（适合后端持有完整流的大文件场景）。
+     * <p>
+     * 失败时会尝试 abort 已创建的分片会话。
+     *
+     * @param fileStorageInfo 文件信息（需 content 或 inputStream，建议设置 size）
+     * @param partSize 分片大小；&lt;=0 时使用平台默认（MinIO 配置 multipartPartSize）
+     * @return 是否成功
+     */
+    public boolean uploadByMultipart(FileStorageInfo fileStorageInfo, long partSize) {
+        if (fileStorageInfo == null) {
+            log.error("【文件服务】文件信息为空");
+            return false;
+        }
+        FileStorageInterface storage = getFileStorage(fileStorageInfo.getPlatform());
+        if (!storage.supportMultipartUpload()) {
+            throw storage.unsupportedMultipart();
+        }
+
+        long resolvedPartSize = partSize > 0 ? partSize : resolveDefaultPartSize(storage);
+        if (resolvedPartSize <= 0) {
+            throw new GlobalException("【文件服务】分片大小无效，请指定 partSize 或配置 multipartPartSize");
+        }
+
+        MultipartInitResult initResult = null;
+        List<MultipartPartETag> uploadedParts = new ArrayList<>();
+        long startTime = System.currentTimeMillis();
+        try {
+            contentToStream(fileStorageInfo);
+            initResult = initiateMultipartUpload(fileStorageInfo);
+            // 保证后续 complete 使用同一 filename
+            fileStorageInfo.setFilename(initResult.getFilename());
+
+            try (InputStream inputStream = fileStorageInfo.getInputStream()) {
+                byte[] buffer = new byte[(int)Math.min(resolvedPartSize, Integer.MAX_VALUE)];
+                int partNumber = 1;
+                int read;
+                while ((read = readFully(inputStream, buffer)) > 0) {
+                    ByteArrayInputStream partStream = new ByteArrayInputStream(buffer, 0, read);
+                    MultipartPartETag partETag =
+                        storage.uploadPart(fileStorageInfo, initResult.getUploadId(), partNumber, partStream, read);
+                    uploadedParts.add(partETag);
+                    partNumber++;
+                }
+            }
+
+            if (uploadedParts.isEmpty()) {
+                throw new GlobalException("【文件服务】文件内容为空，无法分片上传");
+            }
+
+            boolean success =
+                completeMultipartUpload(fileStorageInfo, initResult.getUploadId(), uploadedParts);
+            log.info("【文件服务】自动分片上传{} | file={} | parts={} | 耗时: {}ms", success ? "成功" : "失败",
+                fileStorageInfo.getFilename(), uploadedParts.size(), System.currentTimeMillis() - startTime);
+            return success;
+        } catch (Exception e) {
+            log.error("【文件服务】自动分片上传失败 | file={}", fileStorageInfo.getFilename(), e);
+            if (initResult != null && StringUtils.isNotBlank(initResult.getUploadId())) {
+                try {
+                    abortMultipartUpload(fileStorageInfo, initResult.getUploadId());
+                } catch (Exception abortEx) {
+                    log.warn("【文件服务】自动分片失败后 abort 异常 | uploadId={}", initResult.getUploadId(), abortEx);
+                }
+            }
+            if (e instanceof GlobalException globalException) {
+                throw globalException;
+            }
+            throw new GlobalException("【文件服务】自动分片上传失败", e);
+        }
+    }
+
+    /**
+     * 尽量读满 buffer，返回实际读取字节数；到流末尾且无数据时返回 -1。
+     */
+    private int readFully(InputStream inputStream, byte[] buffer) throws IOException {
+        int offset = 0;
+        while (offset < buffer.length) {
+            int read = inputStream.read(buffer, offset, buffer.length - offset);
+            if (read < 0) {
+                return offset == 0 ? -1 : offset;
+            }
+            offset += read;
+        }
+        return offset;
+    }
+
+    /** 从具体平台实现上读取默认分片大小 */
+    private long resolveDefaultPartSize(FileStorageInterface storage) {
+        if (storage instanceof com.gqtian.fileStorage.service.platform.MinioOssPlatFrom minio) {
+            return minio.getMultipartPartSize();
+        }
+        // 走 S3 协议降级的平台
+        if (storage.s3ProtocolSupport() != null) {
+            return storage.s3ProtocolSupport().getMultipartPartSize();
+        }
+        return 0;
     }
 
     /** 销毁所有存储平台的连接 */

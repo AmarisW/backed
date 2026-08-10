@@ -12,6 +12,7 @@ import com.gqtian.fileStorage.config.FileStorageProperties.AliYunOssConfig;
 import com.gqtian.fileStorage.domain.FileStorageInfo;
 import com.gqtian.fileStorage.service.FileStorageClientFactory;
 import com.gqtian.fileStorage.service.FileStorageInterface;
+import com.gqtian.fileStorage.service.s3.S3ProtocolSupport;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,11 +20,10 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 👻 阿里OSS平台
- *
- * @className AliyunOssPlatfrom
- * @author gqtian
- * @date 2025/3/21 10:10
+ * 阿里云 OSS 平台。
+ * <p>
+ * 尚未实现自有分片时，可配置 {@code s3MultipartFallback=true} 走 S3 协议降级分片
+ *（需 endpoint 支持 S3 兼容 API）。
  */
 @Slf4j
 @Getter
@@ -46,16 +46,32 @@ public class AliyunOssPlatFrom implements FileStorageInterface {
     /** 工厂（包含配置信息及连接工具） */
     private FileStorageClientFactory<OSS> clientFactory;
 
+    /**
+     * S3 协议分片降级（未实现阿里云自有分片时使用）；可为 null
+     */
+    private S3ProtocolSupport s3ProtocolSupport;
+
     public AliyunOssPlatFrom(AliYunOssConfig aliYunOssConfig, FileStorageClientFactory<OSS> clientFactory) {
         this.platform = aliYunOssConfig.getPlatform();
         this.bucketName = aliYunOssConfig.getBucketName();
         this.basePath = aliYunOssConfig.getBasePath();
         this.domain = aliYunOssConfig.getDomain();
         this.clientFactory = clientFactory;
+        // 无自有分片封装时，按配置降级到 S3 协议分片
+        if (S3ProtocolSupport.shouldEnable(aliYunOssConfig)) {
+            this.s3ProtocolSupport = S3ProtocolSupport.create(platform, aliYunOssConfig,
+                aliYunOssConfig.getMultipartPartSize());
+            log.info("【文件服务】阿里云 OSS 已启用 S3 协议分片降级 | platform={}", platform);
+        }
     }
 
     public OSS getClient() {
         return clientFactory.getClient();
+    }
+
+    @Override
+    public S3ProtocolSupport s3ProtocolSupport() {
+        return s3ProtocolSupport;
     }
 
     @Override
@@ -104,6 +120,10 @@ public class AliyunOssPlatFrom implements FileStorageInterface {
 
     @Override
     public void close() {
+        if (s3ProtocolSupport != null) {
+            s3ProtocolSupport.close();
+            s3ProtocolSupport = null;
+        }
         clientFactory.close();
     }
 }

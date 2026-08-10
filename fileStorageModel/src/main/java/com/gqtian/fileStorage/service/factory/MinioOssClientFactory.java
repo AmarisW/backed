@@ -9,7 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-/** 阿里云 OSS 存储平台的 Client 工厂 */
+/** MinIO 存储平台的 Client 工厂 */
 @Getter
 @Setter
 @NoArgsConstructor
@@ -61,7 +61,9 @@ public class MinioOssClientFactory implements FileStorageClientFactory<MinioClie
     public MinioClient getClient() {
         if (client == null) {
             synchronized (this) {
-                client = new MinioClient.Builder().credentials(accessKey, secretKey).endpoint(endPoint).build();
+                if (client == null) {
+                    client = MinioClient.builder().credentials(accessKey, secretKey).endpoint(endPoint).build();
+                }
             }
         }
         return client;

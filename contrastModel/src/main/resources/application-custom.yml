@@ -1,24 +1,26 @@
 #################################  自定义配置 #################################
 yml:
   properties:
-    #---------------普通用法---------------#
+
+    #----------------------- 普通用法 -----------------------#
     ## 普通属性
     normalBoolean: true
     normalString: "字符串"
     normalNumber: 1
-    #---------------数组集合---------------#
+
+    #----------------------- 数组集合 -----------------------#
     myListOrArray:
       - 1
       - 2
       - 3
     ### 等价于 myListOrArray: 1, 2, 3
-    
-    #---------------对象集合---------------#
+
+    #----------------------- 对象集合 -----------------------#
     # 数组或集合（元素为对象）
     myListOrArrayPlus:
-      - { age: 25,gender: 1,name: "张三",motto: 2 }
-      - { age: 25,gender: 1,name: "李四",motto: 2 }
-      - { age: 25,gender: 1,name: "王二麻子",motto: 2 }
+      - { age: 25, gender: 1, name: "张三", motto: 2 }
+      - { age: 25, gender: 1, name: "李四", motto: 2 }
+      - { age: 25, gender: 1, name: "王二麻子", motto: 2 }
       #等价于
       #    myListOrArrayPlus:
       #      - age: 25
@@ -33,27 +35,19 @@ yml:
       #        gender: 1
       #        name: "王二麻子"
       #        motto: 2
-      
-      #---------------简单Map---------------#
-    myMap: { Key1: "Value1",Key2: "Value2" }
-    #等价于 
+
+    #----------------------- 简单 Map -----------------------#
+    myMap: { Key1: "Value1", Key2: "Value2" }
+    #等价于
     #myMap:
     #  Key1: "Value1"
     #  Key2: "Value2"
-    #---------------复杂Map---------------#
+
+    #----------------------- 复杂 Map -----------------------#
     myMapPlus:
-      Key1: { age: 25,
-              gender: 1,
-              name: "张三",
-              motto: 2 }
-      Key2: { age: 25,
-              gender: 1,
-              name: "李四",
-              motto: 2 }
-      Key3: { age: 25,
-              gender: 1,
-              name: "王二麻子",
-              motto: 2 }
+      Key1: { age: 25, gender: 1, name: "张三", motto: 2 }
+      Key2: { age: 25, gender: 1, name: "李四", motto: 2 }
+      Key3: { age: 25, gender: 1, name: "王二麻子", motto: 2 }
     #等价于
     #myMapPlus[k1]:
     #    age: 25
@@ -77,47 +71,98 @@ yml:
     #          gender: 1
     #          name: "张三"
     #          motto: 2
-    
-    #---------------对象---------------#
-    myUser: { age: 25,gender: 1,name: "张三",motto: 2 }
 
+    #----------------------- 对象 -----------------------#
+    myUser: { age: 25, gender: 1, name: "张三", motto: 2 }
 
-######################################## 自定义配置 ######################################## 
-file-storage: # minio | aliYunOss | huaweiObs | ftp | local
-  default-platform: local
+######################################## 文件存储 ########################################
+# 使用说明：
+# 1. 启动类需加 @EnableFileStorage
+# 2. default-platform：业务未指定 platform 时使用的默认平台
+# 3. 各平台 enable=true 才会加载；可同时启用多个，上传时通过 FileStorageInfo.platform 选择
+# 4. 分片能力：
+#    - minio：已实现厂商自有分片（MinIO SDK）
+#    - aliYunOss / huaweiObs：暂无自有分片，可开 s3-multipart-fallback 降级为 S3 协议分片（endpoint 须支持 S3 API）
+#    - local / ftp：不支持分片
+# 5. 业务调用：upload / initiateMultipartUpload / uploadPart / completeMultipartUpload / abortMultipartUpload
+#    或 uploadByMultipart(info, partSize)（partSize<=0 时用 multipart-part-size）
+file-storage:
+  # 可选：local | minio | aliYunOss | huaweiObs | ftp
+  default-platform: minio                                             # 未指定平台时的默认存储
+
+  #----------------------- 本地 local -----------------------#
+  # 本地磁盘落盘；不支持分片
   local:
-    platform: local                                                   # 本地
-    enable: true                                                      # 是否启用对象存储服务
-    base-path: D:\Desktop\临时项目                                      # 基础路
-  aliYunOss:
-    platform: aliYunOss                                               # 阿里云
-    enable: true                                                      # 是否启用对象存储服务
-    access-key: REDACTED                              # 访问密钥，用于身份验证
-    secret-key: REDACTED                        # 密钥secret-key，与访问密钥搭配使用，确保数据安全
-    end-point: https://oss-cn-beijing.aliyuncs.com                    # 对象存储服务的终结点（Endpoint），即服务访问地址
-    bucket-name: gqtian                                               # 存储桶（Bucket）名称，用于组织和管理存储在OSS中的对象
-    base-path: test/                                                  # 基础路径，用于指定上传到存储桶时的默认目录
+    platform: local                                                   # 平台编码
+    enable: true                                                      # 是否启用
+    base-path: D:/Desktop/临时项目/                                    # 落盘根目录（建议正斜杠）
+    domain:                                                           # 对外访问前缀（本地预览可按业务自拼）
+    multipart-threshold: 134217728                                    # 128MB（local 未使用，字段对齐）
+    multipart-part-size: 33554432                                     # 32MB（local 未使用，字段对齐）
+
+  #----------------------- MinIO -----------------------#
+  # 自有分片：CreateMultipartUpload / UploadPart / Complete；一般无需 S3 降级
   minio:
-    platform: minio                                                   # 阿里云
-    enable: true                                                      # 是否启用对象存储服务
-    access-key: REDACTED                                      # 访问密钥，用于身份验证
-    secret-key: REDACTED                      # 密钥secret-key，与访问密钥搭配使用，确保数据安全
-    end-point: http://192.168.90.111:3100                             # 对象存储服务的终结点（Endpoint），即服务访问地址
-    bucket-name: v2x                                                  # 存储桶（Bucket）名称，用于组织和管理存储在OSS中的对象
-    base-path: test/                                                  # 基础路径，用于指定上传到存储桶时的默认目录
+    platform: minio                                                   # 平台编码
+    enable: true                                                      # 是否启用
+    access-key: REDACTED                                      # 访问密钥
+    secret-key: REDACTED                      # 密钥
+    end-point: http://192.168.90.111:3100                             # 服务地址（须带 http/https）
+    bucket-name: v2x                                                  # 存储桶
+    base-path: test/                                                  # 对象 key 前缀
+    domain:                                                           # 访问域名（可选）
+    multipart-threshold: 134217728                                    # 自动分片阈值 128MB（预留）
+    multipart-part-size: 33554432                                     # 默认分片大小 32MB（建议 5MB~100MB）
+    s3-multipart-fallback: false                                      # 已有自有分片，保持 false
+    region: us-east-1                                                 # 仅 S3 降级时使用
+    path-style-access: true                                           # 仅 S3 降级时使用；MinIO 兼容端点用 true
+
+  #----------------------- 阿里云 OSS -----------------------#
+  # 暂无自有分片；endpoint 支持 S3 API 时可开 s3-multipart-fallback
+  aliYunOss:
+    platform: aliYunOss                                               # 平台编码
+    enable: true                                                      # 是否启用
+    access-key: REDACTED                              # 访问密钥
+    secret-key: REDACTED                        # 密钥
+    end-point: https://oss-cn-beijing.aliyuncs.com                    # 服务地址
+    bucket-name: gqtian                                               # 存储桶
+    base-path: test/                                                  # 对象 key 前缀
+    domain:                                                           # 访问域名（可选）
+    multipart-threshold: 134217728                                    # 自动分片阈值 128MB
+    multipart-part-size: 33554432                                     # 默认分片大小 32MB
+    s3-multipart-fallback: false                                      # true=降级 S3 协议分片
+    region: cn-beijing                                                # S3 降级区域（与业务 region 对齐更稳妥）
+    path-style-access: false                                          # 官方虚拟主机风格多为 false
+
+  #----------------------- 华为 OBS -----------------------#
+  # 暂无自有分片；私有/兼容 S3 的 endpoint 可开 s3-multipart-fallback
+  huaweiObs:
+    platform: huaweiObs                                               # 平台编码
+    enable: true                                                      # 是否启用
+    access-key: REDACTED                                  # 访问密钥
+    secret-key: REDACTED                    # 密钥
+    end-point: http://10.201.124.34:8002                              # 服务地址
+    bucket-name: hnsjtt-glfwpt                                        # 存储桶
+    base-path: test/                                                  # 对象 key 前缀
+    domain:                                                           # 访问域名（可选）
+    default-acl:                                                      # 默认 ACL（可选）
+    multipart-threshold: 134217728                                    # 自动分片阈值 128MB
+    multipart-part-size: 33554432                                     # 默认分片大小 32MB
+    s3-multipart-fallback: false                                      # true=降级 S3 协议分片
+    region: us-east-1                                                 # S3 降级区域（兼容端点常作占位）
+    path-style-access: true                                           # 私有兼容端点建议 true
+
+  #----------------------- FTP -----------------------#
+  # 不支持分片
   ftp:
-    platform: ftp                                                     # Ftp
-    enable: true                                                      # 是否启用对象存储服务
+    platform: ftp                                                     # 平台编码
+    enable: true                                                      # 是否启用
     access-key: REDACTED                                               # 用户名
     secret-key: REDACTED                                         # 密码
-    end-point: 47.98.213.196:21                                       # 对象存储服务的终结点（Endpoint），即服务访问地址
-    base-path: sub/                                                   # 基础路径 根目录
-    domain:                                                           # 预览地址
-  huaweiObs:
-    platform: huaweiObs                                               # 华为云对象存储服务
-    enable: true                                                      # 是否启用对象存储服务
-    access-key: REDACTED                                  # 访问密钥，用于身份验证
-    secret-key: REDACTED                    # 密钥secret-key，与访问密钥搭配使用，确保数据安全
-    end-point: http://10.201.124.34:8002                              # 对象存储服务的终结点（Endpoint），即服务访问地址
-    bucket-name: hnsjtt-glfwpt                                        # 存储桶（Bucket）名称，用于组织和管理存储在OSS中的对象
-    base-path: test/                                                  # 基础路径，用于指定上传到存储桶时的默认目录
+    end-point: 47.98.213.196:21                                       # host:port
+    base-path: sub/                                                   # 根目录下的基础路径
+    domain:                                                           # 预览地址（可选）
+    # connection-timeout: 10000                                       # 连接超时 ms（可选，默认 10s）
+    # so-timeout: 10000                                               # Socket 超时 ms（可选，默认 10s）
+    # is-active: false                                                # 是否主动模式（默认被动）
+    # charset: UTF-8                                                  # 编码（默认 UTF-8）

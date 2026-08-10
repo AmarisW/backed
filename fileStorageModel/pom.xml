@@ -83,6 +83,12 @@
       <artifactId>minio</artifactId>
     </dependency>
 
+    <!-- AWS S3 原生 SDK -->
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+    </dependency>
+
   </dependencies>
 
   <!-- 构建配置 -->

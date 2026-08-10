@@ -8,6 +8,7 @@ import com.gqtian.fileStorage.config.FileStorageProperties.HuaweiObsConfig;
 import com.gqtian.fileStorage.domain.FileStorageInfo;
 import com.gqtian.fileStorage.service.FileStorageClientFactory;
 import com.gqtian.fileStorage.service.FileStorageInterface;
+import com.gqtian.fileStorage.service.s3.S3ProtocolSupport;
 import com.obs.services.ObsClient;
 import com.obs.services.exception.ObsException;
 import com.obs.services.model.HttpMethodEnum;
@@ -21,11 +22,9 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * 👻 华为Obs
- *
- * @className HuaWeiObsPlatFrom
- * @author gqtian
- * @date 2025/3/21 17:52
+ * 华为 OBS 平台。
+ * <p>
+ * 尚未实现自有分片时，可配置 {@code s3MultipartFallback=true} 走 S3 协议降级分片。
  */
 @Slf4j
 @Getter
@@ -48,16 +47,29 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
     /** 工厂（包含配置信息及连接工具） */
     private FileStorageClientFactory<ObsClient> clientFactory;
 
+    /** S3 协议分片降级；可为 null */
+    private S3ProtocolSupport s3ProtocolSupport;
+
     public HuaweiObsPlatFrom(HuaweiObsConfig huaweiObsConfig, FileStorageClientFactory<ObsClient> clientFactory) {
         this.platform = huaweiObsConfig.getPlatform();
         this.bucketName = huaweiObsConfig.getBucketName();
         this.basePath = huaweiObsConfig.getBasePath();
         this.domain = huaweiObsConfig.getDomain();
         this.clientFactory = clientFactory;
+        if (S3ProtocolSupport.shouldEnable(huaweiObsConfig)) {
+            this.s3ProtocolSupport = S3ProtocolSupport.create(platform, huaweiObsConfig,
+                huaweiObsConfig.getMultipartPartSize());
+            log.info("【文件服务】华为 OBS 已启用 S3 协议分片降级 | platform={}", platform);
+        }
     }
 
     public ObsClient getClient() {
         return clientFactory.getClient();
+    }
+
+    @Override
+    public S3ProtocolSupport s3ProtocolSupport() {
+        return s3ProtocolSupport;
     }
 
     @Override
@@ -80,9 +92,7 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
     public boolean delete(FileStorageInfo fileStorageInfo) {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
         try {
-            // 创建ObsClient实例
             ObsClient obsClient = getClient();
-            // obs删除
             obsClient.deleteObject(bucketName, fileKey);
         } catch (ObsException e) {
             log.error("【文件服务】obs删除保存失败", e);
@@ -97,7 +107,6 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
         TemporarySignatureResponse response = null;
         try {
             ObsClient obsClient = getClient();
-            // URL有效期，3600秒
             long expireSeconds = 3600L;
             TemporarySignatureRequest request = new TemporarySignatureRequest(HttpMethodEnum.GET, expireSeconds);
             request.setBucketName(bucketName);
@@ -111,6 +120,10 @@ public class HuaweiObsPlatFrom implements FileStorageInterface {
 
     @Override
     public void close() {
+        if (s3ProtocolSupport != null) {
+            s3ProtocolSupport.close();
+            s3ProtocolSupport = null;
+        }
         clientFactory.close();
     }
 }

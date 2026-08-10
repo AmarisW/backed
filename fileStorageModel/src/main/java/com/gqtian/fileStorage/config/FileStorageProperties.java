@@ -72,6 +72,22 @@ public class FileStorageProperties {
 
         /** 存储路径 */
         private String basePath = "";
+
+        /**
+         * 未实现厂商自有分片时，是否降级为 S3 协议分片。
+         * <p>
+         * 要求当前平台 endpoint 支持 S3 API，且 accessKey/secretKey/bucket 可用于 S3 签名。
+         */
+        private boolean s3MultipartFallback = false;
+
+        /** S3 协议区域（分片降级用），默认 us-east-1 */
+        private String region = "us-east-1";
+
+        /**
+         * S3 path-style 访问（分片降级用）。
+         * MinIO 等兼容端点通常为 true。
+         */
+        private boolean pathStyleAccess = true;
     }
 
     /** 本地 local */

@@ -1,28 +1,43 @@
 /* Copyright (C) 2020-present Linkcld. All rights reserved. */
 package com.gqtian.fileStorage.service.platform;
 
+import java.io.BufferedInputStream;
 import java.io.InputStream;
+import java.util.Comparator;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
 
 import com.gqtian.common.globalProcess.GlobalException;
 import com.gqtian.fileStorage.config.FileStorageProperties.MinioConfig;
 import com.gqtian.fileStorage.domain.FileStorageInfo;
+import com.gqtian.fileStorage.domain.MultipartInitResult;
+import com.gqtian.fileStorage.domain.MultipartPartETag;
 import com.gqtian.fileStorage.service.FileStorageClientFactory;
 import com.gqtian.fileStorage.service.FileStorageInterface;
 
 import io.minio.BucketExistsArgs;
+import io.minio.CreateMultipartUploadResponse;
 import io.minio.GetPresignedObjectUrlArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.UploadPartResponse;
 import io.minio.http.Method;
+import io.minio.messages.Part;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
-/** 阿里云 OSS 存储 */
+/**
+ * MinIO 对象存储平台实现。
+ * <p>
+ * 分片能力通过 {@link FileStorageInterface} 对外暴露；Client 由 {@link FileStorageClientFactory} 提供。
+ * MinIO 8.x 分片相关方法为 protected，故在本类内用私有子类调用，不额外增加公共 Client 类型。
+ */
 @Slf4j
 @Getter
 @Setter
@@ -41,7 +56,13 @@ public class MinioOssPlatFrom implements FileStorageInterface {
     /** 访问域名（访问地址前缀 domain+fileName 为实际的访问地址） */
     private String domain;
 
-    /** 工厂（包含配置信息及连接工具） */
+    /** 自动分片阈值（字节），预留给整文件自动分片场景 */
+    private int multipartThreshold;
+
+    /** 建议分片大小（字节） */
+    private int multipartPartSize;
+
+    /** Client 工厂 */
     private FileStorageClientFactory<MinioClient> clientFactory;
 
     public MinioOssPlatFrom(MinioConfig config, FileStorageClientFactory<MinioClient> clientFactory) {
@@ -49,6 +70,8 @@ public class MinioOssPlatFrom implements FileStorageInterface {
         bucketName = config.getBucketName();
         domain = config.getDomain();
         basePath = config.getBasePath();
+        multipartThreshold = config.getMultipartThreshold();
+        multipartPartSize = config.getMultipartPartSize();
         this.clientFactory = clientFactory;
     }
 
@@ -59,28 +82,14 @@ public class MinioOssPlatFrom implements FileStorageInterface {
     @Override
     public boolean upload(FileStorageInfo fileStorageInfo) {
         String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
-        try (InputStream inputStream = fileStorageInfo.getInputStream())
-
-        {
+        try (InputStream inputStream = fileStorageInfo.getInputStream()) {
             MinioClient client = getClient();
-            // 判断存储桶是否存在
-            boolean bucketExists = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
-            if (!bucketExists) {
-                client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
-            }
-            // 获取文件后缀类型
-            // String contentType =
-            // fileStorageInfo.getFilename().substring(fileStorageInfo.getFilename().lastIndexOf(".") +
-            // 1);
-            // 上传
+            ensureBucket(client);
             client.putObject(PutObjectArgs.builder().bucket(bucketName).object(fileKey)
-                .stream(inputStream, inputStream.available(), -1)
-                // 文件上传的类型，如果不指定，那么每次访问时都要先下载文件
-                // .contentType(contentType)
-                .build());
+                .stream(inputStream, inputStream.available(), -1).build());
             return true;
         } catch (Exception e) {
-            log.error("【文件服务】minioOss文件上传失败", e);
+            log.error("【文件服务】minio 文件上传失败", e);
         }
         return false;
     }
@@ -93,7 +102,7 @@ public class MinioOssPlatFrom implements FileStorageInterface {
             client.removeObject(RemoveObjectArgs.builder().bucket(bucketName).object(fileKey).build());
             return true;
         } catch (Exception e) {
-            log.error("【文件服务】minioOss文件删除失败", e);
+            log.error("【文件服务】minio 文件删除失败", e);
             throw new GlobalException(fileKey + "文件删除失败");
         }
     }
@@ -107,14 +116,169 @@ public class MinioOssPlatFrom implements FileStorageInterface {
             generateUrl = client.getPresignedObjectUrl(GetPresignedObjectUrlArgs.builder().method(Method.GET)
                 .bucket(bucketName).object(fileKey).expiry(1, TimeUnit.DAYS).build());
         } catch (Exception e) {
-            log.error("【文件服务】minioOss文件预览失败", e);
+            log.error("【文件服务】minio 文件预览失败", e);
             throw new GlobalException(fileKey + "文件预览失败");
         }
         return generateUrl;
     }
 
     @Override
+    public boolean supportMultipartUpload() {
+        return true;
+    }
+
+    @Override
+    public MultipartInitResult initiateMultipartUpload(FileStorageInfo fileStorageInfo) {
+        String filename = resolveFilename(fileStorageInfo);
+        String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), filename);
+        try {
+            MinioClient client = getClient();
+            ensureBucket(client);
+            // 通过平台私有子类调用 SDK protected 分片 API
+            String uploadId = new MinioSdkAccess(client).initiateMultipartUpload(bucketName, fileKey);
+            log.info("【文件服务】minio 初始化分片成功 | objectKey={} | uploadId={}", fileKey, uploadId);
+            return MultipartInitResult.builder().platform(platform).uploadId(uploadId).objectKey(fileKey)
+                .filename(filename).path(fileStorageInfo.getPath()).build();
+        } catch (Exception e) {
+            log.error("【文件服务】minio 初始化分片失败 | objectKey={}", fileKey, e);
+            throw new GlobalException("【文件服务】minio 初始化分片失败", e);
+        }
+    }
+
+    @Override
+    public MultipartPartETag uploadPart(FileStorageInfo fileStorageInfo, String uploadId, int partNumber,
+        InputStream partData, long partSize) {
+        validatePartArgs(uploadId, partNumber, partSize);
+        String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
+        try {
+            String etag = new MinioSdkAccess(getClient()).uploadPart(bucketName, fileKey, uploadId, partNumber,
+                partData, (int)partSize);
+            log.info("【文件服务】minio 分片上传成功 | objectKey={} | partNumber={} | size={}", fileKey, partNumber,
+                partSize);
+            return MultipartPartETag.builder().partNumber(partNumber).etag(etag).build();
+        } catch (Exception e) {
+            log.error("【文件服务】minio 分片上传失败 | objectKey={} | partNumber={}", fileKey, partNumber, e);
+            throw new GlobalException("【文件服务】minio 分片上传失败", e);
+        }
+    }
+
+    @Override
+    public boolean completeMultipartUpload(FileStorageInfo fileStorageInfo, String uploadId,
+        List<MultipartPartETag> parts) {
+        if (StringUtils.isBlank(uploadId)) {
+            throw new GlobalException("【文件服务】uploadId 不能为空");
+        }
+        if (parts == null || parts.isEmpty()) {
+            throw new GlobalException("【文件服务】分片列表不能为空");
+        }
+        String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
+        try {
+            // 按分片号升序合并，符合 S3/MinIO 要求
+            Part[] minioParts = parts.stream().sorted(Comparator.comparingInt(MultipartPartETag::getPartNumber))
+                .map(p -> new Part(p.getPartNumber(), p.getEtag())).toArray(Part[]::new);
+            new MinioSdkAccess(getClient()).completeMultipartUpload(bucketName, fileKey, uploadId, minioParts);
+            log.info("【文件服务】minio 合并分片成功 | objectKey={} | parts={}", fileKey, minioParts.length);
+            return true;
+        } catch (Exception e) {
+            log.error("【文件服务】minio 合并分片失败 | objectKey={} | uploadId={}", fileKey, uploadId, e);
+            throw new GlobalException("【文件服务】minio 合并分片失败", e);
+        }
+    }
+
+    @Override
+    public boolean abortMultipartUpload(FileStorageInfo fileStorageInfo, String uploadId) {
+        if (StringUtils.isBlank(uploadId)) {
+            throw new GlobalException("【文件服务】uploadId 不能为空");
+        }
+        String fileKey = getStorageLocation(basePath, fileStorageInfo.getPath(), fileStorageInfo.getFilename());
+        try {
+            new MinioSdkAccess(getClient()).abortMultipartUpload(bucketName, fileKey, uploadId);
+            log.info("【文件服务】minio 取消分片成功 | objectKey={} | uploadId={}", fileKey, uploadId);
+            return true;
+        } catch (Exception e) {
+            log.error("【文件服务】minio 取消分片失败 | objectKey={} | uploadId={}", fileKey, uploadId, e);
+            throw new GlobalException("【文件服务】minio 取消分片失败", e);
+        }
+    }
+
+    @Override
     public void close() {
         clientFactory.close();
+    }
+
+    /** 确保存储桶存在 */
+    private void ensureBucket(MinioClient client) throws Exception {
+        boolean bucketExists = client.bucketExists(BucketExistsArgs.builder().bucket(bucketName).build());
+        if (!bucketExists) {
+            client.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+        }
+    }
+
+    /** 解析文件名：优先使用传入 filename，否则按 fileType 生成 */
+    private String resolveFilename(FileStorageInfo fileStorageInfo) {
+        if (StringUtils.isNotBlank(fileStorageInfo.getFilename())) {
+            return fileStorageInfo.getFilename();
+        }
+        if (StringUtils.isNotBlank(fileStorageInfo.getFileType())) {
+            String generated = generateFilename(fileStorageInfo.getFileType());
+            fileStorageInfo.setFilename(generated);
+            return generated;
+        }
+        throw new GlobalException("【文件服务】分片上传需指定 filename 或 fileType");
+    }
+
+    /** 校验分片参数 */
+    private void validatePartArgs(String uploadId, int partNumber, long partSize) {
+        if (StringUtils.isBlank(uploadId)) {
+            throw new GlobalException("【文件服务】uploadId 不能为空");
+        }
+        if (partNumber < 1 || partNumber > 10000) {
+            throw new GlobalException("【文件服务】partNumber 需在 1~10000 之间");
+        }
+        if (partSize <= 0) {
+            throw new GlobalException("【文件服务】partSize 必须大于 0");
+        }
+        // MinIO SDK uploadPart 的 length 为 int
+        if (partSize > Integer.MAX_VALUE) {
+            throw new GlobalException("【文件服务】单分片大小不能超过 " + Integer.MAX_VALUE + " 字节");
+        }
+    }
+
+    /**
+     * 访问 MinIO SDK 中 protected 的分片 API。
+     * <p>
+     * 仅作为平台实现细节，不对外暴露新的 Client 类型；对外统一走 {@link FileStorageInterface}。
+     */
+    private static final class MinioSdkAccess extends MinioClient {
+
+        private MinioSdkAccess(MinioClient client) {
+            super(client);
+        }
+
+        private String initiateMultipartUpload(String bucket, String object) throws Exception {
+            CreateMultipartUploadResponse response =
+                createMultipartUpload(bucket, null, object, null, null);
+            return response.result().uploadId();
+        }
+
+        private String uploadPart(String bucket, String object, String uploadId, int partNumber,
+            InputStream data, int partSize) throws Exception {
+            // SDK 要求 BufferedInputStream / byte[] 等类型
+            BufferedInputStream buffered =
+                data instanceof BufferedInputStream ? (BufferedInputStream)data
+                    : new BufferedInputStream(data);
+            UploadPartResponse response =
+                uploadPart(bucket, null, object, buffered, partSize, uploadId, partNumber, null, null);
+            return response.etag();
+        }
+
+        private void completeMultipartUpload(String bucket, String object, String uploadId, Part[] parts)
+            throws Exception {
+            completeMultipartUpload(bucket, null, object, uploadId, parts, null, null);
+        }
+
+        private void abortMultipartUpload(String bucket, String object, String uploadId) throws Exception {
+            abortMultipartUpload(bucket, null, object, uploadId, null, null);
+        }
     }
 }

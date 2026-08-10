@@ -144,7 +144,7 @@ public class FileStorageServiceBuilder {
     public static AliyunOssPlatFrom buildAliyunOssFileStorage(AliYunOssConfig aliYunOssConfig,
         List<FileStorageClientFactory<?>> clientFactoryList) {
         if (Objects.equals(aliYunOssConfig, null) || !aliYunOssConfig.isEnable()) {
-            log.info("【文件服务】未启用阿里云 OSS 存储平台：{}", aliYunOssConfig.getPlatform());
+            log.debug("【文件服务】未启用阿里云 OSS 存储平台：{}", aliYunOssConfig.getPlatform());
             return null;
         }
         // buildFileStorageDetect(aliYunOssConfig, PlatformEnum.ALIYUN_OSS);
@@ -187,7 +187,7 @@ public class FileStorageServiceBuilder {
     private FileStorageInterface buildLocalFileStorage(LocalConfig local) {
         // 检查 FTP 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(local, null) || !local.isEnable()) {
-            log.info("【文件服务】未启用本地存储平台：{}", local.getPlatform());
+            log.debug("【文件服务】未启用本地存储平台：{}", local.getPlatform());
             return null;
         }
         log.info("【文件服务】加载本地存储平台：{}，平台地址：{}", local.getPlatform(), local.getEndPoint());
@@ -205,7 +205,7 @@ public class FileStorageServiceBuilder {
         List<FileStorageClientFactory<?>> clientFactoryList) {
         // 检查 FTP 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(ftp, null) || !ftp.isEnable()) {
-            log.info("【文件服务】未启用 FTP 存储平台：{}", ftp.getPlatform());
+            log.debug("【文件服务】未启用 FTP 存储平台：{}", ftp.getPlatform());
             return null;
         }
         // 如果 FTP 存储平台已启用，记录加载信息并继续创建实例
@@ -228,7 +228,7 @@ public class FileStorageServiceBuilder {
         List<FileStorageClientFactory<?>> clientFactoryList) {
         // 检查华为 OBS 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(huaweiObs, null) || !huaweiObs.isEnable()) {
-            log.info("【文件服务】未启用华为 OBS 存储平台：{}", huaweiObs.getPlatform());
+            log.debug("【文件服务】未启用华为 OBS 存储平台：{}", huaweiObs.getPlatform());
             return null;
         }
         // 如果华为 OBS 存储平台已启用，记录加载信息并继续创建实例
@@ -252,7 +252,7 @@ public class FileStorageServiceBuilder {
         List<FileStorageClientFactory<?>> clientFactoryList) {
         // 检查 Minio 配置是否为空或未启用，如果任一条件满足，则记录日志并返回 null
         if (Objects.equals(minio, null) || !minio.isEnable()) {
-            log.info("【文件服务】未启用 Minio 存储平台：{}", minio.getPlatform());
+            log.debug("【文件服务】未启用 Minio 存储平台：{}", minio.getPlatform());
             return null;
         }
         // 如果 Minio 存储平台已启用，记录加载信息并继续创建实例
