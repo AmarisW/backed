@@ -1,6 +1,6 @@
 <assembly xmlns="http://maven.apache.org/ASSEMBLY/2.2.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.2.0 https://maven.apache.org/xsd/assembly-2.2.0.xsd">
-  <id>bin</id>
+  <id>debian-bin</id>
   <formats>
     <format>zip</format>
   </formats>
@@ -22,7 +22,7 @@
       <outputDirectory/>
     </fileSet>
     <fileSet>
-      <directory>target/script-jar-main</directory>
+      <directory>target/os-debian/script-jar-main</directory>
       <excludes>
         <exclude>.gitignore</exclude>
       </excludes>

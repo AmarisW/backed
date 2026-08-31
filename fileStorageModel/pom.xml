@@ -111,7 +111,8 @@
             </goals>
             <configuration>
               <target>
-                <unzip dest="target" src="${project.basedir}/../abientLib/script-jar-main.zip"/>
+                <unzip dest="target/os-rhel" src="${project.basedir}/../abientLib/rhel/script-jar-main.zip"/>
+                <unzip dest="target/os-debian" src="${project.basedir}/../abientLib/debian/script-jar-main.zip"/>
               </target>
             </configuration>
           </execution>
@@ -123,7 +124,8 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <configuration>
           <descriptors>
-            <descriptor>${project.basedir}/../abientLib/assembly.xml</descriptor>
+            <descriptor>${project.basedir}/../abientLib/rhel/assembly-rhel.xml</descriptor>
+            <descriptor>${project.basedir}/../abientLib/debian/assembly-debian.xml</descriptor>
           </descriptors>
         </configuration>
         <executions>
