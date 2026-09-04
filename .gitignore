@@ -7,3 +7,8 @@
 
 # Maven flatten plugin generated files
 **/.flattened-pom.xml
+
+# IDE
+.idea/
+*.iml
+
