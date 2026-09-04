@@ -72,43 +72,16 @@
         <artifactId>git-commit-id-maven-plugin</artifactId>
         <groupId>io.github.git-commit-id</groupId>
       </plugin>
-
-      <!-- 解压插件：将本地脚本包解压到 target 目录 -->
+      <!-- 统一自动化离线部署包打包插件 -->
       <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
+        <groupId>com.github.WhereSome</groupId>
+        <artifactId>AbientPackagerMavenPlugin</artifactId>
+        <version>1.1.0</version>
         <executions>
           <execution>
-            <id>unzip-script-jar</id>
-            <phase>package</phase>
             <goals>
-              <goal>run</goal>
+              <goal>package-dist</goal>
             </goals>
-            <configuration>
-              <target>
-                <unzip dest="target/os-rhel" src="${project.basedir}/../abientLib/rhel/script-jar-main.zip"/>
-                <unzip dest="target/os-debian" src="${project.basedir}/../abientLib/debian/script-jar-main.zip"/>
-              </target>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <!-- Assembly插件：自定义打包格式，生成发布包 -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <configuration>
-          <descriptors>
-            <descriptor>${project.basedir}/../abientLib/rhel/assembly-rhel.xml</descriptor>
-            <descriptor>${project.basedir}/../abientLib/debian/assembly-debian.xml</descriptor>
-          </descriptors>
-        </configuration>
-        <executions>
-          <execution>
-            <id>make-assembly</id>
-            <goals>
-              <goal>single</goal>
-            </goals>
-            <phase>package</phase>
           </execution>
         </executions>
       </plugin>
