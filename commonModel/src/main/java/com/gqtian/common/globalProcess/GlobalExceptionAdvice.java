@@ -32,17 +32,13 @@ public class GlobalExceptionAdvice {
 
     /**
      * 处理自定义业务异常
-     * <p>
-     * 业务异常不需要打印完整堆栈，只记录错误信息
-     * </p>
      *
      * @param e 业务异常对象
      * @return 统一返回结果
      */
     @ExceptionHandler(GlobalException.class)
     public GlobalResult<?> handleGlobalException(GlobalException e) {
-        // 业务异常只打印错误信息，不打印堆栈
-        log.warn("业务异常: code={}, message={}", e.getCode(), e.getMessage());
+        log.warn("业务异常: code={}, message={}", e.getCode(), e.getMessage(), e);
 
         // 如果某个自定义异常有@ResponseStatus注解，就继续抛出
         if (AnnotationUtils.findAnnotation(e.getClass(), ResponseStatus.class) != null) {
