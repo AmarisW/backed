@@ -11,7 +11,7 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://118.196.17.107:3306/flyway_dev?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8&createDatabaseIfNotExist=true
           username: root
-          password: REDACTED
+          password: ${MYSQL_PASSWORD}
 
   #----------------------- Flyway -----------------------#
   flyway:

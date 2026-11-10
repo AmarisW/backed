@@ -16,6 +16,8 @@ spring:
   waitSqlPrint: true                       # 是否等待SQL打印
   config:
     import:
+      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
       - classpath:application-custom.yml   # 导入自定义配置
 
 

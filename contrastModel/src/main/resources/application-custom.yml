@@ -105,8 +105,8 @@ file-storage:
   minio:
     platform: minio                                                   # 平台编码
     enable: true                                                      # 是否启用
-    access-key: REDACTED                                      # 访问密钥
-    secret-key: REDACTED                      # 密钥
+    access-key: ${MINIO_ACCESS_KEY}  # 访问密钥
+    secret-key: ${MINIO_SECRET_KEY}  # 密钥
     end-point: http://192.168.90.111:3100                             # 服务地址（须带 http/https）
     bucket-name: v2x                                                  # 存储桶
     base-path: test/                                                  # 对象 key 前缀
@@ -122,8 +122,8 @@ file-storage:
   aliYunOss:
     platform: aliYunOss                                               # 平台编码
     enable: true                                                      # 是否启用
-    access-key: REDACTED                              # 访问密钥
-    secret-key: REDACTED                        # 密钥
+    access-key: ${ALIYUN_OSS_ACCESS_KEY}  # 访问密钥
+    secret-key: ${ALIYUN_OSS_SECRET_KEY}  # 密钥
     end-point: https://oss-cn-beijing.aliyuncs.com                    # 服务地址
     bucket-name: gqtian                                               # 存储桶
     base-path: test/                                                  # 对象 key 前缀
@@ -139,8 +139,8 @@ file-storage:
   huaweiObs:
     platform: huaweiObs                                               # 平台编码
     enable: true                                                      # 是否启用
-    access-key: REDACTED                                  # 访问密钥
-    secret-key: REDACTED                    # 密钥
+    access-key: ${HUAWEI_OBS_ACCESS_KEY}  # 访问密钥
+    secret-key: ${HUAWEI_OBS_SECRET_KEY}  # 密钥
     end-point: http://10.201.124.34:8002                              # 服务地址
     bucket-name: hnsjtt-glfwpt                                        # 存储桶
     base-path: test/                                                  # 对象 key 前缀
@@ -157,8 +157,8 @@ file-storage:
   ftp:
     platform: ftp                                                     # 平台编码
     enable: true                                                      # 是否启用
-    access-key: REDACTED                                               # 用户名
-    secret-key: REDACTED                                         # 密码
+    access-key: ${FTP_USERNAME}  # 用户名
+    secret-key: ${FTP_PASSWORD}  # 密码
     end-point: 47.98.213.196:21                                       # host:port
     base-path: sub/                                                   # 根目录下的基础路径
     domain:                                                           # 预览地址（可选）

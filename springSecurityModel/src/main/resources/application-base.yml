@@ -2,7 +2,7 @@
 # 对应 JwtProperties 配置类，修改后需重启生效
 security:
   jwt:
-    secret: REDACTED  # 签名密钥，生产环境务必更换且不少于 32 字符
+    secret: ${JWT_SECRET}  # 签名密钥，生产环境务必更换且不少于 32 字符
     expiration: 86400000               # Token 有效期（毫秒），86400000 = 24 小时
     header: Authorization              # 客户端传递 Token 的请求头名称
     prefix: Bearer                     # Token 前缀，格式：Authorization: Bearer <token>

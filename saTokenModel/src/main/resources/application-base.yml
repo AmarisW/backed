@@ -5,14 +5,14 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=GMT%2B8
     username: root
-    password: REDACTED
+    password: ${MYSQL_PASSWORD}
     
   data:
     redis:
       database: 1                        # Redis数据库索引（默认为0）
       host: 118.196.17.107               # Redis服务器地址
       port: 6379                         # Redis服务器连接端口
-      password: REDACTED            # Redis服务器连接密码（默认为空）
+      password: ${REDIS_PASSWORD}            # Redis服务器连接密码（默认为空）
       timeout: 10s                       # 连接超时时间
       lettuce:
         pool:

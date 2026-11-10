@@ -13,6 +13,8 @@ spring:
   isEnable: true                           # 是否启用初始化字典
   config:
     import:
+      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
       - classpath:application-custom.yml   # 导入自定义配置
 
 

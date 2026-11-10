@@ -13,6 +13,8 @@ spring:
   isEnable: false                        # 是否启用 commonModel 字典初始化
   config:
     import:
+      - optional:file:.env[.properties]
+      - optional:file:../.env[.properties]
       - classpath:application-custom.yml # 导入自定义配置（可覆盖 JWT 等参数）
 
 #################################  日志配置  #################################

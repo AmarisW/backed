@@ -5,7 +5,7 @@ spring:
     host: 101.43.87.108
     port: 5672
     username: admin
-    password: REDACTED
+    password: ${RABBITMQ_PASSWORD}
     virtual-host: /                       # 虚拟主机
     connection-timeout: 30000             # 连接超时（毫秒）
     publisher-confirm-type: correlated    # 发布确认类型

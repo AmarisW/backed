@@ -10,14 +10,14 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://101.43.87.108:3306/easy_trans?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Shanghai
           username: root
-          password: REDACTED
+          password: ${EASY_TRANS_MYSQL_PASSWORD}
 
   #----------------------- Redis -----------------------#
   data:
     redis:
       host: 101.43.87.108                     # Redis 地址
       port: 6379                          # Redis 端口
-      password: REDACTED             # Redis 密码（无密码留空）
+      password: ${EASY_TRANS_REDIS_PASSWORD}             # Redis 密码（无密码留空）
       database: 0                         # Redis 数据库
       timeout: 5000ms                     # 连接超时时间
       lettuce:

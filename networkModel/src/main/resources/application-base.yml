@@ -9,7 +9,7 @@ spring:
           driver-class-name: com.mysql.cj.jdbc.Driver
           url: jdbc:mysql://118.196.17.107:3306/sh_test?useUnicode=true&characterEncoding=utf8&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true
           username: root
-          password: REDACTED
+          password: ${MYSQL_PASSWORD}
           
 
 #################################  Mybatis-plus  #################################
